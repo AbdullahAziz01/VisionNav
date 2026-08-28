@@ -1,0 +1,9 @@
+{
+  "_comment": "Example stereo calibration. Replace with real Android/OpenCV calibration values.",
+  "left_camera_index": 0,
+  "right_camera_index": 1,
+  "baseline_m": 0.12,
+  "focal_length_px": 700.0,
+  "image_width": 640,
+  "image_height": 480
+}
