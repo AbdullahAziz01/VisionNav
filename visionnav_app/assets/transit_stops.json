@@ -1,0 +1,1525 @@
+{
+ "source": "OpenStreetMap via Overpass API (ODbL)",
+ "area": "Islamabad / Rawalpindi",
+ "bbox": [
+  33.4,
+  72.8,
+  33.8,
+  73.3
+ ],
+ "count": 216,
+ "stops": [
+  {
+   "name": "Metro Bus Terminal 7th Avenue",
+   "key": "7th avenue",
+   "lat": 33.718256,
+   "lon": 73.071917,
+   "metro": true
+  },
+  {
+   "name": "Metro Bus Terminal Chaman",
+   "key": "chaman",
+   "lat": 33.690184,
+   "lon": 73.042763,
+   "metro": true
+  },
+  {
+   "name": "Chamman Metro Station",
+   "key": "chamman",
+   "lat": 33.691738,
+   "lon": 73.043482,
+   "metro": true
+  },
+  {
+   "name": "Metro Bus Terminal Chandni Chowk",
+   "key": "chandni chowk",
+   "lat": 33.629977,
+   "lon": 73.071952,
+   "metro": true
+  },
+  {
+   "name": "Metro Bus Terminal Committee Chowk",
+   "key": "committee chowk",
+   "lat": 33.613851,
+   "lon": 73.065079,
+   "metro": true
+  },
+  {
+   "name": "Metro Bus Terminal Faiz Ahmed Faiz",
+   "key": "faiz ahmed faiz",
+   "lat": 33.675545,
+   "lon": 73.054481,
+   "metro": true
+  },
+  {
+   "name": "Metro Bus Terminal Faizabad",
+   "key": "faizabad",
+   "lat": 33.661338,
+   "lon": 73.082947,
+   "metro": true
+  },
+  {
+   "name": "G10 Metro Station",
+   "key": "g10",
+   "lat": 33.667596,
+   "lon": 73.016289,
+   "metro": true
+  },
+  {
+   "name": "G13 Golra Metro Station",
+   "key": "g13 golra",
+   "lat": 33.64043,
+   "lon": 72.961475,
+   "metro": true
+  },
+  {
+   "name": "Metro Bus Station Ibn-e-Sina",
+   "key": "ibn e sina",
+   "lat": 33.696042,
+   "lon": 73.038372,
+   "metro": true
+  },
+  {
+   "name": "Metro Bus Terminal IJP",
+   "key": "ijp",
+   "lat": 33.6565,
+   "lon": 73.071978,
+   "metro": true
+  },
+  {
+   "name": "Metro Bus Terminal Katchery",
+   "key": "katchery",
+   "lat": 33.702477,
+   "lon": 73.041795,
+   "metro": true
+  },
+  {
+   "name": "Metro Bus Terminal Khyban-e-Johar",
+   "key": "khyban e johar",
+   "lat": 33.66916,
+   "lon": 73.059278,
+   "metro": true
+  },
+  {
+   "name": "Metro Bus Terminal Liaquat Bagh",
+   "key": "liaquat bagh",
+   "lat": 33.606075,
+   "lon": 73.065816,
+   "metro": true
+  },
+  {
+   "name": "Metro bus Mareer Chowk station",
+   "key": "mareer chowk",
+   "lat": 33.599523,
+   "lon": 73.062663,
+   "metro": true
+  },
+  {
+   "name": "Metro Bus Terminal Marir Chowk",
+   "key": "marir chowk",
+   "lat": 33.599788,
+   "lon": 73.062973,
+   "metro": true
+  },
+  {
+   "name": "N5 Metro Station",
+   "key": "n5",
+   "lat": 33.632161,
+   "lon": 72.944123,
+   "metro": true
+  },
+  {
+   "name": "NHA Metro Station",
+   "key": "nha",
+   "lat": 33.676832,
+   "lon": 73.034001,
+   "metro": true
+  },
+  {
+   "name": "NIIA Metro Station",
+   "key": "niia",
+   "lat": 33.55597,
+   "lon": 72.837443,
+   "metro": true
+  },
+  {
+   "name": "NUST Metro Bus Station",
+   "key": "nust",
+   "lat": 33.65535,
+   "lon": 72.992984,
+   "metro": true
+  },
+  {
+   "name": "NUST Metro Bus Area",
+   "key": "nust area",
+   "lat": 33.655522,
+   "lon": 72.993124,
+   "metro": true
+  },
+  {
+   "name": "Metro Bus Terminal Pak Secretariat",
+   "key": "pak secretariat",
+   "lat": 33.735125,
+   "lon": 73.092319,
+   "metro": true
+  },
+  {
+   "name": "Metro Bus Terminal Parade Ground",
+   "key": "parade ground",
+   "lat": 33.724595,
+   "lon": 73.084066,
+   "metro": true
+  },
+  {
+   "name": "Metro Bus Terminal Peshawar Mor",
+   "key": "peshawar mor",
+   "lat": 33.685031,
+   "lon": 73.047234,
+   "metro": true
+  },
+  {
+   "name": "Metro Bus Station Photohar",
+   "key": "photohar",
+   "lat": 33.660964,
+   "lon": 73.065445,
+   "metro": true
+  },
+  {
+   "name": "PIMS Metro Bus Station",
+   "key": "pims",
+   "lat": 33.705899,
+   "lon": 73.048437,
+   "metro": true
+  },
+  {
+   "name": "Police Foundation Metro Station",
+   "key": "police foundation",
+   "lat": 33.663361,
+   "lon": 73.008253,
+   "metro": true
+  },
+  {
+   "name": "Metro Bus Terminal Rehmanabad",
+   "key": "rehmanabad",
+   "lat": 33.636088,
+   "lon": 73.074889,
+   "metro": true
+  },
+  {
+   "name": "Metro Bus Saddar station",
+   "key": "saddar",
+   "lat": 33.593782,
+   "lon": 73.056151,
+   "metro": true
+  },
+  {
+   "name": "Metro Bus Terminal Shaheed-E-Millat",
+   "key": "shaheed e millat",
+   "lat": 33.72141,
+   "lon": 73.077946,
+   "metro": true
+  },
+  {
+   "name": "Metro Bus Terminal Shamsabad",
+   "key": "shamsabad",
+   "lat": 33.650442,
+   "lon": 73.080342,
+   "metro": true
+  },
+  {
+   "name": "Metro Bus Terminal Sixth Road",
+   "key": "sixth road",
+   "lat": 33.643608,
+   "lon": 73.077894,
+   "metro": true
+  },
+  {
+   "name": "Metro Bus Terminal Stock Exchange",
+   "key": "stock exchange",
+   "lat": 33.711509,
+   "lon": 73.059024,
+   "metro": true
+  },
+  {
+   "name": "Metro Bus Terminal Waris Khan",
+   "key": "waris khan",
+   "lat": 33.620802,
+   "lon": 73.06613,
+   "metro": true
+  },
+  {
+   "name": "22#",
+   "key": "22",
+   "lat": 33.633431,
+   "lon": 72.935427,
+   "metro": false
+  },
+  {
+   "name": "22 No Chungi Stop",
+   "key": "22 chungi",
+   "lat": 33.582088,
+   "lon": 73.044835,
+   "metro": false
+  },
+  {
+   "name": "26 No. stop",
+   "key": "26",
+   "lat": 33.628246,
+   "lon": 72.935258,
+   "metro": false
+  },
+  {
+   "name": "26 number",
+   "key": "26 number",
+   "lat": 33.633025,
+   "lon": 72.935024,
+   "metro": false
+  },
+  {
+   "name": "4 Star Travel Services",
+   "key": "4 star travel services",
+   "lat": 33.688406,
+   "lon": 73.034412,
+   "metro": false
+  },
+  {
+   "name": "6th Road Station",
+   "key": "6th road",
+   "lat": 33.643575,
+   "lon": 73.077806,
+   "metro": false
+  },
+  {
+   "name": "Aabpara Bus Stop",
+   "key": "aabpara",
+   "lat": 33.708424,
+   "lon": 73.090173,
+   "metro": false
+  },
+  {
+   "name": "Aabpara Market",
+   "key": "aabpara market",
+   "lat": 33.71,
+   "lon": 73.08817,
+   "metro": false
+  },
+  {
+   "name": "Islamabad Airport",
+   "key": "airport",
+   "lat": 33.555987,
+   "lon": 72.837367,
+   "metro": false
+  },
+  {
+   "name": "Airport chowk",
+   "key": "airport chowk",
+   "lat": 33.60537,
+   "lon": 73.131453,
+   "metro": false
+  },
+  {
+   "name": "Aiwan-e-Sadar Colony",
+   "key": "aiwan e sadar colony",
+   "lat": 33.733498,
+   "lon": 73.108594,
+   "metro": false
+  },
+  {
+   "name": "Al-Shifa",
+   "key": "al shifa",
+   "lat": 33.558233,
+   "lon": 73.093969,
+   "metro": false
+  },
+  {
+   "name": "Ali Nawaz Chauhan Chowk",
+   "key": "ali nawaz chauhan chowk",
+   "lat": 33.617328,
+   "lon": 73.081939,
+   "metro": false
+  },
+  {
+   "name": "Alipur Bank Stop",
+   "key": "alipur bank",
+   "lat": 33.645248,
+   "lon": 73.18077,
+   "metro": false
+  },
+  {
+   "name": "Asian Broadcasting Pvt. Ltd",
+   "key": "asian broadcasting pvt ltd",
+   "lat": 33.704056,
+   "lon": 72.979222,
+   "metro": false
+  },
+  {
+   "name": "Baloch Transportation",
+   "key": "baloch transportation",
+   "lat": 33.631953,
+   "lon": 73.038714,
+   "metro": false
+  },
+  {
+   "name": "Bank Colony",
+   "key": "bank colony",
+   "lat": 33.700394,
+   "lon": 73.061979,
+   "metro": false
+  },
+  {
+   "name": "Banni Chowk",
+   "key": "banni chowk",
+   "lat": 33.621553,
+   "lon": 73.062011,
+   "metro": false
+  },
+  {
+   "name": "Banth",
+   "key": "banth",
+   "lat": 33.409485,
+   "lon": 73.223122,
+   "metro": false
+  },
+  {
+   "name": "Bari Imam",
+   "key": "bari imam",
+   "lat": 33.743403,
+   "lon": 73.109381,
+   "metro": false
+  },
+  {
+   "name": "Bhaata Chowkh",
+   "key": "bhaata chowkh",
+   "lat": 33.602106,
+   "lon": 72.979783,
+   "metro": false
+  },
+  {
+   "name": "Bilal Travels Bus Service",
+   "key": "bilal travels service",
+   "lat": 33.685313,
+   "lon": 73.033666,
+   "metro": false
+  },
+  {
+   "name": "Burji Stop",
+   "key": "burji",
+   "lat": 33.541509,
+   "lon": 73.146928,
+   "metro": false
+  },
+  {
+   "name": "Burma Stop",
+   "key": "burma",
+   "lat": 33.633743,
+   "lon": 73.132748,
+   "metro": false
+  },
+  {
+   "name": "cda stop",
+   "key": "cda",
+   "lat": 33.641534,
+   "lon": 73.043395,
+   "metro": false
+  },
+  {
+   "name": "Chaina Chowk",
+   "key": "chaina chowk",
+   "lat": 33.772969,
+   "lon": 72.811774,
+   "metro": false
+  },
+  {
+   "name": "Chak Beli Mor",
+   "key": "chak beli mor",
+   "lat": 33.477238,
+   "lon": 73.196136,
+   "metro": false
+  },
+  {
+   "name": "Chakki",
+   "key": "chakki",
+   "lat": 33.429266,
+   "lon": 73.227184,
+   "metro": false
+  },
+  {
+   "name": "Chakwal Adda",
+   "key": "chakwal",
+   "lat": 33.662854,
+   "lon": 73.08364,
+   "metro": false
+  },
+  {
+   "name": "Chandani Chowk Station",
+   "key": "chandani chowk",
+   "lat": 33.629854,
+   "lon": 73.071963,
+   "metro": false
+  },
+  {
+   "name": "Channi Bridge",
+   "key": "channi bridge",
+   "lat": 33.44219,
+   "lon": 73.226172,
+   "metro": false
+  },
+  {
+   "name": "Charing Cross",
+   "key": "charing cross",
+   "lat": 33.605679,
+   "lon": 73.021165,
+   "metro": false
+  },
+  {
+   "name": "Chatha Bakhtawar",
+   "key": "chatha bakhtawar",
+   "lat": 33.664747,
+   "lon": 73.152476,
+   "metro": false
+  },
+  {
+   "name": "Chatri Chowkh",
+   "key": "chatri chowkh",
+   "lat": 33.621943,
+   "lon": 73.10635,
+   "metro": false
+  },
+  {
+   "name": "Children Hospital",
+   "key": "children hospital",
+   "lat": 33.705294,
+   "lon": 73.05566,
+   "metro": false
+  },
+  {
+   "name": "Chirah Chowk",
+   "key": "chirah chowk",
+   "lat": 33.656496,
+   "lon": 73.278122,
+   "metro": false
+  },
+  {
+   "name": "Chour Chowk",
+   "key": "chour chowk",
+   "lat": 33.608293,
+   "lon": 73.011409,
+   "metro": false
+  },
+  {
+   "name": "Chour Harpal",
+   "key": "chour harpal",
+   "lat": 33.609646,
+   "lon": 73.008661,
+   "metro": false
+  },
+  {
+   "name": "Chungi No.8",
+   "key": "chungi 8",
+   "lat": 33.627148,
+   "lon": 73.093394,
+   "metro": false
+  },
+  {
+   "name": "College Morr",
+   "key": "college morr",
+   "lat": 33.681242,
+   "lon": 73.018728,
+   "metro": false
+  },
+  {
+   "name": "Daewoo bus Terminal",
+   "key": "daewoo",
+   "lat": 33.622178,
+   "lon": 72.954202,
+   "metro": false
+  },
+  {
+   "name": "Daewoo BusWworkshop",
+   "key": "daewoo buswworkshop",
+   "lat": 33.61836,
+   "lon": 72.984261,
+   "metro": false
+  },
+  {
+   "name": "Daewoo express",
+   "key": "daewoo express",
+   "lat": 33.69184,
+   "lon": 73.056903,
+   "metro": false
+  },
+  {
+   "name": "Daewoo Express Faizabad Terminal",
+   "key": "daewoo express faizabad",
+   "lat": 33.660704,
+   "lon": 73.081281,
+   "metro": false
+  },
+  {
+   "name": "Dental Hospital",
+   "key": "dental hospital",
+   "lat": 33.69996,
+   "lon": 73.049046,
+   "metro": false
+  },
+  {
+   "name": "Development Park",
+   "key": "development park",
+   "lat": 33.695401,
+   "lon": 73.047792,
+   "metro": false
+  },
+  {
+   "name": "DHA Gate 7 South",
+   "key": "dha gate 7",
+   "lat": 33.532807,
+   "lon": 73.181164,
+   "metro": false
+  },
+  {
+   "name": "DHA jamia mosque bus stop",
+   "key": "dha jamia mosque",
+   "lat": 33.540371,
+   "lon": 73.097648,
+   "metro": false
+  },
+  {
+   "name": "Dhok Kala Khan Bus Stop",
+   "key": "dhok kala khan",
+   "lat": 33.654532,
+   "lon": 73.092324,
+   "metro": false
+  },
+  {
+   "name": "Dhoke Kazim",
+   "key": "dhoke kazim",
+   "lat": 33.655315,
+   "lon": 73.154278,
+   "metro": false
+  },
+  {
+   "name": "Dhoke Syed's Choke",
+   "key": "dhoke syed s choke",
+   "lat": 33.579356,
+   "lon": 73.023813,
+   "metro": false
+  },
+  {
+   "name": "Diplomatic Enclave Gate 4",
+   "key": "diplomatic enclave gate 4",
+   "lat": 33.730682,
+   "lon": 73.110706,
+   "metro": false
+  },
+  {
+   "name": "Double Road Stop",
+   "key": "double road",
+   "lat": 33.648024,
+   "lon": 73.079107,
+   "metro": false
+  },
+  {
+   "name": "EME COLLEGE",
+   "key": "eme college",
+   "lat": 33.624269,
+   "lon": 72.954651,
+   "metro": false
+  },
+  {
+   "name": "Faisal Mover",
+   "key": "faisal mover",
+   "lat": 33.627974,
+   "lon": 72.943878,
+   "metro": false
+  },
+  {
+   "name": "Faisal movers",
+   "key": "faisal movers",
+   "lat": 33.661571,
+   "lon": 73.081239,
+   "metro": false
+  },
+  {
+   "name": "Faisal Movers Faizabad Al-Makkah Terminal",
+   "key": "faisal movers faizabad al makkah",
+   "lat": 33.662133,
+   "lon": 73.083926,
+   "metro": false
+  },
+  {
+   "name": "Faisal Movers Ghizali Terminal",
+   "key": "faisal movers ghizali",
+   "lat": 33.630427,
+   "lon": 72.943345,
+   "metro": false
+  },
+  {
+   "name": "Faisal Movers / Sania Express 26 No.Terminal",
+   "key": "faisal movers sania express 26",
+   "lat": 33.63064,
+   "lon": 72.944078,
+   "metro": false
+  },
+  {
+   "name": "Faiz Abad Adda",
+   "key": "faiz abad",
+   "lat": 33.661641,
+   "lon": 73.084588,
+   "metro": false
+  },
+  {
+   "name": "Faizabad Adda (Mansehra terminal)",
+   "key": "faizabad mansehra",
+   "lat": 33.662284,
+   "lon": 73.083852,
+   "metro": false
+  },
+  {
+   "name": "Fasal Movers",
+   "key": "fasal movers",
+   "lat": 33.662709,
+   "lon": 73.08349,
+   "metro": false
+  },
+  {
+   "name": "FAST Bus Stop",
+   "key": "fast",
+   "lat": 33.655673,
+   "lon": 73.01695,
+   "metro": false
+  },
+  {
+   "name": "Fawara Chowk Bus Stop",
+   "key": "fawara chowk",
+   "lat": 33.613191,
+   "lon": 73.054763,
+   "metro": false
+  },
+  {
+   "name": "G-10 Markaz",
+   "key": "g 10 markaz",
+   "lat": 33.676728,
+   "lon": 73.014472,
+   "metro": false
+  },
+  {
+   "name": "G-12 west nust station",
+   "key": "g 12 nust",
+   "lat": 33.650022,
+   "lon": 72.982486,
+   "metro": false
+  },
+  {
+   "name": "G-6/1-2",
+   "key": "g 6 1 2",
+   "lat": 33.71251,
+   "lon": 73.079964,
+   "metro": false
+  },
+  {
+   "name": "G-8 Markaz",
+   "key": "g 8 markaz",
+   "lat": 33.698943,
+   "lon": 73.047102,
+   "metro": false
+  },
+  {
+   "name": "G-9 Markaz",
+   "key": "g 9 markaz",
+   "lat": 33.689496,
+   "lon": 73.030215,
+   "metro": false
+  },
+  {
+   "name": "G-9 Bus Wagon & Pickup Stop‎",
+   "key": "g 9 wagon pickup",
+   "lat": 33.689671,
+   "lon": 73.030612,
+   "metro": false
+  },
+  {
+   "name": "Gangal East",
+   "key": "gangal",
+   "lat": 33.612997,
+   "lon": 73.126091,
+   "metro": false
+  },
+  {
+   "name": "Ghee Mill Stop",
+   "key": "ghee mill",
+   "lat": 33.5411,
+   "lon": 73.142827,
+   "metro": false
+  },
+  {
+   "name": "ghosia travels",
+   "key": "ghosia travels",
+   "lat": 33.61637,
+   "lon": 72.9912,
+   "metro": false
+  },
+  {
+   "name": "Golra Mor Bus Stop",
+   "key": "golra mor",
+   "lat": 33.624796,
+   "lon": 72.971498,
+   "metro": false
+  },
+  {
+   "name": "GPO stop",
+   "key": "gpo",
+   "lat": 33.59539,
+   "lon": 73.051024,
+   "metro": false
+  },
+  {
+   "name": "Haji Chowk",
+   "key": "haji chowk",
+   "lat": 33.629842,
+   "lon": 73.089524,
+   "metro": false
+  },
+  {
+   "name": "Hamrahi Travels",
+   "key": "hamrahi travels",
+   "lat": 33.548751,
+   "lon": 73.102294,
+   "metro": false
+  },
+  {
+   "name": "Haraka",
+   "key": "haraka",
+   "lat": 33.431413,
+   "lon": 73.16033,
+   "metro": false
+  },
+  {
+   "name": "Hotel Stop Jhangi Syedan",
+   "key": "hotel jhangi syedan",
+   "lat": 33.623832,
+   "lon": 72.951469,
+   "metro": false
+  },
+  {
+   "name": "Ibne Sina Station",
+   "key": "ibne sina",
+   "lat": 33.695756,
+   "lon": 73.038661,
+   "metro": false
+  },
+  {
+   "name": "ICB College",
+   "key": "icb college",
+   "lat": 33.71781,
+   "lon": 73.08994,
+   "metro": false
+  },
+  {
+   "name": "Iqbal Hall",
+   "key": "iqbal hall",
+   "lat": 33.708658,
+   "lon": 73.073689,
+   "metro": false
+  },
+  {
+   "name": "Jahaz Ground Stop",
+   "key": "jahaz ground",
+   "lat": 33.628392,
+   "lon": 73.101972,
+   "metro": false
+  },
+  {
+   "name": "Java Road Stop",
+   "key": "java road",
+   "lat": 33.54173,
+   "lon": 73.149644,
+   "metro": false
+  },
+  {
+   "name": "Jhangi Sayedan",
+   "key": "jhangi sayedan",
+   "lat": 33.642765,
+   "lon": 73.208096,
+   "metro": false
+  },
+  {
+   "name": "Jillania Stop",
+   "key": "jillania",
+   "lat": 33.694443,
+   "lon": 73.045952,
+   "metro": false
+  },
+  {
+   "name": "Kacha stop",
+   "key": "kacha",
+   "lat": 33.624295,
+   "lon": 73.011644,
+   "metro": false
+  },
+  {
+   "name": "Kachehri",
+   "key": "kachehri",
+   "lat": 33.584151,
+   "lon": 73.066438,
+   "metro": false
+  },
+  {
+   "name": "Kainat Travels",
+   "key": "kainat travels",
+   "lat": 33.613625,
+   "lon": 72.996505,
+   "metro": false
+  },
+  {
+   "name": "Kalyal Stop",
+   "key": "kalyal",
+   "lat": 33.530279,
+   "lon": 73.050309,
+   "metro": false
+  },
+  {
+   "name": "Kalyam Mor",
+   "key": "kalyam mor",
+   "lat": 33.421119,
+   "lon": 73.223072,
+   "metro": false
+  },
+  {
+   "name": "Karachi Company",
+   "key": "karachi company",
+   "lat": 33.689317,
+   "lon": 73.034402,
+   "metro": false
+  },
+  {
+   "name": "Kashmir Highway Station",
+   "key": "kashmir highway",
+   "lat": 33.684608,
+   "lon": 73.047482,
+   "metro": false
+  },
+  {
+   "name": "khalid hospital",
+   "key": "khalid hospital",
+   "lat": 33.644925,
+   "lon": 73.04943,
+   "metro": false
+  },
+  {
+   "name": "Khanna Pul",
+   "key": "khanna pul",
+   "lat": 33.629318,
+   "lon": 73.113646,
+   "metro": false
+  },
+  {
+   "name": "Khayaban-i-Johar Station",
+   "key": "khayaban i johar",
+   "lat": 33.669059,
+   "lon": 73.059297,
+   "metro": false
+  },
+  {
+   "name": "Koh-i-Noor Mills Bus Stop",
+   "key": "koh i noor mills",
+   "lat": 33.618908,
+   "lon": 72.980991,
+   "metro": false
+  },
+  {
+   "name": "kohistan luxury bus service",
+   "key": "kohistan luxury service",
+   "lat": 33.615289,
+   "lon": 72.995157,
+   "metro": false
+  },
+  {
+   "name": "Koral Chowk",
+   "key": "koral chowk",
+   "lat": 33.605619,
+   "lon": 73.131182,
+   "metro": false
+  },
+  {
+   "name": "Korang Stop",
+   "key": "korang",
+   "lat": 33.5772,
+   "lon": 73.152299,
+   "metro": false
+  },
+  {
+   "name": "Kucheri",
+   "key": "kucheri",
+   "lat": 33.582833,
+   "lon": 73.067173,
+   "metro": false
+  },
+  {
+   "name": "Kuri Road",
+   "key": "kuri road",
+   "lat": 33.642652,
+   "lon": 73.103906,
+   "metro": false
+  },
+  {
+   "name": "Lane 2 Officer colony",
+   "key": "lane 2 officer colony",
+   "lat": 33.601068,
+   "lon": 72.993519,
+   "metro": false
+  },
+  {
+   "name": "lane 3 Officer colony",
+   "key": "lane 3 officer colony",
+   "lat": 33.602764,
+   "lon": 72.991326,
+   "metro": false
+  },
+  {
+   "name": "Liaqat Bagh Station",
+   "key": "liaqat bagh",
+   "lat": 33.605941,
+   "lon": 73.065774,
+   "metro": false
+  },
+  {
+   "name": "Liaqat Colony",
+   "key": "liaqat colony",
+   "lat": 33.556061,
+   "lon": 73.015311,
+   "metro": false
+  },
+  {
+   "name": "Local Bus stop",
+   "key": "local",
+   "lat": 33.660629,
+   "lon": 73.064284,
+   "metro": false
+  },
+  {
+   "name": "Lodges Park",
+   "key": "lodges park",
+   "lat": 33.716589,
+   "lon": 73.098141,
+   "metro": false
+  },
+  {
+   "name": "Mandi Morh, Rawalpindi-Islamabad",
+   "key": "mandi morh",
+   "lat": 33.635564,
+   "lon": 73.033148,
+   "metro": false
+  },
+  {
+   "name": "mandi morr",
+   "key": "mandi morr",
+   "lat": 33.635912,
+   "lon": 73.032316,
+   "metro": false
+  },
+  {
+   "name": "Mansehra Wagon Stop",
+   "key": "mansehra wagon",
+   "lat": 33.689117,
+   "lon": 73.03389,
+   "metro": false
+  },
+  {
+   "name": "Marir Hassan",
+   "key": "marir hassan",
+   "lat": 33.596498,
+   "lon": 73.064862,
+   "metro": false
+  },
+  {
+   "name": "Marrir Station",
+   "key": "marrir",
+   "lat": 33.599724,
+   "lon": 73.062795,
+   "metro": false
+  },
+  {
+   "name": "media town Block A",
+   "key": "media town block a",
+   "lat": 33.563976,
+   "lon": 73.122216,
+   "metro": false
+  },
+  {
+   "name": "Media town Block B, C, D & E",
+   "key": "media town block b c d e",
+   "lat": 33.56457,
+   "lon": 73.123982,
+   "metro": false
+  },
+  {
+   "name": "Melody Market",
+   "key": "melody market",
+   "lat": 33.7147,
+   "lon": 73.084481,
+   "metro": false
+  },
+  {
+   "name": "Ministry of Foreign Affairs",
+   "key": "ministry of foreign affairs",
+   "lat": 33.718132,
+   "lon": 73.103852,
+   "metro": false
+  },
+  {
+   "name": "Mohrha Shah Wali HMC",
+   "key": "mohrha shah wali hmc",
+   "lat": 33.772682,
+   "lon": 72.818215,
+   "metro": false
+  },
+  {
+   "name": "moterway express",
+   "key": "moterway express",
+   "lat": 33.613451,
+   "lon": 72.997177,
+   "metro": false
+  },
+  {
+   "name": "Moti mehal stop",
+   "key": "moti mehal",
+   "lat": 33.602737,
+   "lon": 73.065441,
+   "metro": false
+  },
+  {
+   "name": "MOTORWAY",
+   "key": "motorway",
+   "lat": 33.628476,
+   "lon": 72.943475,
+   "metro": false
+  },
+  {
+   "name": "Municipal Corporation",
+   "key": "municipal corporation",
+   "lat": 33.715959,
+   "lon": 73.087289,
+   "metro": false
+  },
+  {
+   "name": "Muslim Colony",
+   "key": "muslim colony",
+   "lat": 33.739082,
+   "lon": 73.10836,
+   "metro": false
+  },
+  {
+   "name": "Nadra Chowk",
+   "key": "nadra chowk",
+   "lat": 33.720271,
+   "lon": 73.095299,
+   "metro": false
+  },
+  {
+   "name": "Nai Abbadi Stop",
+   "key": "nai abbadi",
+   "lat": 33.645176,
+   "lon": 73.176822,
+   "metro": false
+  },
+  {
+   "name": "National Library",
+   "key": "national library",
+   "lat": 33.724631,
+   "lon": 73.102699,
+   "metro": false
+  },
+  {
+   "name": "Naz Cinema Stop",
+   "key": "naz cinema",
+   "lat": 33.623441,
+   "lon": 73.067462,
+   "metro": false
+  },
+  {
+   "name": "new khan road runner",
+   "key": "new khan road runner",
+   "lat": 33.61517,
+   "lon": 72.994796,
+   "metro": false
+  },
+  {
+   "name": "Niazi Express",
+   "key": "niazi express",
+   "lat": 33.687677,
+   "lon": 73.033761,
+   "metro": false
+  },
+  {
+   "name": "Nilore Barier",
+   "key": "nilore barier",
+   "lat": 33.653498,
+   "lon": 73.244062,
+   "metro": false
+  },
+  {
+   "name": "Nori Hospital",
+   "key": "nori hospital",
+   "lat": 33.698651,
+   "lon": 73.053746,
+   "metro": false
+  },
+  {
+   "name": "Nori Hospitan",
+   "key": "nori hospitan",
+   "lat": 33.698473,
+   "lon": 73.0539,
+   "metro": false
+  },
+  {
+   "name": "old New Khan",
+   "key": "old new khan",
+   "lat": 33.614548,
+   "lon": 72.996601,
+   "metro": false
+  },
+  {
+   "name": "Opposite SUPARCO Bus Stop",
+   "key": "opposite suparco",
+   "lat": 33.520085,
+   "lon": 73.179753,
+   "metro": false
+  },
+  {
+   "name": "PAF Chowk Rawalpindi",
+   "key": "paf chowk",
+   "lat": 33.608757,
+   "lon": 73.082012,
+   "metro": false
+  },
+  {
+   "name": "Pakistan Secretariat",
+   "key": "pakistan secretariat",
+   "lat": 33.729548,
+   "lon": 73.093537,
+   "metro": false
+  },
+  {
+   "name": "Peshawar Morr",
+   "key": "peshawar morr",
+   "lat": 33.684702,
+   "lon": 73.046878,
+   "metro": false
+  },
+  {
+   "name": "PIMS Gate FR",
+   "key": "pims gate fr",
+   "lat": 33.706108,
+   "lon": 73.052014,
+   "metro": false
+  },
+  {
+   "name": "Pir Wadahi",
+   "key": "pir wadahi",
+   "lat": 33.630705,
+   "lon": 73.042489,
+   "metro": false
+  },
+  {
+   "name": "Pirwadhai Mor Bus Station",
+   "key": "pirwadhai mor",
+   "lat": 33.629887,
+   "lon": 73.042077,
+   "metro": false
+  },
+  {
+   "name": "Police Flats",
+   "key": "police flats",
+   "lat": 33.684281,
+   "lon": 73.024614,
+   "metro": false
+  },
+  {
+   "name": "Pothohar Station",
+   "key": "pothohar",
+   "lat": 33.660792,
+   "lon": 73.065674,
+   "metro": false
+  },
+  {
+   "name": "Puli Stop",
+   "key": "puli",
+   "lat": 33.706959,
+   "lon": 73.070502,
+   "metro": false
+  },
+  {
+   "name": "Punjab House Bus Stop",
+   "key": "punjab house",
+   "lat": 33.592838,
+   "lon": 73.065252,
+   "metro": false
+  },
+  {
+   "name": "PWD bus stop",
+   "key": "pwd",
+   "lat": 33.575939,
+   "lon": 73.152974,
+   "metro": false
+  },
+  {
+   "name": "Radio Pakistan",
+   "key": "radio pakistan",
+   "lat": 33.7228,
+   "lon": 73.100898,
+   "metro": false
+  },
+  {
+   "name": "Rawal Chowk",
+   "key": "rawal chowk",
+   "lat": 33.62645,
+   "lon": 73.075361,
+   "metro": false
+  },
+  {
+   "name": "Regional Passport office Rawalpindi",
+   "key": "regional passport office",
+   "lat": 33.616679,
+   "lon": 73.033821,
+   "metro": false
+  },
+  {
+   "name": "Rescue 15",
+   "key": "rescue 15",
+   "lat": 33.699603,
+   "lon": 73.05982,
+   "metro": false
+  },
+  {
+   "name": "Sadiqabad Chowk",
+   "key": "sadiqabad chowk",
+   "lat": 33.632201,
+   "lon": 73.085588,
+   "metro": false
+  },
+  {
+   "name": "Sadiqabad Morr",
+   "key": "sadiqabad morr",
+   "lat": 33.6341,
+   "lon": 73.076231,
+   "metro": false
+  },
+  {
+   "name": "Sagri",
+   "key": "sagri",
+   "lat": 33.460784,
+   "lon": 73.265246,
+   "metro": false
+  },
+  {
+   "name": "Samarzar Housing Society",
+   "key": "samarzar housing society",
+   "lat": 33.526332,
+   "lon": 73.048619,
+   "metro": false
+  },
+  {
+   "name": "Sanam Chowk",
+   "key": "sanam chowk",
+   "lat": 33.632841,
+   "lon": 73.126825,
+   "metro": false
+  },
+  {
+   "name": "Sarya Chowk",
+   "key": "sarya chowk",
+   "lat": 33.689954,
+   "lon": 73.055935,
+   "metro": false
+  },
+  {
+   "name": "Satra Meel",
+   "key": "satra meel",
+   "lat": 33.643362,
+   "lon": 73.200222,
+   "metro": false
+  },
+  {
+   "name": "Satrah Meel",
+   "key": "satrah meel",
+   "lat": 33.425955,
+   "lon": 73.225436,
+   "metro": false
+  },
+  {
+   "name": "Secretariat Station",
+   "key": "secretariat",
+   "lat": 33.734623,
+   "lon": 73.092513,
+   "metro": false
+  },
+  {
+   "name": "Secretariat Police Station",
+   "key": "secretariat police",
+   "lat": 33.726678,
+   "lon": 73.106512,
+   "metro": false
+  },
+  {
+   "name": "Shaheed-i-Millat Station",
+   "key": "shaheed i millat",
+   "lat": 33.721598,
+   "lon": 73.078201,
+   "metro": false
+  },
+  {
+   "name": "Shaheen Chowk",
+   "key": "shaheen chowk",
+   "lat": 33.712297,
+   "lon": 73.027144,
+   "metro": false
+  },
+  {
+   "name": "Shaheen chowkh",
+   "key": "shaheen chowkh",
+   "lat": 33.626863,
+   "lon": 73.115152,
+   "metro": false
+  },
+  {
+   "name": "Shakarparian Stop",
+   "key": "shakarparian",
+   "lat": 33.684024,
+   "lon": 73.072756,
+   "metro": false
+  },
+  {
+   "name": "Silai Centre",
+   "key": "silai centre",
+   "lat": 33.702024,
+   "lon": 73.065021,
+   "metro": false
+  },
+  {
+   "name": "Sitara Market",
+   "key": "sitara market",
+   "lat": 33.705843,
+   "lon": 73.066964,
+   "metro": false
+  },
+  {
+   "name": "Skyways Daewoo Bus Service",
+   "key": "skyways daewoo service",
+   "lat": 33.661857,
+   "lon": 73.083345,
+   "metro": false
+  },
+  {
+   "name": "Street 3, Dhoke Khabba",
+   "key": "street 3 dhoke khabba",
+   "lat": 33.613155,
+   "lon": 73.075198,
+   "metro": false
+  },
+  {
+   "name": "Sukh Chayn Park",
+   "key": "sukh chayn park",
+   "lat": 33.713604,
+   "lon": 73.10032,
+   "metro": false
+  },
+  {
+   "name": "Sultana Foundation",
+   "key": "sultana foundation",
+   "lat": 33.643131,
+   "lon": 73.202954,
+   "metro": false
+  },
+  {
+   "name": "SUPARCO Bus Stop",
+   "key": "suparco",
+   "lat": 33.520178,
+   "lon": 73.178953,
+   "metro": false
+  },
+  {
+   "name": "Supreme Court",
+   "key": "supreme court",
+   "lat": 33.727839,
+   "lon": 73.09704,
+   "metro": false
+  },
+  {
+   "name": "Tahli Mohri Chowk",
+   "key": "tahli mohri chowk",
+   "lat": 33.571063,
+   "lon": 73.048075,
+   "metro": false
+  },
+  {
+   "name": "Tarramri",
+   "key": "tarramri",
+   "lat": 33.644424,
+   "lon": 73.16417,
+   "metro": false
+  },
+  {
+   "name": "Taxila (ٹیکسلا)",
+   "key": "taxila",
+   "lat": 33.741621,
+   "lon": 72.819073,
+   "metro": false
+  },
+  {
+   "name": "Tench bhatta",
+   "key": "tench bhatta",
+   "lat": 33.582527,
+   "lon": 73.030714,
+   "metro": false
+  },
+  {
+   "name": "Teri & Nari Panos Flyingcoach Adda Mandi Morr Rawalpindi",
+   "key": "teri nari panos flyingcoach mandi morr",
+   "lat": 33.634467,
+   "lon": 73.033075,
+   "metro": false
+  },
+  {
+   "name": "Trolly Adda",
+   "key": "trolly",
+   "lat": 33.629511,
+   "lon": 73.109158,
+   "metro": false
+  },
+  {
+   "name": "Tumair",
+   "key": "tumair",
+   "lat": 33.660863,
+   "lon": 73.258263,
+   "metro": false
+  },
+  {
+   "name": "Usman Chowk Bus Stop",
+   "key": "usman chowk",
+   "lat": 33.645815,
+   "lon": 72.955273,
+   "metro": false
+  },
+  {
+   "name": "Visa Seekers Shuttle Service",
+   "key": "visa seekers shuttle service",
+   "lat": 33.728811,
+   "lon": 73.136358,
+   "metro": false
+  },
+  {
+   "name": "Wagon Stop",
+   "key": "wagon",
+   "lat": 33.681974,
+   "lon": 73.02051,
+   "metro": false
+  },
+  {
+   "name": "Youth Hostel",
+   "key": "youth hostel",
+   "lat": 33.709981,
+   "lon": 73.091837,
+   "metro": false
+  }
+ ]
+}

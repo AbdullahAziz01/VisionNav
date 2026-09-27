@@ -10,7 +10,7 @@ from ultralytics import YOLO
 MODEL = "yolov8n.pt"
 CONF = 0.4
 # Classes relevant to VisionNav (COCO names)
-TARGET_CLASSES = {"bus", "person", "car", "truck"}
+TARGET_CLASSES = {"person", "bicycle", "car", "motorcycle", "bus", "truck"}
 
 
 def main():

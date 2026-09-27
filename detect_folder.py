@@ -9,7 +9,7 @@ from ultralytics import YOLO
 
 MODEL = "yolov8n.pt"
 CONF = 0.4
-TARGET_CLASSES = {"bus", "person", "car", "truck"}
+TARGET_CLASSES = {"person", "bicycle", "car", "motorcycle", "bus", "truck"}
 IMAGE_EXT = {".jpg", ".jpeg", ".png", ".webp"}
 
 

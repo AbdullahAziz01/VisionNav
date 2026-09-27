@@ -1,0 +1,23 @@
+{
+  "scale": 0.575738,
+  "shift": 0.0,
+  "mode": "scale_only",
+  "num_points": 1,
+  "mae_before_m": 1.4738,
+  "mae_after_m": 0.0,
+  "rmse_before_m": 1.4738,
+  "rmse_after_m": 0.0,
+  "depth_model": "depth-anything/Depth-Anything-V2-Metric-Indoor-Small-hf",
+  "points": [
+    {
+      "distance_m": 2.0,
+      "predicted_median_m": 3.4738,
+      "predicted_std_m": 0.7422,
+      "samples": 21,
+      "corrected_m": 2.0,
+      "error_before_m": 1.474,
+      "error_after_m": 0.0
+    }
+  ],
+  "source": "phone_camera_via_/pipeline/frame"
+}

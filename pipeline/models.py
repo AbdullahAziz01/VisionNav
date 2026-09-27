@@ -38,6 +38,12 @@ class ObjectDistance:
     distance_label: str
     depth_backend: str
     tracking_backend: str
+    route_line: str | None = None
+    route_destination: str | None = None
+    route_direction: str | None = None
+    route_confidence: float | None = None
+    route_is_stable: bool = False
+    route_tts_message: str | None = None
 
 
 @dataclass

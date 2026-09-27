@@ -1,0 +1,61 @@
+{
+  "routes": [
+    {
+      "id": "green_line",
+      "display_name": "Green Line",
+      "endpoints": ["PIMS Hospital", "Barakahu Stop"],
+      "directions": [
+        {
+          "id": "toward_barakahu",
+          "destination": "Barakahu",
+          "destination_aliases": [
+            "BARAKAHU",
+            "BARA KAHU",
+            "BARAKAHU STOP"
+          ],
+          "tts_message": "Green Line toward Barakahu."
+        },
+        {
+          "id": "toward_pims",
+          "destination": "PIMS Hospital",
+          "destination_aliases": [
+            "PIMS",
+            "PIMS HOSPITAL"
+          ],
+          "tts_message": "Green Line toward PIMS Hospital."
+        }
+      ]
+    },
+    {
+      "id": "orange_line",
+      "display_name": "Orange Line",
+      "endpoints": [
+        "Faiz Ahmad Faiz Metro Station Bay 3",
+        "N-5 Metro Station"
+      ],
+      "directions": [
+        {
+          "id": "toward_n5",
+          "destination": "N-5",
+          "destination_aliases": [
+            "N-5",
+            "N5",
+            "N 5",
+            "N-5 METRO STATION"
+          ],
+          "tts_message": "Orange Line toward N-5."
+        },
+        {
+          "id": "toward_faiz_ahmad_faiz",
+          "destination": "Faiz Ahmad Faiz",
+          "destination_aliases": [
+            "FAIZ AHMAD FAIZ",
+            "FAIZ AHMAD",
+            "FAIZ AHMAD FAIZ METRO STATION"
+          ],
+          "tts_message": "Orange Line toward Faiz Ahmad Faiz."
+        }
+      ]
+    }
+  ]
+}

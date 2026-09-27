@@ -1,0 +1,12 @@
+{
+  "base_model": "depth-anything/Depth-Anything-V2-Metric-Outdoor-Small-hf",
+  "quantization": "4-bit NF4",
+  "compute_dtype": "float16",
+  "double_quantization": false,
+  "parameters_million": 14.168,
+  "framework": "PyTorch + Transformers + bitsandbytes",
+  "average_inference_ms": 24.639,
+  "median_inference_ms": 22.91,
+  "fps": 40.586,
+  "peak_gpu_memory_gb": 0.168
+}
