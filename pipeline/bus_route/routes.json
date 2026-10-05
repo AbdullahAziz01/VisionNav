@@ -1,27 +1,62 @@
 {
+  "source_url": "https://metro-status.com/feeder-metro/",
+  "source_observed_date": "2026-10-05",
+  "notes": [
+    "Feeder entries copy the 22 corridors on the metro-status.com dashboard snapshot dated 2026-10-05.",
+    "Online/offline status and service frequency are omitted and are not used for recognition.",
+    "Substation lists are copied only where the source detail panel provided them.",
+    "An unavailable substation list means the source supplied none. Stops were not invented.",
+    "Corridor endpoints come from the source titles. Disagreements with stop lists are preserved in source_uncertainty_notes.",
+    "FR-04 and FR-4 are separate unresolved entries.",
+    "FRG-01 and the Green Line are separate database records. Equivalence has not been verified.",
+    "Destination aliases are recognition spellings, not verified new routes."
+  ],
   "routes": [
     {
       "id": "green_line",
       "display_name": "Green Line",
-      "endpoints": ["PIMS Hospital", "Barakahu Stop"],
+      "route_code": null,
+      "spoken_name": "Green Line",
+      "route_only_tts": "Green Line detected. Direction could not be read.",
+      "ocr_code_aliases": [],
+      "source_title": null,
+      "source_corridor": "PIMS Hospital ↔ Barakahu Stop",
+      "corridor_endpoints": [
+        "PIMS Hospital",
+        "Barakahu Stop"
+      ],
+      "source_url": null,
+      "source_uncertainty_notes": [
+        "BARAKAHU and BARA KAHU are shared recognition spellings with FR-14, FR-15, and FRG-01. Those words alone do not identify the Green Line.",
+        "PIMS alone is shared with feeder corridors. PIMS HOSPITAL remains Green Line destination wording. The word GREEN together with PIMS is not treated as enough to choose this record.",
+        "FRG-01 uses a PIMS to BaraKahu title. This record is not treated as a verified equivalent of FRG-01 or as a verified separate physical service.",
+        "Destination spellings are recognition aliases for OCR, not verified new routes. Intermediate substations are metadata and are not destination aliases."
+      ],
+      "aliases_are_recognition_only": true,
+      "substations_available": false,
+      "substations": null,
       "directions": [
         {
           "id": "toward_barakahu",
           "destination": "Barakahu",
+          "spoken_destination": "Barakahu",
           "destination_aliases": [
             "BARAKAHU",
             "BARA KAHU",
             "BARAKAHU STOP"
           ],
+          "alias_role": "recognition",
           "tts_message": "Green Line toward Barakahu."
         },
         {
           "id": "toward_pims",
           "destination": "PIMS Hospital",
+          "spoken_destination": "PIMS Hospital",
           "destination_aliases": [
             "PIMS",
             "PIMS HOSPITAL"
           ],
+          "alias_role": "recognition",
           "tts_message": "Green Line toward PIMS Hospital."
         }
       ]
@@ -29,31 +64,1315 @@
     {
       "id": "orange_line",
       "display_name": "Orange Line",
-      "endpoints": [
+      "route_code": null,
+      "spoken_name": "Orange Line",
+      "route_only_tts": "Orange Line detected. Direction could not be read.",
+      "ocr_code_aliases": [],
+      "source_title": null,
+      "source_corridor": "Faiz Ahmad Faiz Metro Station Bay 3 ↔ N-5 Metro Station",
+      "corridor_endpoints": [
         "Faiz Ahmad Faiz Metro Station Bay 3",
         "N-5 Metro Station"
       ],
+      "source_url": null,
+      "source_uncertainty_notes": [
+        "Destination spellings are recognition aliases for OCR, not verified new routes. Intermediate substations are metadata and are not destination aliases."
+      ],
+      "aliases_are_recognition_only": true,
+      "substations_available": false,
+      "substations": null,
       "directions": [
         {
           "id": "toward_n5",
           "destination": "N-5",
+          "spoken_destination": "N-5",
           "destination_aliases": [
             "N-5",
             "N5",
             "N 5",
             "N-5 METRO STATION"
           ],
+          "alias_role": "recognition",
           "tts_message": "Orange Line toward N-5."
         },
         {
           "id": "toward_faiz_ahmad_faiz",
           "destination": "Faiz Ahmad Faiz",
+          "spoken_destination": "Faiz Ahmad Faiz",
           "destination_aliases": [
             "FAIZ AHMAD FAIZ",
             "FAIZ AHMAD",
             "FAIZ AHMAD FAIZ METRO STATION"
           ],
+          "alias_role": "recognition",
           "tts_message": "Orange Line toward Faiz Ahmad Faiz."
+        }
+      ]
+    },
+    {
+      "id": "fr_1",
+      "display_name": "FR-1",
+      "route_code": "FR-1",
+      "spoken_name": "Feeder route one",
+      "route_only_tts": "Feeder route one detected. Direction could not be read.",
+      "ocr_code_aliases": [
+        "FR-1",
+        "FR 1",
+        "FR1"
+      ],
+      "source_title": "FR-1: Khanna Pul - NUST Metro Station",
+      "source_corridor": "Khanna Pul ↔ NUST Metro Station",
+      "corridor_endpoints": [
+        "Khanna Pul",
+        "NUST Metro Station"
+      ],
+      "source_url": "https://metro-status.com/feeder-metro/",
+      "source_uncertainty_notes": [
+        "Corridor endpoints are the source title ends. They are not replaced by the first or last substation.",
+        "Destination spellings are recognition aliases for OCR, not verified new routes. Intermediate substations are metadata and are not destination aliases.",
+        "Iqbal Town appears twice consecutively in the source.",
+        "Stop list is presented in the opposite order to the title."
+      ],
+      "aliases_are_recognition_only": true,
+      "substations_available": true,
+      "substations": [
+        "Nust Metro Station",
+        "Police Foundation Metro Station",
+        "NPA Stop",
+        "Islamic University",
+        "Bahria University",
+        "FAST University",
+        "PAEC General Hospital",
+        "IMC Hospital",
+        "Metro CNC",
+        "Sabzi Mandi",
+        "Mandi Morh",
+        "Kurang Road Stop",
+        "IESCO",
+        "PTCL I-10",
+        "Sui Gas Stop",
+        "OGTI Stop",
+        "CDA Complain Center",
+        "MCI Model School",
+        "Potohar Metro Bus Station",
+        "I-8 Markaz",
+        "Faizabad Metro Station",
+        "Sohan",
+        "Dhok Kala Khan",
+        "Iqbal Town",
+        "Iqbal Town",
+        "Kuri Road",
+        "Zia Masjid",
+        "Khanna Pul"
+      ],
+      "directions": [
+        {
+          "id": "fr_1_toward_khanna_pul",
+          "destination": "Khanna Pul",
+          "spoken_destination": "Khanna Pul",
+          "destination_aliases": [
+            "KHANNA PUL"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route one toward Khanna Pul."
+        },
+        {
+          "id": "fr_1_toward_nust",
+          "destination": "NUST Metro Station",
+          "spoken_destination": "NUST Metro Station",
+          "destination_aliases": [
+            "NUST METRO STATION",
+            "NUST METRO",
+            "NUST"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route one toward NUST Metro Station."
+        }
+      ]
+    },
+    {
+      "id": "fr_2",
+      "display_name": "FR-2",
+      "route_code": "FR-2",
+      "spoken_name": "Feeder route two",
+      "route_only_tts": "Feeder route two detected. Direction could not be read.",
+      "ocr_code_aliases": [
+        "FR-2",
+        "FR 2",
+        "FR2"
+      ],
+      "source_title": "FR-2: PIMS - FAIZABAD",
+      "source_corridor": "PIMS ↔ Faizabad",
+      "corridor_endpoints": [
+        "PIMS",
+        "Faizabad"
+      ],
+      "source_url": "https://metro-status.com/feeder-metro/",
+      "source_uncertainty_notes": [
+        "Corridor endpoints are the source title ends. They are not replaced by the first or last substation.",
+        "Destination spellings are recognition aliases for OCR, not verified new routes. Intermediate substations are metadata and are not destination aliases.",
+        "The source detail panel supplied no substations. No stops were invented."
+      ],
+      "aliases_are_recognition_only": true,
+      "substations_available": false,
+      "substations": null,
+      "directions": [
+        {
+          "id": "fr_2_toward_pims",
+          "destination": "PIMS",
+          "spoken_destination": "PIMS",
+          "destination_aliases": [
+            "PIMS"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route two toward PIMS."
+        },
+        {
+          "id": "fr_2_toward_faizabad",
+          "destination": "Faizabad",
+          "spoken_destination": "Faizabad",
+          "destination_aliases": [
+            "FAIZABAD"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route two toward Faizabad."
+        }
+      ]
+    },
+    {
+      "id": "fr_3a",
+      "display_name": "FR-3A",
+      "route_code": "FR-3A",
+      "spoken_name": "Feeder route three A",
+      "route_only_tts": "Feeder route three A detected. Direction could not be read.",
+      "ocr_code_aliases": [
+        "FR-3A",
+        "FR 3 A",
+        "FR-3 A",
+        "FR3A"
+      ],
+      "source_title": "FR-3A: PIMS - Faisal Masjid",
+      "source_corridor": "PIMS ↔ Faisal Masjid",
+      "corridor_endpoints": [
+        "PIMS",
+        "Faisal Masjid"
+      ],
+      "source_url": "https://metro-status.com/feeder-metro/",
+      "source_uncertainty_notes": [
+        "Corridor endpoints are the source title ends. They are not replaced by the first or last substation.",
+        "Destination spellings are recognition aliases for OCR, not verified new routes. Intermediate substations are metadata and are not destination aliases.",
+        "Stop list continues beyond Faisal Masjid to Said Pur Village."
+      ],
+      "aliases_are_recognition_only": true,
+      "substations_available": true,
+      "substations": [
+        "PIMS Hospital",
+        "PIMS Metro Station",
+        "IMCB F-8",
+        "Katchery",
+        "F-8 Markaz",
+        "F-9 Park",
+        "Shaheen Chowk",
+        "Bahria University",
+        "Naval Complex",
+        "Faisal Masjid",
+        "Parveen Shakir Road",
+        "Kohsar Road/F-7 Markaz",
+        "Murghzar Zoo",
+        "F-6",
+        "Said Pur Village"
+      ],
+      "directions": [
+        {
+          "id": "fr_3a_toward_pims",
+          "destination": "PIMS",
+          "spoken_destination": "PIMS",
+          "destination_aliases": [
+            "PIMS"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route three A toward PIMS."
+        },
+        {
+          "id": "fr_3a_toward_faisal_masjid",
+          "destination": "Faisal Masjid",
+          "spoken_destination": "Faisal Masjid",
+          "destination_aliases": [
+            "FAISAL MASJID",
+            "FAISAL MOSQUE"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route three A toward Faisal Masjid."
+        }
+      ]
+    },
+    {
+      "id": "fr_04",
+      "display_name": "FR-04",
+      "route_code": "FR-04",
+      "spoken_name": "Feeder route zero four",
+      "route_only_tts": "Feeder route zero four detected. Direction could not be read.",
+      "ocr_code_aliases": [
+        "FR-04",
+        "FR 04",
+        "FR04"
+      ],
+      "source_title": "FR-04: PIMS - Bari Imam",
+      "source_corridor": "PIMS ↔ Bari Imam",
+      "corridor_endpoints": [
+        "PIMS",
+        "Bari Imam"
+      ],
+      "source_url": "https://metro-status.com/feeder-metro/",
+      "source_uncertainty_notes": [
+        "Corridor endpoints are the source title ends. They are not replaced by the first or last substation.",
+        "Destination spellings are recognition aliases for OCR, not verified new routes. Intermediate substations are metadata and are not destination aliases.",
+        "Kept separate from FR-4. The titles differ and the leading zero is preserved.",
+        "Bari Imam is this entry's title endpoint. FR-4's stop list also contains the name, but the entries are not merged.",
+        "The source detail panel supplied no substations. No stops were invented."
+      ],
+      "aliases_are_recognition_only": true,
+      "substations_available": false,
+      "substations": null,
+      "directions": [
+        {
+          "id": "fr_04_toward_pims",
+          "destination": "PIMS",
+          "spoken_destination": "PIMS",
+          "destination_aliases": [
+            "PIMS"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route zero four toward PIMS."
+        },
+        {
+          "id": "fr_04_toward_bari_imam",
+          "destination": "Bari Imam",
+          "spoken_destination": "Bari Imam",
+          "destination_aliases": [
+            "BARI IMAM"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route zero four toward Bari Imam."
+        }
+      ]
+    },
+    {
+      "id": "fr_4",
+      "display_name": "FR-4",
+      "route_code": "FR-4",
+      "spoken_name": "Feeder route four",
+      "route_only_tts": "Feeder route four detected. Direction could not be read.",
+      "ocr_code_aliases": [
+        "FR-4",
+        "FR 4"
+      ],
+      "source_title": "FR-4: PIMS - Aiwan e Saddar",
+      "source_corridor": "PIMS ↔ Aiwan e Saddar",
+      "corridor_endpoints": [
+        "PIMS",
+        "Aiwan e Saddar"
+      ],
+      "source_url": "https://metro-status.com/feeder-metro/",
+      "source_uncertainty_notes": [
+        "Corridor endpoints are the source title ends. They are not replaced by the first or last substation.",
+        "Destination spellings are recognition aliases for OCR, not verified new routes. Intermediate substations are metadata and are not destination aliases.",
+        "Source contains two overlapping stop sequences without direction labels, both ending at Bari Imam.",
+        "Do not merge with the offline FR-04 entry without operator verification.",
+        "Kept separate from FR-04. The titles differ and the leading zero on FR-04 is preserved.",
+        "Bari Imam appears in the stop list but is not a corridor endpoint, so it is not a destination alias for FR-4."
+      ],
+      "aliases_are_recognition_only": true,
+      "substations_available": true,
+      "substations": [
+        "PIMS Hospital",
+        "Children Hospital",
+        "Rescue 15",
+        "Bank Colony",
+        "Salai Centre",
+        "Sitara Market",
+        "Pulley Stop",
+        "Iqbal Hall",
+        "G-6/1.2",
+        "Melody Market",
+        "Abpara Market",
+        "Youth Hostel",
+        "Metropolitan Corporation",
+        "ICB College",
+        "NADRA Chowk",
+        "Lodges Park",
+        "Sukh Chayn Park",
+        "Ministry of Foreign Affairs",
+        "Radio Pakistan",
+        "Election Commission of Pakistan",
+        "Supreme Court of Pakistan",
+        "Parliament House",
+        "National Library",
+        "Secretariate Police Station",
+        "Diplomatic Enclave Gate 4",
+        "Aiwan e Sadar Colony",
+        "Muslim Colony",
+        "Rangers Gate",
+        "Bari Imam",
+        "PIMS Gate",
+        "Children Hospital",
+        "Rescue 15",
+        "Bank Colony",
+        "Salai centre",
+        "Sitara Market",
+        "Pulley Stop",
+        "Iqbal Hall",
+        "G-6/1,2",
+        "Melody Market",
+        "Abpara Market",
+        "Youth Hostel",
+        "Metropolitan Corporation",
+        "ICB College",
+        "NADRA Chowk",
+        "Lodges Park",
+        "Sukh chayn Park",
+        "Ministry of Foreign Affairs",
+        "Radio Pakistan",
+        "National library",
+        "Secretariate Police station",
+        "Diplomatic Enclave Gate 4",
+        "Muslim Colony",
+        "Bari Imam"
+      ],
+      "directions": [
+        {
+          "id": "fr_4_toward_pims",
+          "destination": "PIMS",
+          "spoken_destination": "PIMS",
+          "destination_aliases": [
+            "PIMS"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route four toward PIMS."
+        },
+        {
+          "id": "fr_4_toward_aiwan",
+          "destination": "Aiwan e Saddar",
+          "spoken_destination": "Aiwan e Saddar",
+          "destination_aliases": [
+            "AIWAN E SADDAR",
+            "AIWAN E SADAR",
+            "AIWAN-E-SADDAR"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route four toward Aiwan e Saddar."
+        }
+      ]
+    },
+    {
+      "id": "fr_4a",
+      "display_name": "FR-4A",
+      "route_code": "FR-4A",
+      "spoken_name": "Feeder route four A",
+      "route_only_tts": "Feeder route four A detected. Direction could not be read.",
+      "ocr_code_aliases": [
+        "FR-4A",
+        "FR 4 A",
+        "FR-4 A",
+        "FR4A"
+      ],
+      "source_title": "FR-4A: PIMS - QAU",
+      "source_corridor": "PIMS ↔ QAU",
+      "corridor_endpoints": [
+        "PIMS",
+        "QAU"
+      ],
+      "source_url": "https://metro-status.com/feeder-metro/",
+      "source_uncertainty_notes": [
+        "Corridor endpoints are the source title ends. They are not replaced by the first or last substation.",
+        "Destination spellings are recognition aliases for OCR, not verified new routes. Intermediate substations are metadata and are not destination aliases.",
+        "Detail list starts at Bari Imam, not PIMS as stated in the title."
+      ],
+      "aliases_are_recognition_only": true,
+      "substations_available": true,
+      "substations": [
+        "Bari Imam",
+        "Muhallah Noori Bagh",
+        "Community Health Center",
+        "D-Type Quaid e Azam Colony",
+        "C-Type Quaid e Azam Colony",
+        "Babul Quaid",
+        "Quaid Azam University"
+      ],
+      "directions": [
+        {
+          "id": "fr_4a_toward_pims",
+          "destination": "PIMS",
+          "spoken_destination": "PIMS",
+          "destination_aliases": [
+            "PIMS"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route four A toward PIMS."
+        },
+        {
+          "id": "fr_4a_toward_qau",
+          "destination": "QAU",
+          "spoken_destination": "QAU",
+          "destination_aliases": [
+            "QAU",
+            "QUAID E AZAM UNIVERSITY",
+            "QUAID AZAM UNIVERSITY",
+            "QUAID-E-AZAM UNIVERSITY"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route four A toward QAU."
+        }
+      ]
+    },
+    {
+      "id": "fr_6",
+      "display_name": "FR-6",
+      "route_code": "FR-6",
+      "spoken_name": "Feeder route six",
+      "route_only_tts": "Feeder route six detected. Direction could not be read.",
+      "ocr_code_aliases": [
+        "FR-6",
+        "FR 6",
+        "FR6"
+      ],
+      "source_title": "FR-6: PIMS - Golra Shareef",
+      "source_corridor": "PIMS ↔ Golra Shareef",
+      "corridor_endpoints": [
+        "PIMS",
+        "Golra Shareef"
+      ],
+      "source_url": "https://metro-status.com/feeder-metro/",
+      "source_uncertainty_notes": [
+        "Corridor endpoints are the source title ends. They are not replaced by the first or last substation.",
+        "Destination spellings are recognition aliases for OCR, not verified new routes. Intermediate substations are metadata and are not destination aliases.",
+        "The source detail panel supplied no substations. No stops were invented."
+      ],
+      "aliases_are_recognition_only": true,
+      "substations_available": false,
+      "substations": null,
+      "directions": [
+        {
+          "id": "fr_6_toward_pims",
+          "destination": "PIMS",
+          "spoken_destination": "PIMS",
+          "destination_aliases": [
+            "PIMS"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route six toward PIMS."
+        },
+        {
+          "id": "fr_6_toward_golra_shareef",
+          "destination": "Golra Shareef",
+          "spoken_destination": "Golra Shareef",
+          "destination_aliases": [
+            "GOLRA SHAREEF",
+            "GOLRA SHARIF"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route six toward Golra Shareef."
+        }
+      ]
+    },
+    {
+      "id": "fr_7",
+      "display_name": "FR-7",
+      "route_code": "FR-7",
+      "spoken_name": "Feeder route seven",
+      "route_only_tts": "Feeder route seven detected. Direction could not be read.",
+      "ocr_code_aliases": [
+        "FR-7",
+        "FR 7",
+        "FR7"
+      ],
+      "source_title": "FR-7: PIMS - G-11",
+      "source_corridor": "PIMS ↔ G-11",
+      "corridor_endpoints": [
+        "PIMS",
+        "G-11"
+      ],
+      "source_url": "https://metro-status.com/feeder-metro/",
+      "source_uncertainty_notes": [
+        "Corridor endpoints are the source title ends. They are not replaced by the first or last substation.",
+        "Destination spellings are recognition aliases for OCR, not verified new routes. Intermediate substations are metadata and are not destination aliases.",
+        "Stop list continues beyond G-11 to Police Foundation Metro Station."
+      ],
+      "aliases_are_recognition_only": true,
+      "substations_available": true,
+      "substations": [
+        "PIMS Hospital",
+        "Children Hospital",
+        "NORI Hospital",
+        "Dental Hospital",
+        "G-8 Markaz",
+        "Development Park",
+        "Chaman Metro Station",
+        "Karachi Company",
+        "G-9 Markaz",
+        "Police Flats",
+        "College Morh",
+        "G-10 Markaz",
+        "PHA Flats",
+        "Tanki Stop",
+        "G-10/G-11",
+        "Institute of Modern Studies",
+        "G-11 Markaz",
+        "Mehrabad",
+        "Nust Metro Station",
+        "Bar Council",
+        "A.K Bari Road",
+        "Police Foundation Metro Station"
+      ],
+      "directions": [
+        {
+          "id": "fr_7_toward_pims",
+          "destination": "PIMS",
+          "spoken_destination": "PIMS",
+          "destination_aliases": [
+            "PIMS"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route seven toward PIMS."
+        },
+        {
+          "id": "fr_7_toward_g11",
+          "destination": "G-11",
+          "spoken_destination": "G-11",
+          "destination_aliases": [
+            "G-11",
+            "G11",
+            "G 11"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route seven toward G-11."
+        }
+      ]
+    },
+    {
+      "id": "fr_8a",
+      "display_name": "FR-8A",
+      "route_code": "FR-8A",
+      "spoken_name": "Feeder route eight A",
+      "route_only_tts": "Feeder route eight A detected. Direction could not be read.",
+      "ocr_code_aliases": [
+        "FR-8A",
+        "FR 8 A",
+        "FR-8 A",
+        "FR8A"
+      ],
+      "source_title": "FR-8A: PIMS - Tramri via Aabpara",
+      "source_corridor": "PIMS ↔ Tramri via Aabpara",
+      "corridor_endpoints": [
+        "PIMS",
+        "Tramri"
+      ],
+      "source_url": "https://metro-status.com/feeder-metro/",
+      "source_uncertainty_notes": [
+        "Corridor endpoints are the source title ends. They are not replaced by the first or last substation.",
+        "Destination spellings are recognition aliases for OCR, not verified new routes. Intermediate substations are metadata and are not destination aliases.",
+        "Aabpara and Abpara are recognition spellings for the Tramri-via-Aabpara direction, not a separate route.",
+        "The source detail panel supplied no substations. No stops were invented."
+      ],
+      "aliases_are_recognition_only": true,
+      "substations_available": false,
+      "substations": null,
+      "directions": [
+        {
+          "id": "fr_8a_toward_pims",
+          "destination": "PIMS",
+          "spoken_destination": "PIMS",
+          "destination_aliases": [
+            "PIMS"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route eight A toward PIMS."
+        },
+        {
+          "id": "fr_8a_toward_tramri",
+          "destination": "Tramri",
+          "spoken_destination": "Tramri",
+          "destination_aliases": [
+            "TRAMRI",
+            "TRAMARI",
+            "AABPARA",
+            "ABPARA",
+            "AAB PARA"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route eight A toward Tramri."
+        }
+      ]
+    },
+    {
+      "id": "fr_8b",
+      "display_name": "FR-8B",
+      "route_code": "FR-8B",
+      "spoken_name": "Feeder route eight B",
+      "route_only_tts": "Feeder route eight B detected. Direction could not be read.",
+      "ocr_code_aliases": [
+        "FR-8B",
+        "FR 8 B",
+        "FR-8 B",
+        "FR8B"
+      ],
+      "source_title": "FR-8B: Khanna Pul - Nilore",
+      "source_corridor": "Khanna Pul ↔ Nilore",
+      "corridor_endpoints": [
+        "Khanna Pul",
+        "Nilore"
+      ],
+      "source_url": "https://metro-status.com/feeder-metro/",
+      "source_uncertainty_notes": [
+        "Corridor endpoints are the source title ends. They are not replaced by the first or last substation.",
+        "Destination spellings are recognition aliases for OCR, not verified new routes. Intermediate substations are metadata and are not destination aliases.",
+        "The source detail panel supplied no substations. No stops were invented."
+      ],
+      "aliases_are_recognition_only": true,
+      "substations_available": false,
+      "substations": null,
+      "directions": [
+        {
+          "id": "fr_8b_toward_khanna_pul",
+          "destination": "Khanna Pul",
+          "spoken_destination": "Khanna Pul",
+          "destination_aliases": [
+            "KHANNA PUL"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route eight B toward Khanna Pul."
+        },
+        {
+          "id": "fr_8b_toward_nilore",
+          "destination": "Nilore",
+          "spoken_destination": "Nilore",
+          "destination_aliases": [
+            "NILORE"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route eight B toward Nilore."
+        }
+      ]
+    },
+    {
+      "id": "fr_8c",
+      "display_name": "FR-8C",
+      "route_code": "FR-8C",
+      "spoken_name": "Feeder route eight C",
+      "route_only_tts": "Feeder route eight C detected. Direction could not be read.",
+      "ocr_code_aliases": [
+        "FR-8C",
+        "FR 8 C",
+        "FR-8 C",
+        "FR8C"
+      ],
+      "source_title": "FR-8C: PIMS - Tramri Faizabad",
+      "source_corridor": "PIMS ↔ Tramri Faizabad",
+      "corridor_endpoints": [
+        "PIMS",
+        "Tramri Faizabad"
+      ],
+      "source_url": "https://metro-status.com/feeder-metro/",
+      "source_uncertainty_notes": [
+        "Corridor endpoints are the source title ends. They are not replaced by the first or last substation.",
+        "Destination spellings are recognition aliases for OCR, not verified new routes. Intermediate substations are metadata and are not destination aliases.",
+        "Tramri alone is also an FR-8A endpoint. Tramri by itself does not choose between FR-8A and FR-8C.",
+        "The source detail panel supplied no substations. No stops were invented."
+      ],
+      "aliases_are_recognition_only": true,
+      "substations_available": false,
+      "substations": null,
+      "directions": [
+        {
+          "id": "fr_8c_toward_pims",
+          "destination": "PIMS",
+          "spoken_destination": "PIMS",
+          "destination_aliases": [
+            "PIMS"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route eight C toward PIMS."
+        },
+        {
+          "id": "fr_8c_toward_tramri_faizabad",
+          "destination": "Tramri Faizabad",
+          "spoken_destination": "Tramri Faizabad",
+          "destination_aliases": [
+            "TRAMRI",
+            "TRAMARI",
+            "TRAMRI FAIZABAD",
+            "TRAMARI FAIZABAD"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route eight C toward Tramri Faizabad."
+        }
+      ]
+    },
+    {
+      "id": "fr_9",
+      "display_name": "FR-9",
+      "route_code": "FR-9",
+      "spoken_name": "Feeder route nine",
+      "route_only_tts": "Feeder route nine detected. Direction could not be read.",
+      "ocr_code_aliases": [
+        "FR-9",
+        "FR 9",
+        "FR9"
+      ],
+      "source_title": "FR-9: Khanna Pul - Golra Mor Station",
+      "source_corridor": "Khanna Pul ↔ Golra Mor Station",
+      "corridor_endpoints": [
+        "Khanna Pul",
+        "Golra Mor Station"
+      ],
+      "source_url": "https://metro-status.com/feeder-metro/",
+      "source_uncertainty_notes": [
+        "Corridor endpoints are the source title ends. They are not replaced by the first or last substation.",
+        "Destination spellings are recognition aliases for OCR, not verified new routes. Intermediate substations are metadata and are not destination aliases.",
+        "The source detail panel supplied no substations. No stops were invented."
+      ],
+      "aliases_are_recognition_only": true,
+      "substations_available": false,
+      "substations": null,
+      "directions": [
+        {
+          "id": "fr_9_toward_khanna_pul",
+          "destination": "Khanna Pul",
+          "spoken_destination": "Khanna Pul",
+          "destination_aliases": [
+            "KHANNA PUL"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route nine toward Khanna Pul."
+        },
+        {
+          "id": "fr_9_toward_golra_mor",
+          "destination": "Golra Mor Station",
+          "spoken_destination": "Golra Mor Station",
+          "destination_aliases": [
+            "GOLRA MOR",
+            "GOLRA MORH",
+            "GOLRA MOR STATION"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route nine toward Golra Mor Station."
+        }
+      ]
+    },
+    {
+      "id": "fr_10",
+      "display_name": "FR-10",
+      "route_code": "FR-10",
+      "spoken_name": "Feeder route ten",
+      "route_only_tts": "Feeder route ten detected. Direction could not be read.",
+      "ocr_code_aliases": [
+        "FR-10",
+        "FR 10",
+        "FR10"
+      ],
+      "source_title": "FR-10: Golra Mor Station - Taxila",
+      "source_corridor": "Golra Mor Station ↔ Taxila",
+      "corridor_endpoints": [
+        "Golra Mor Station",
+        "Taxila"
+      ],
+      "source_url": "https://metro-status.com/feeder-metro/",
+      "source_uncertainty_notes": [
+        "Corridor endpoints are the source title ends. They are not replaced by the first or last substation.",
+        "Destination spellings are recognition aliases for OCR, not verified new routes. Intermediate substations are metadata and are not destination aliases.",
+        "Taxila is also an endpoint of FR-12. Taxila alone does not choose between them.",
+        "The source detail panel supplied no substations. No stops were invented."
+      ],
+      "aliases_are_recognition_only": true,
+      "substations_available": false,
+      "substations": null,
+      "directions": [
+        {
+          "id": "fr_10_toward_golra_mor",
+          "destination": "Golra Mor Station",
+          "spoken_destination": "Golra Mor Station",
+          "destination_aliases": [
+            "GOLRA MOR",
+            "GOLRA MORH",
+            "GOLRA MOR STATION"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route ten toward Golra Mor Station."
+        },
+        {
+          "id": "fr_10_toward_taxila",
+          "destination": "Taxila",
+          "spoken_destination": "Taxila",
+          "destination_aliases": [
+            "TAXILA"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route ten toward Taxila."
+        }
+      ]
+    },
+    {
+      "id": "fr_11",
+      "display_name": "FR-11",
+      "route_code": "FR-11",
+      "spoken_name": "Feeder route eleven",
+      "route_only_tts": "Feeder route eleven detected. Direction could not be read.",
+      "ocr_code_aliases": [
+        "FR-11",
+        "FR 11",
+        "FR11"
+      ],
+      "source_title": "FR-11: Golra Morh - Noon",
+      "source_corridor": "Golra Morh ↔ Noon",
+      "corridor_endpoints": [
+        "Golra Morh",
+        "Noon"
+      ],
+      "source_url": "https://metro-status.com/feeder-metro/",
+      "source_uncertainty_notes": [
+        "Corridor endpoints are the source title ends. They are not replaced by the first or last substation.",
+        "Destination spellings are recognition aliases for OCR, not verified new routes. Intermediate substations are metadata and are not destination aliases.",
+        "The source detail panel supplied no substations. No stops were invented."
+      ],
+      "aliases_are_recognition_only": true,
+      "substations_available": false,
+      "substations": null,
+      "directions": [
+        {
+          "id": "fr_11_toward_golra_morh",
+          "destination": "Golra Morh",
+          "spoken_destination": "Golra Morh",
+          "destination_aliases": [
+            "GOLRA MOR",
+            "GOLRA MORH"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route eleven toward Golra Morh."
+        },
+        {
+          "id": "fr_11_toward_noon",
+          "destination": "Noon",
+          "spoken_destination": "Noon",
+          "destination_aliases": [
+            "NOON"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route eleven toward Noon."
+        }
+      ]
+    },
+    {
+      "id": "fr_12",
+      "display_name": "FR-12",
+      "route_code": "FR-12",
+      "spoken_name": "Feeder route twelve",
+      "route_only_tts": "Feeder route twelve detected. Direction could not be read.",
+      "ocr_code_aliases": [
+        "FR-12",
+        "FR 12",
+        "FR12"
+      ],
+      "source_title": "FR-12: Taxila - Hassan Abdal",
+      "source_corridor": "Taxila ↔ Hassan Abdal",
+      "corridor_endpoints": [
+        "Taxila",
+        "Hassan Abdal"
+      ],
+      "source_url": "https://metro-status.com/feeder-metro/",
+      "source_uncertainty_notes": [
+        "Corridor endpoints are the source title ends. They are not replaced by the first or last substation.",
+        "Destination spellings are recognition aliases for OCR, not verified new routes. Intermediate substations are metadata and are not destination aliases.",
+        "Taxila is also an endpoint of FR-10. Taxila alone does not choose between them.",
+        "The source detail panel supplied no substations. No stops were invented."
+      ],
+      "aliases_are_recognition_only": true,
+      "substations_available": false,
+      "substations": null,
+      "directions": [
+        {
+          "id": "fr_12_toward_taxila",
+          "destination": "Taxila",
+          "spoken_destination": "Taxila",
+          "destination_aliases": [
+            "TAXILA"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route twelve toward Taxila."
+        },
+        {
+          "id": "fr_12_toward_hassan_abdal",
+          "destination": "Hassan Abdal",
+          "spoken_destination": "Hassan Abdal",
+          "destination_aliases": [
+            "HASSAN ABDAL",
+            "HASAN ABDAL"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route twelve toward Hassan Abdal."
+        }
+      ]
+    },
+    {
+      "id": "fr_13",
+      "display_name": "FR-13",
+      "route_code": "FR-13",
+      "spoken_name": "Feeder route thirteen",
+      "route_only_tts": "Feeder route thirteen detected. Direction could not be read.",
+      "ocr_code_aliases": [
+        "FR-13",
+        "FR 13",
+        "FR13"
+      ],
+      "source_title": "FR-13: Golra Morh - Fateh Jang",
+      "source_corridor": "Golra Morh ↔ Fateh Jang",
+      "corridor_endpoints": [
+        "Golra Morh",
+        "Fateh Jang"
+      ],
+      "source_url": "https://metro-status.com/feeder-metro/",
+      "source_uncertainty_notes": [
+        "Corridor endpoints are the source title ends. They are not replaced by the first or last substation.",
+        "Destination spellings are recognition aliases for OCR, not verified new routes. Intermediate substations are metadata and are not destination aliases.",
+        "The source detail panel supplied no substations. No stops were invented."
+      ],
+      "aliases_are_recognition_only": true,
+      "substations_available": false,
+      "substations": null,
+      "directions": [
+        {
+          "id": "fr_13_toward_golra_morh",
+          "destination": "Golra Morh",
+          "spoken_destination": "Golra Morh",
+          "destination_aliases": [
+            "GOLRA MOR",
+            "GOLRA MORH"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route thirteen toward Golra Morh."
+        },
+        {
+          "id": "fr_13_toward_fateh_jang",
+          "destination": "Fateh Jang",
+          "spoken_destination": "Fateh Jang",
+          "destination_aliases": [
+            "FATEH JANG"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route thirteen toward Fateh Jang."
+        }
+      ]
+    },
+    {
+      "id": "fr_14",
+      "display_name": "FR-14",
+      "route_code": "FR-14",
+      "spoken_name": "Feeder route fourteen",
+      "route_only_tts": "Feeder route fourteen detected. Direction could not be read.",
+      "ocr_code_aliases": [
+        "FR-14",
+        "FR 14",
+        "FR14"
+      ],
+      "source_title": "FR-14: Mandi Mor - Bahra Kahu",
+      "source_corridor": "Mandi Mor ↔ Bahra Kahu",
+      "corridor_endpoints": [
+        "Mandi Mor",
+        "Bahra Kahu"
+      ],
+      "source_url": "https://metro-status.com/feeder-metro/",
+      "source_uncertainty_notes": [
+        "Corridor endpoints are the source title ends. They are not replaced by the first or last substation.",
+        "Destination spellings are recognition aliases for OCR, not verified new routes. Intermediate substations are metadata and are not destination aliases.",
+        "Barakahu and Bara Kahu are shared recognition spellings with Green Line, FR-15, and FRG-01. They do not select this route by themselves.",
+        "The source detail panel supplied no substations. No stops were invented."
+      ],
+      "aliases_are_recognition_only": true,
+      "substations_available": false,
+      "substations": null,
+      "directions": [
+        {
+          "id": "fr_14_toward_mandi_mor",
+          "destination": "Mandi Mor",
+          "spoken_destination": "Mandi Mor",
+          "destination_aliases": [
+            "MANDI MOR"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route fourteen toward Mandi Mor."
+        },
+        {
+          "id": "fr_14_toward_bahra_kahu",
+          "destination": "Bahra Kahu",
+          "spoken_destination": "Bahra Kahu",
+          "destination_aliases": [
+            "BARAKAHU",
+            "BARA KAHU",
+            "BAHRA KAHU"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route fourteen toward Bahra Kahu."
+        }
+      ]
+    },
+    {
+      "id": "fr_14a",
+      "display_name": "FR-14A",
+      "route_code": "FR-14A",
+      "spoken_name": "Feeder route fourteen A",
+      "route_only_tts": "Feeder route fourteen A detected. Direction could not be read.",
+      "ocr_code_aliases": [
+        "FR-14A",
+        "FR 14 A",
+        "FR-14 A",
+        "FR14A"
+      ],
+      "source_title": "FR-14A: Jillani Stop - 17 Meel",
+      "source_corridor": "Jillani Stop ↔ 17 Meel",
+      "corridor_endpoints": [
+        "Jillani Stop",
+        "17 Meel"
+      ],
+      "source_url": "https://metro-status.com/feeder-metro/",
+      "source_uncertainty_notes": [
+        "Corridor endpoints are the source title ends. They are not replaced by the first or last substation.",
+        "Destination spellings are recognition aliases for OCR, not verified new routes. Intermediate substations are metadata and are not destination aliases.",
+        "17 Mile is a recognition spelling of the source endpoint 17 Meel, not a separate route.",
+        "The source detail panel supplied no substations. No stops were invented."
+      ],
+      "aliases_are_recognition_only": true,
+      "substations_available": false,
+      "substations": null,
+      "directions": [
+        {
+          "id": "fr_14a_toward_jillani",
+          "destination": "Jillani Stop",
+          "spoken_destination": "Jillani Stop",
+          "destination_aliases": [
+            "JILLANI STOP",
+            "JILLANI"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route fourteen A toward Jillani Stop."
+        },
+        {
+          "id": "fr_14a_toward_17_meel",
+          "destination": "17 Meel",
+          "spoken_destination": "17 Meel",
+          "destination_aliases": [
+            "17 MEEL",
+            "17 MILE"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route fourteen A toward 17 Meel."
+        }
+      ]
+    },
+    {
+      "id": "fr_15",
+      "display_name": "FR-15",
+      "route_code": "FR-15",
+      "spoken_name": "Feeder route fifteen",
+      "route_only_tts": "Feeder route fifteen detected. Direction could not be read.",
+      "ocr_code_aliases": [
+        "FR-15",
+        "FR 15",
+        "FR15"
+      ],
+      "source_title": "FR-15: PIMS - Bhara Khu",
+      "source_corridor": "PIMS ↔ Bhara Khu",
+      "corridor_endpoints": [
+        "PIMS",
+        "Bhara Khu"
+      ],
+      "source_url": "https://metro-status.com/feeder-metro/",
+      "source_uncertainty_notes": [
+        "Corridor endpoints are the source title ends. They are not replaced by the first or last substation.",
+        "Destination spellings are recognition aliases for OCR, not verified new routes. Intermediate substations are metadata and are not destination aliases.",
+        "Barakahu and Bara Kahu are shared recognition spellings with Green Line, FR-14, and FRG-01. They do not select this route by themselves.",
+        "The source detail panel supplied no substations. No stops were invented."
+      ],
+      "aliases_are_recognition_only": true,
+      "substations_available": false,
+      "substations": null,
+      "directions": [
+        {
+          "id": "fr_15_toward_pims",
+          "destination": "PIMS",
+          "spoken_destination": "PIMS",
+          "destination_aliases": [
+            "PIMS"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route fifteen toward PIMS."
+        },
+        {
+          "id": "fr_15_toward_bhara_khu",
+          "destination": "Bhara Khu",
+          "spoken_destination": "Bhara Khu",
+          "destination_aliases": [
+            "BARAKAHU",
+            "BARA KAHU",
+            "BHARA KHU",
+            "BHARA KAHU"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route fifteen toward Bhara Khu."
+        }
+      ]
+    },
+    {
+      "id": "exp_16",
+      "display_name": "EXP-16",
+      "route_code": "EXP-16",
+      "spoken_name": "Express route sixteen",
+      "route_only_tts": "Express route sixteen detected. Direction could not be read.",
+      "ocr_code_aliases": [
+        "EXP-16",
+        "EXP 16",
+        "EXP16"
+      ],
+      "source_title": "EXP-16: PIMS - Media Town",
+      "source_corridor": "PIMS ↔ Media Town",
+      "corridor_endpoints": [
+        "PIMS",
+        "Media Town"
+      ],
+      "source_url": "https://metro-status.com/feeder-metro/",
+      "source_uncertainty_notes": [
+        "Corridor endpoints are the source title ends. They are not replaced by the first or last substation.",
+        "Destination spellings are recognition aliases for OCR, not verified new routes. Intermediate substations are metadata and are not destination aliases.",
+        "The source detail panel supplied no substations. No stops were invented."
+      ],
+      "aliases_are_recognition_only": true,
+      "substations_available": false,
+      "substations": null,
+      "directions": [
+        {
+          "id": "exp_16_toward_pims",
+          "destination": "PIMS",
+          "spoken_destination": "PIMS",
+          "destination_aliases": [
+            "PIMS"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Express route sixteen toward PIMS."
+        },
+        {
+          "id": "exp_16_toward_media_town",
+          "destination": "Media Town",
+          "spoken_destination": "Media Town",
+          "destination_aliases": [
+            "MEDIA TOWN"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Express route sixteen toward Media Town."
+        }
+      ]
+    },
+    {
+      "id": "fr_17",
+      "display_name": "FR-17",
+      "route_code": "FR-17",
+      "spoken_name": "Feeder route seventeen",
+      "route_only_tts": "Feeder route seventeen detected. Direction could not be read.",
+      "ocr_code_aliases": [
+        "FR-17",
+        "FR 17",
+        "FR17"
+      ],
+      "source_title": "FR-17: T Chowk - Aari Syedan",
+      "source_corridor": "T Chowk ↔ Aari Syedan",
+      "corridor_endpoints": [
+        "T Chowk",
+        "Aari Syedan"
+      ],
+      "source_url": "https://metro-status.com/feeder-metro/",
+      "source_uncertainty_notes": [
+        "Corridor endpoints are the source title ends. They are not replaced by the first or last substation.",
+        "Destination spellings are recognition aliases for OCR, not verified new routes. Intermediate substations are metadata and are not destination aliases.",
+        "The source detail panel supplied no substations. No stops were invented."
+      ],
+      "aliases_are_recognition_only": true,
+      "substations_available": false,
+      "substations": null,
+      "directions": [
+        {
+          "id": "fr_17_toward_t_chowk",
+          "destination": "T Chowk",
+          "spoken_destination": "T Chowk",
+          "destination_aliases": [
+            "T CHOWK",
+            "T-CHOWK"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route seventeen toward T Chowk."
+        },
+        {
+          "id": "fr_17_toward_aari_syedan",
+          "destination": "Aari Syedan",
+          "spoken_destination": "Aari Syedan",
+          "destination_aliases": [
+            "AARI SYEDAN",
+            "ARI SYEDAN"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route seventeen toward Aari Syedan."
+        }
+      ]
+    },
+    {
+      "id": "frg_01",
+      "display_name": "FRG-01",
+      "route_code": "FRG-01",
+      "spoken_name": "Feeder route G zero one",
+      "route_only_tts": "Feeder route G zero one detected. Direction could not be read.",
+      "ocr_code_aliases": [
+        "FRG-01",
+        "FRG 01",
+        "FRG01",
+        "FRG-1",
+        "FRG1",
+        "FRG 1"
+      ],
+      "source_title": "FRG-01: PIMS - BaraKahu",
+      "source_corridor": "PIMS ↔ BaraKahu",
+      "corridor_endpoints": [
+        "PIMS",
+        "BaraKahu"
+      ],
+      "source_url": "https://metro-status.com/feeder-metro/",
+      "source_uncertainty_notes": [
+        "Corridor endpoints are the source title ends. They are not replaced by the first or last substation.",
+        "Destination spellings are recognition aliases for OCR, not verified new routes. Intermediate substations are metadata and are not destination aliases.",
+        "Source identity FRG-01 is stored separately from the Green Line record.",
+        "FRG-01 and the Green Line are not treated as verified equivalent services or as verified distinct physical services.",
+        "Shared PIMS and Barakahu wording does not select either record.",
+        "The source detail panel supplied no substations. No stops were invented."
+      ],
+      "aliases_are_recognition_only": true,
+      "substations_available": false,
+      "substations": null,
+      "directions": [
+        {
+          "id": "frg_01_toward_pims",
+          "destination": "PIMS",
+          "spoken_destination": "PIMS",
+          "destination_aliases": [
+            "PIMS"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route G zero one toward PIMS."
+        },
+        {
+          "id": "frg_01_toward_barakahu",
+          "destination": "BaraKahu",
+          "spoken_destination": "Barakahu",
+          "destination_aliases": [
+            "BARAKAHU",
+            "BARA KAHU"
+          ],
+          "alias_role": "recognition",
+          "tts_message": "Feeder route G zero one toward Barakahu."
         }
       ]
     }

@@ -92,9 +92,9 @@ class TestBusRouteIdentifier(unittest.TestCase):
         self.assertEqual(skipped.images, [])
         self.assertIsNone(crop_bus(_frame(), tiny.bbox_xyxy))
 
-    def test_stable_barakahu_returns_green_line(self):
+    def test_stable_barakahu_stop_returns_green_line(self):
         fake_easyocr = MagicMock()
-        reader = FakeOcr(["BARAKAHU"])
+        reader = FakeOcr(["BARAKAHU STOP"])
         with patch.dict(sys.modules, {"easyocr": fake_easyocr}):
             identifier = BusRouteIdentifier(reader=reader)
             bus = _detection(track_id=7)
@@ -116,6 +116,7 @@ class TestBusRouteIdentifier(unittest.TestCase):
         self.assertEqual(bus.route_confidence, 1.0)
         self.assertTrue(bus.route_is_stable)
         self.assertEqual(bus.route_tts_message, "Green Line toward Barakahu.")
+        self.assertIsNone(bus.route_code)
 
     def test_stable_n5_returns_orange_line(self):
         reader = FakeOcr(["N-5"])
@@ -148,8 +149,23 @@ class TestBusRouteIdentifier(unittest.TestCase):
         self.assertFalse(bus.route_is_stable)
         self.assertIsNone(bus.route_tts_message)
 
-    def test_pims_with_green_can_become_stable(self):
+    def test_green_and_pims_do_not_identify_a_route(self):
         reader = FakeOcr(["GREEN LINE", "PIMS"])
+        identifier = BusRouteIdentifier(reader=reader)
+        bus = _detection()
+        frame = _frame()
+        for frame_index in (1, 7, 13):
+            identifier.apply(frame, [bus], frame_index)
+
+        self.assertEqual(len(reader.images), 3)
+        self.assertIsNone(bus.route_line)
+        self.assertIsNone(bus.route_code)
+        self.assertIsNone(bus.route_direction)
+        self.assertFalse(bus.route_is_stable)
+        self.assertIsNone(bus.route_tts_message)
+
+    def test_pims_hospital_can_become_stable(self):
+        reader = FakeOcr(["PIMS HOSPITAL"])
         identifier = BusRouteIdentifier(reader=reader)
         bus = _detection()
         frame = _frame()
@@ -183,6 +199,140 @@ class TestBusRouteIdentifier(unittest.TestCase):
 
         self.assertEqual(len(reader.images), 1)
         self.assertEqual(reader.images[0].shape, (200, 300, 3))
+
+
+class ScriptedOcr:
+    def __init__(self, scripts: list[list[str]]):
+        self.scripts = scripts
+        self.calls = 0
+
+    def text_candidates(self, image_bgr):
+        texts = self.scripts[min(self.calls, len(self.scripts) - 1)]
+        self.calls += 1
+        items = [
+            OcrText(text=text, confidence=0.95, bbox=((0.0, 0.0),))
+            for text in texts
+        ]
+        return items, " ".join(texts)
+
+
+def _stabilize(identifier, bus, frame, count, start_step=0):
+    for step in range(start_step, start_step + count):
+        identifier.apply(frame, [bus], frame_index=1 + step * 6)
+
+
+class TestFeederRoutePipeline(unittest.TestCase):
+    def test_code_only_becomes_stable_without_a_direction(self):
+        identifier = BusRouteIdentifier(reader=FakeOcr(["FR-7"]))
+        bus = _detection()
+        frame = _frame()
+        _stabilize(identifier, bus, frame, 3)
+
+        self.assertEqual(bus.route_code, "FR-7")
+        self.assertEqual(bus.route_line, "FR-7")
+        self.assertIsNone(bus.route_direction)
+        self.assertIsNone(bus.route_destination)
+        self.assertTrue(bus.route_is_stable)
+        self.assertEqual(
+            bus.route_tts_message,
+            "Feeder route seven detected. Direction could not be read.",
+        )
+
+    def test_later_direction_replaces_route_only(self):
+        reader = ScriptedOcr(
+            [["FR-7"], ["FR-7"], ["FR-7"], ["FR-7", "G-11"], ["FR-7", "G-11"], ["FR-7", "G-11"]]
+        )
+        identifier = BusRouteIdentifier(reader=reader)
+        bus = _detection()
+        frame = _frame()
+        _stabilize(identifier, bus, frame, 3)
+        self.assertIsNone(bus.route_direction)
+
+        _stabilize(identifier, bus, frame, 3, start_step=3)
+        self.assertEqual(bus.route_code, "FR-7")
+        self.assertEqual(bus.route_direction, "fr_7_toward_g11")
+        self.assertEqual(bus.route_destination, "G-11")
+        self.assertEqual(bus.route_tts_message, "Feeder route seven toward G-11.")
+
+    def test_both_endpoints_do_not_assign_a_direction(self):
+        identifier = BusRouteIdentifier(reader=FakeOcr(["PIMS", "G-11"]))
+        bus = _detection()
+        _stabilize(identifier, bus, _frame(), 3)
+
+        self.assertEqual(bus.route_code, "FR-7")
+        self.assertIsNone(bus.route_direction)
+        self.assertIsNone(bus.route_destination)
+        self.assertEqual(
+            bus.route_tts_message,
+            "Feeder route seven detected. Direction could not be read.",
+        )
+
+    def test_stale_direction_is_replaced_by_contradictory_reads(self):
+        reader = ScriptedOcr(
+            [
+                ["FR-7", "G-11"],
+                ["FR-7", "G-11"],
+                ["FR-7", "G-11"],
+                ["FR-7", "PIMS"],
+                ["FR-7", "PIMS"],
+                ["FR-7", "PIMS"],
+            ]
+        )
+        identifier = BusRouteIdentifier(reader=reader)
+        bus = _detection()
+        frame = _frame()
+        _stabilize(identifier, bus, frame, 5)
+        self.assertEqual(bus.route_direction, "fr_7_toward_g11")
+
+        identifier.apply(frame, [bus], frame_index=1 + 5 * 6)
+        self.assertEqual(bus.route_direction, "fr_7_toward_pims")
+        self.assertEqual(bus.route_destination, "PIMS")
+        self.assertEqual(bus.route_tts_message, "Feeder route seven toward PIMS.")
+
+    def test_conflicting_reads_clear_a_stale_direction(self):
+        reader = ScriptedOcr(
+            [
+                ["FR-7", "G-11"],
+                ["FR-7", "G-11"],
+                ["FR-7", "G-11"],
+                ["FR-7", "TAXILA"],
+                ["FR-7", "TAXILA"],
+                ["FR-7", "TAXILA"],
+            ]
+        )
+        identifier = BusRouteIdentifier(reader=reader)
+        bus = _detection()
+        frame = _frame()
+        _stabilize(identifier, bus, frame, 5)
+        self.assertEqual(bus.route_direction, "fr_7_toward_g11")
+
+        identifier.apply(frame, [bus], frame_index=1 + 5 * 6)
+        self.assertFalse(bus.route_is_stable)
+        self.assertIsNone(bus.route_direction)
+        self.assertIsNone(bus.route_tts_message)
+        self.assertIsNone(bus.route_code)
+
+    def test_ocr_exception_after_a_stable_route_does_not_break_the_frame(self):
+        class ThenFail:
+            def __init__(self):
+                self.calls = 0
+
+            def text_candidates(self, image_bgr):
+                self.calls += 1
+                if self.calls > 3:
+                    raise RuntimeError("ocr failed")
+                return [OcrText(text="N-5", confidence=0.9, bbox=())], "N-5"
+
+        identifier = BusRouteIdentifier(reader=ThenFail())
+        bus = _detection()
+        frame = _frame()
+        _stabilize(identifier, bus, frame, 3)
+        self.assertEqual(bus.route_tts_message, "Orange Line toward N-5.")
+
+        identifier.apply(frame, [bus], frame_index=1 + 3 * 6)
+        self.assertEqual(bus.route_line, "Orange Line")
+        self.assertEqual(bus.route_tts_message, "Orange Line toward N-5.")
+        self.assertTrue(bus.route_is_stable)
 
 
 if __name__ == "__main__":

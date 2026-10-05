@@ -7,6 +7,7 @@ class TrackedDetection {
     this.estimatedDistanceM,
     required this.distanceLabel,
     this.routeLine,
+    this.routeCode,
     this.routeDestination,
     this.routeDirection,
     this.routeConfidence,
@@ -21,6 +22,7 @@ class TrackedDetection {
   final double? estimatedDistanceM;
   final String distanceLabel;
   final String? routeLine;
+  final String? routeCode;
   final String? routeDestination;
   final String? routeDirection;
   final double? routeConfidence;
@@ -39,6 +41,7 @@ class TrackedDetection {
       estimatedDistanceM: (json['estimated_distance_m'] as num?)?.toDouble(),
       distanceLabel: json['distance_label'] as String? ?? 'distance unavailable',
       routeLine: _jsonString(json['route_line']),
+      routeCode: _jsonString(json['route_code']),
       routeDestination: _jsonString(json['route_destination']),
       routeDirection: _jsonString(json['route_direction']),
       routeConfidence: _jsonDouble(json['route_confidence']),

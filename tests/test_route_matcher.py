@@ -4,14 +4,19 @@ from pipeline.bus_route.route_matcher import RouteStabilityTracker, match_route_
 
 
 class TestMatchRouteText(unittest.TestCase):
-    def test_barakahu_green_line(self):
-        match = match_route_text("barakahu")
+    def test_barakahu_alone_is_ambiguous(self):
+        self.assertIsNone(match_route_text("barakahu"))
+        self.assertIsNone(match_route_text("BARA KAHU"))
+
+    def test_barakahu_stop_green_line(self):
+        match = match_route_text("BARAKAHU STOP")
         self.assertIsNotNone(match)
         self.assertEqual(match.route_line, "Green Line")
         self.assertEqual(match.direction_id, "toward_barakahu")
         self.assertEqual(match.route_destination, "Barakahu")
         self.assertGreaterEqual(match.confidence, 0.7)
-        self.assertEqual(match.raw_text, "barakahu")
+        self.assertEqual(match.raw_text, "BARAKAHU STOP")
+        self.assertIsNone(match.route_code)
 
     def test_pims_hospital_green_line(self):
         match = match_route_text("PIMS Hospital")
@@ -55,7 +60,7 @@ class TestMatchRouteText(unittest.TestCase):
 class TestRouteStabilityTracker(unittest.TestCase):
     def test_requires_three_matching_observations(self):
         tracker = RouteStabilityTracker()
-        match = match_route_text("barakahu")
+        match = match_route_text("BARAKAHU STOP")
         self.assertIsNotNone(match)
 
         self.assertIsNone(tracker.observe(7, match))

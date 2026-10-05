@@ -131,6 +131,8 @@ def object_to_dict(obj):
 
         "route_line": obj.route_line,
 
+        "route_code": obj.route_code,
+
         "route_destination": obj.route_destination,
 
         "route_direction": obj.route_direction,

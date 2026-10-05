@@ -5,7 +5,9 @@ Usage (from the repo root):
     python tools/test_bus_route_ocr.py --image path/to/image.jpg --crop x,y,width,height
 
 The first run may download EasyOCR English model weights.
-This tool reads one image only and does not use RouteStabilityTracker.
+This tool reads one image only. It does not use RouteStabilityTracker.
+Matching uses the same rules as the live pipeline. A result on one photo is
+not a measurement of real-world accuracy.
 """
 
 from __future__ import annotations
@@ -20,15 +22,12 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from pipeline.bus_route.identifier import ocr_evidence_texts
 from pipeline.bus_route.ocr_reader import BusOcrReader
-from pipeline.bus_route.route_matcher import RouteMatch, match_route_text
-
-_FINAL_LABELS = {
-    "toward_barakahu": "Green Line toward Barakahu",
-    "toward_pims": "Green Line toward PIMS",
-    "toward_n5": "Orange Line toward N-5",
-    "toward_faiz_ahmad_faiz": "Orange Line toward Faiz Ahmad Faiz",
-}
+from pipeline.bus_route.route_matcher import (
+    format_route_interpretation,
+    interpret_ocr_evidence,
+)
 
 
 def parse_crop(value: str) -> tuple[int, int, int, int]:
@@ -67,35 +66,16 @@ def clamp_crop(
     return image[top:bottom, left:right], clamped
 
 
-def collect_matches(texts: list[str]) -> list[RouteMatch]:
-    matches: list[RouteMatch] = []
-    seen: set[tuple[str, str]] = set()
-    for text in texts:
-        match = match_route_text(text)
-        if match is None:
-            continue
-        key = (match.raw_text, match.direction_id)
-        if key in seen:
-            continue
-        seen.add(key)
-        matches.append(match)
-    return matches
-
-
-def final_label(matches: list[RouteMatch]) -> str:
-    if not matches:
-        return "No supported route match"
-    best_confidence = max(match.confidence for match in matches)
-    best = [match for match in matches if match.confidence == best_confidence]
-    directions = {match.direction_id for match in best}
-    if len(directions) != 1:
-        return "No supported route match"
-    return _FINAL_LABELS.get(best[0].direction_id, "No supported route match")
+def describe_ocr_texts(texts: list[str]) -> str:
+    """Report one crop using the production matcher."""
+    return format_route_interpretation(interpret_ocr_evidence(texts))
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="OCR one image and match it to a supported Metrobus route."
+        description=(
+            "OCR one image and match it with the production bus-route rules."
+        )
     )
     parser.add_argument("--image", required=True, help="Path to a local image")
     parser.add_argument(
@@ -149,24 +129,14 @@ def main(argv: list[str] | None = None) -> int:
 
     print("Combined OCR text:")
     print(f"  {combined if combined else '(none)'}")
-
-    texts = [item.text for item in items]
-    if combined and combined not in texts:
-        texts.append(combined)
-    matches = collect_matches(texts)
-
-    print("Route matches:")
-    if not matches:
-        print("  (none)")
-    for match in matches:
-        label = _FINAL_LABELS.get(match.direction_id, match.direction_id)
-        print(
-            f"  {label}  direction={match.direction_id}  "
-            f"confidence={match.confidence:.2f}  text={match.raw_text!r}"
-        )
-
-    print("Final result:")
-    print(f"  {final_label(matches)}")
+    print()
+    print("Production match:")
+    print(describe_ocr_texts(ocr_evidence_texts(items, combined)))
+    print()
+    print(
+        "This is one photograph. It does not measure how often real buses "
+        "are recognized."
+    )
     return 0
 
 

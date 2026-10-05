@@ -5,8 +5,10 @@ import 'package:visionnav_app/services/pipeline_models.dart';
 /// Rules (all pure Dart, no platform code, unit-testable):
 ///  * At most one phrase per call. A stable bus route is spoken before any
 ///    distance phrase. Otherwise the nearest qualifying object wins.
-///  * A stable route is spoken once per track, line, and direction, and only
-///    while that bus is still in the latest detections.
+///  * A stable route is spoken once per track, route, and direction state,
+///    while that bus is still in the latest detections. Route-only speech
+///    (no direction yet) is its own state. A later confirmed direction is
+///    spoken once more. The phrase is the server's route_tts_message.
 ///  * A track is announced the first time it is seen with a distance.
 ///  * The same track is re-announced only when BOTH
 ///      - its per-track cooldown has elapsed, and
@@ -110,9 +112,13 @@ class AnnouncementManager {
   }
 
   _RouteAnnouncementKey _routeKey(TrackedDetection obj) {
+    final code = obj.routeCode;
+    final route = code != null && code.trim().isNotEmpty
+        ? code
+        : (obj.routeLine ?? '');
     return _RouteAnnouncementKey(
       obj.trackId,
-      obj.routeLine ?? '',
+      route,
       obj.routeDirection ?? '',
     );
   }
@@ -173,20 +179,20 @@ class _TrackState {
 }
 
 class _RouteAnnouncementKey {
-  const _RouteAnnouncementKey(this.trackId, this.routeLine, this.routeDirection);
+  const _RouteAnnouncementKey(this.trackId, this.routeIdentity, this.routeDirection);
 
   final int trackId;
-  final String routeLine;
+  final String routeIdentity;
   final String routeDirection;
 
   @override
   bool operator ==(Object other) {
     return other is _RouteAnnouncementKey &&
         other.trackId == trackId &&
-        other.routeLine == routeLine &&
+        other.routeIdentity == routeIdentity &&
         other.routeDirection == routeDirection;
   }
 
   @override
-  int get hashCode => Object.hash(trackId, routeLine, routeDirection);
+  int get hashCode => Object.hash(trackId, routeIdentity, routeDirection);
 }

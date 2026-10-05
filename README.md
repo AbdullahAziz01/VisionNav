@@ -21,9 +21,10 @@ The system dynamically adapts to the available hardware, utilising a **dual-came
 * Outdoor coordinate tracking and path navigation mapping.
 * Dynamic route planning and destination guidance using GPS sensor modules.
 
-### 📝 OCR & Sign Reading (Planned Integration)
-* **EasyOCR / Tesseract** integration for recognizing street signs, shop banners, menus, and text directions in the user's view.
-* Conversion of recognized text to audio feedback via Text-to-Speech (TTS).
+### 📝 Bus route reading
+* **EasyOCR** reads destination text on a detected bus. ByteTrack keeps the bus identity, and a route is announced only after the same route agrees in 3 of the last 5 reads.
+* Islamabad **Green Line**, **Orange Line**, and the **feeder** corridors from the October 2026 metro-status snapshot are in the route database. Feeder recognition, the missing stop lists, and how to try a real bus photo are described in [docs/bus_route_recognition.md](docs/bus_route_recognition.md).
+* The phone speaks the sentence produced by the backend. Mocked tests do not measure accuracy on real buses.
 
 ### ⚡ Infrastructure
 * **FastAPI & Uvicorn**: Lightweight, asynchronous web API exposing endpoints for single image processing, camera status, and active pipeline orchestration.

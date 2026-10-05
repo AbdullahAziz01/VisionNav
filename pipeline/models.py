@@ -44,6 +44,7 @@ class ObjectDistance:
     route_confidence: float | None = None
     route_is_stable: bool = False
     route_tts_message: str | None = None
+    route_code: str | None = None
 
 
 @dataclass

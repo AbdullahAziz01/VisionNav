@@ -1,0 +1,39 @@
+{
+  "source_url": "https://metro-status.com/feeder-metro/",
+  "observed_date": "2026-10-05",
+  "source_displayed_updated_at": "05 October, 2026 – 07:46 AM (timezone not stated by source)",
+  "scope": "All 22 entries displayed by the source dashboard, including online and offline entries. Not independently verified against CDA/NRTC.",
+  "counts": {"online": 18, "offline": 4, "routes_with_stop_lists": 5, "routes_without_stop_lists": 17},
+  "notes": [
+    "Online/Running and Offline/Stopped are website status labels, not an inventory of individual buses or guaranteed service availability.",
+    "Source route codes, spellings, stop order and duplicate stops are preserved. FR-04 and FR-4 are distinct source entries and must not be automatically merged.",
+    "An empty stops array means the source detail panel supplied no substations; it does not mean the route has no stops.",
+    "Route headings do not always agree with the detailed stop lists. Do not infer verified terminals or travel direction from the list alone.",
+    "The site's separate feeder-metro-route guide conflicts with this dashboard; guide data is not silently merged into these records.",
+    "This snapshot is research data, not the production OCR route configuration."
+  ],
+  "routes": [
+    {"route_code": "FR-2", "source_title": "FR-2: PIMS - FAIZABAD", "website_status": "offline", "source_service_note": "Every 60 Minutes", "stops": []},
+    {"route_code": "FR-04", "source_title": "FR-04: PIMS - Bari Imam", "website_status": "offline", "source_service_note": "Every 30 Minutes", "stops": []},
+    {"route_code": "FR-12", "source_title": "FR-12: Taxila - Hassan Abdal", "website_status": "offline", "source_service_note": "Trial Phase", "stops": []},
+    {"route_code": "FR-15", "source_title": "FR-15: PIMS - Bhara Khu", "website_status": "offline", "source_service_note": "Trial Phase", "stops": []},
+    {"route_code": "FRG-01", "source_title": "FRG-01: PIMS - BaraKahu", "website_status": "online", "source_service_note": "Every 50 Minutes", "stops": []},
+    {"route_code": "FR-1", "source_title": "FR-1: Khanna Pul - NUST Metro Station", "website_status": "online", "source_service_note": "Trial Phase", "stops": ["Nust Metro Station", "Police Foundation Metro Station", "NPA Stop", "Islamic University", "Bahria University", "FAST University", "PAEC General Hospital", "IMC Hospital", "Metro CNC", "Sabzi Mandi", "Mandi Morh", "Kurang Road Stop", "IESCO", "PTCL I-10", "Sui Gas Stop", "OGTI Stop", "CDA Complain Center", "MCI Model School", "Potohar Metro Bus Station", "I-8 Markaz", "Faizabad Metro Station", "Sohan", "Dhok Kala Khan", "Iqbal Town", "Iqbal Town", "Kuri Road", "Zia Masjid", "Khanna Pul"], "issues": ["Iqbal Town appears twice consecutively in the source.", "Stop list is presented in the opposite order to the title."]},
+    {"route_code": "FR-3A", "source_title": "FR-3A: PIMS - Faisal Masjid", "website_status": "online", "source_service_note": "Every 20 Minutes", "stops": ["PIMS Hospital", "PIMS Metro Station", "IMCB F-8", "Katchery", "F-8 Markaz", "F-9 Park", "Shaheen Chowk", "Bahria University", "Naval Complex", "Faisal Masjid", "Parveen Shakir Road", "Kohsar Road/F-7 Markaz", "Murghzar Zoo", "F-6", "Said Pur Village"], "issues": ["Stop list continues beyond Faisal Masjid to Said Pur Village."]},
+    {"route_code": "FR-4", "source_title": "FR-4: PIMS - Aiwan e Saddar", "website_status": "online", "source_service_note": "Every 10 Minutes", "stops": ["PIMS Hospital", "Children Hospital", "Rescue 15", "Bank Colony", "Salai Centre", "Sitara Market", "Pulley Stop", "Iqbal Hall", "G-6/1.2", "Melody Market", "Abpara Market", "Youth Hostel", "Metropolitan Corporation", "ICB College", "NADRA Chowk", "Lodges Park", "Sukh Chayn Park", "Ministry of Foreign Affairs", "Radio Pakistan", "Election Commission of Pakistan", "Supreme Court of Pakistan", "Parliament House", "National Library", "Secretariate Police Station", "Diplomatic Enclave Gate 4", "Aiwan e Sadar Colony", "Muslim Colony", "Rangers Gate", "Bari Imam", "PIMS Gate", "Children Hospital", "Rescue 15", "Bank Colony", "Salai centre", "Sitara Market", "Pulley Stop", "Iqbal Hall", "G-6/1,2", "Melody Market", "Abpara Market", "Youth Hostel", "Metropolitan Corporation", "ICB College", "NADRA Chowk", "Lodges Park", "Sukh chayn Park", "Ministry of Foreign Affairs", "Radio Pakistan", "National library", "Secretariate Police station", "Diplomatic Enclave Gate 4", "Muslim Colony", "Bari Imam"], "issues": ["Source contains two overlapping stop sequences without direction labels, both ending at Bari Imam.", "Do not merge with the offline FR-04 entry without operator verification."]},
+    {"route_code": "FR-4A", "source_title": "FR-4A: PIMS - QAU", "website_status": "online", "source_service_note": "Every 30 Minutes", "stops": ["Bari Imam", "Muhallah Noori Bagh", "Community Health Center", "D-Type Quaid e Azam Colony", "C-Type Quaid e Azam Colony", "Babul Quaid", "Quaid Azam University"], "issues": ["Detail list starts at Bari Imam, not PIMS as stated in the title."]},
+    {"route_code": "FR-6", "source_title": "FR-6: PIMS - Golra Shareef", "website_status": "online", "source_service_note": "Trial Phase", "stops": []},
+    {"route_code": "FR-7", "source_title": "FR-7: PIMS - G-11", "website_status": "online", "source_service_note": "Every 10 Minutes", "stops": ["PIMS Hospital", "Children Hospital", "NORI Hospital", "Dental Hospital", "G-8 Markaz", "Development Park", "Chaman Metro Station", "Karachi Company", "G-9 Markaz", "Police Flats", "College Morh", "G-10 Markaz", "PHA Flats", "Tanki Stop", "G-10/G-11", "Institute of Modern Studies", "G-11 Markaz", "Mehrabad", "Nust Metro Station", "Bar Council", "A.K Bari Road", "Police Foundation Metro Station"], "issues": ["Stop list continues beyond G-11 to Police Foundation Metro Station."]},
+    {"route_code": "FR-8A", "source_title": "FR-8A: PIMS - Tramri via Aabpara", "website_status": "online", "source_service_note": "Every 20 Minutes", "stops": []},
+    {"route_code": "FR-8B", "source_title": "FR-8B: Khanna Pul - Nilore", "website_status": "online", "source_service_note": "Trial Phase", "stops": []},
+    {"route_code": "FR-8C", "source_title": "FR-8C: PIMS - Tramri Faizabad", "website_status": "online", "source_service_note": "Every 20 Minutes", "stops": []},
+    {"route_code": "FR-9", "source_title": "FR-9: Khanna Pul - Golra Mor Station", "website_status": "online", "source_service_note": "Every 15 Minutes", "stops": []},
+    {"route_code": "FR-10", "source_title": "FR-10: Golra Mor Station - Taxila", "website_status": "online", "source_service_note": "Every 60 Minutes", "stops": []},
+    {"route_code": "FR-11", "source_title": "FR-11: Golra Morh - Noon", "website_status": "online", "source_service_note": "Trial Phase", "stops": []},
+    {"route_code": "FR-13", "source_title": "FR-13: Golra Morh - Fateh Jang", "website_status": "online", "source_service_note": "Trial Phase", "stops": []},
+    {"route_code": "FR-14", "source_title": "FR-14: Mandi Mor - Bahra Kahu", "website_status": "online", "source_service_note": "Every 60 Minutes", "stops": []},
+    {"route_code": "FR-14A", "source_title": "FR-14A: Jillani Stop - 17 Meel", "website_status": "online", "source_service_note": "Every 60 Minutes", "stops": []},
+    {"route_code": "EXP-16", "source_title": "EXP-16: PIMS - Media Town", "website_status": "online", "source_service_note": "Trial Phase", "stops": []},
+    {"route_code": "FR-17", "source_title": "FR-17: T Chowk - Aari Syedan", "website_status": "online", "source_service_note": "Trial Phase", "stops": []}
+  ]
+}

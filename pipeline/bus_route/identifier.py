@@ -2,9 +2,7 @@
 
 from __future__ import annotations
 
-import json
 import math
-from pathlib import Path
 
 import numpy as np
 
@@ -12,25 +10,12 @@ from pipeline.bus_route.ocr_reader import BusOcrReader, OcrText
 from pipeline.bus_route.route_matcher import (
     RouteMatch,
     RouteStabilityTracker,
-    compact_text,
-    match_route_text,
-    normalize_text,
+    interpret_ocr_evidence,
 )
 
 _OCR_INTERVAL_FRAMES = 6
 _MIN_CROP_WIDTH = 120
 _MIN_CROP_HEIGHT = 40
-_PIMS_DIRECTION_ID = "toward_pims"
-_ROUTES_PATH = Path(__file__).with_name("routes.json")
-
-
-def _load_tts_messages(path: Path = _ROUTES_PATH) -> dict[str, str]:
-    payload = json.loads(path.read_text(encoding="utf-8"))
-    messages: dict[str, str] = {}
-    for route in payload.get("routes", []):
-        for direction in route.get("directions", []):
-            messages[str(direction["id"])] = str(direction["tts_message"])
-    return messages
 
 
 def clamp_bbox(
@@ -76,46 +61,22 @@ def _box_area(bbox_xyxy) -> float:
         return -1.0
 
 
-def _mentions_green(texts: list[str]) -> bool:
-    """True when this crop's OCR text contains GREEN or GREEN LINE."""
-    for text in texts:
-        tokens = normalize_text(text).split()
-        if "GREEN" in tokens:
-            return True
-        if any(compact_text(token) == "GREENLINE" for token in tokens):
-            return True
-    return False
+def ocr_evidence_texts(items: list[OcrText], combined: str) -> list[str]:
+    """Keep every OCR line from the crop, plus the joined reading-order string."""
+    texts = [item.text for item in items if item.text and item.text.strip()]
+    if combined and combined.strip() and combined not in texts:
+        texts.append(combined)
+    return texts
 
 
 def select_route_match(items: list[OcrText], combined: str) -> RouteMatch | None:
-    """Match destination text. PIMS counts only when the same crop says GREEN."""
-    texts = [item.text for item in items]
-    if combined:
-        texts.append(combined)
-    green_ok = _mentions_green(texts)
-
-    allowed: list[RouteMatch] = []
-    for text in texts:
-        match = match_route_text(text)
-        if match is None:
-            continue
-        if match.direction_id == _PIMS_DIRECTION_ID and not green_ok:
-            continue
-        allowed.append(match)
-
-    if not allowed:
-        return None
-
-    top_confidence = max(match.confidence for match in allowed)
-    top = [match for match in allowed if match.confidence == top_confidence]
-    directions = {match.direction_id for match in top}
-    if len(directions) != 1:
-        return None
-    return top[0]
+    """Apply the production route rules to one bus crop. Ambiguity returns None."""
+    return interpret_ocr_evidence(ocr_evidence_texts(items, combined)).match
 
 
 def _clear_route_fields(obj) -> None:
     obj.route_line = None
+    obj.route_code = None
     obj.route_destination = None
     obj.route_direction = None
     obj.route_confidence = None
@@ -136,10 +97,9 @@ class BusRouteIdentifier:
         self.tracker = tracker if tracker is not None else RouteStabilityTracker()
         self.ocr_interval = ocr_interval
         self._last_ocr_frame: dict[int, int] = {}
-        self._tts = _load_tts_messages()
 
     def apply(self, frame_bgr: np.ndarray, objects: list, frame_index: int) -> None:
-        """Update route fields on `objects`. OCR errors leave those fields unset."""
+        """Update route fields on `objects`. An OCR failure does not stop the frame."""
         try:
             self._apply(frame_bgr, objects, frame_index)
         except Exception:
@@ -184,8 +144,9 @@ class BusRouteIdentifier:
 
     def _assign(self, bus, match: RouteMatch) -> None:
         bus.route_line = match.route_line
+        bus.route_code = match.route_code
         bus.route_destination = match.route_destination
         bus.route_direction = match.direction_id
         bus.route_confidence = match.confidence
         bus.route_is_stable = True
-        bus.route_tts_message = self._tts.get(match.direction_id)
+        bus.route_tts_message = match.tts_message

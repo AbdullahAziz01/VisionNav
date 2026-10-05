@@ -195,6 +195,7 @@ void main() {
     });
     expect(parsed.className, 'bus');
     expect(parsed.routeLine, isNull);
+    expect(parsed.routeCode, isNull);
     expect(parsed.routeDestination, isNull);
     expect(parsed.routeDirection, isNull);
     expect(parsed.routeConfidence, isNull);
@@ -207,11 +208,13 @@ void main() {
       'confidence': 0.5,
       'bbox_xyxy': [0, 0, 1, 1],
       'route_line': 12,
+      'route_code': 4,
       'route_confidence': 'high',
       'route_is_stable': 'yes',
       'route_tts_message': null,
     });
     expect(oddTypes.routeLine, isNull);
+    expect(oddTypes.routeCode, isNull);
     expect(oddTypes.routeConfidence, isNull);
     expect(oddTypes.routeIsStable, isFalse);
     expect(oddTypes.routeTtsMessage, isNull);
@@ -229,10 +232,120 @@ void main() {
       'route_tts_message': 'Green Line toward Barakahu.',
     });
     expect(stable.routeLine, 'Green Line');
+    expect(stable.routeCode, isNull);
     expect(stable.routeDestination, 'Barakahu');
     expect(stable.routeDirection, 'toward_barakahu');
     expect(stable.routeConfidence, 1);
     expect(stable.routeIsStable, isTrue);
     expect(stable.routeTtsMessage, 'Green Line toward Barakahu.');
+
+    final routeOnly = TrackedDetection.fromJson({
+      'track_id': 8,
+      'class': 'bus',
+      'confidence': 0.9,
+      'bbox_xyxy': [0, 0, 10, 10],
+      'route_line': 'FR-7',
+      'route_code': 'FR-7',
+      'route_destination': null,
+      'route_direction': null,
+      'route_is_stable': true,
+      'route_tts_message':
+          'Feeder route seven detected. Direction could not be read.',
+    });
+    expect(routeOnly.routeCode, 'FR-7');
+    expect(routeOnly.routeDirection, isNull);
+    expect(routeOnly.routeDestination, isNull);
+    expect(routeOnly.routeIsStable, isTrue);
+  });
+
+  TrackedDetection feederBus({
+    String? direction,
+    String message =
+        'Feeder route seven detected. Direction could not be read.',
+    double? distance = 8,
+  }) {
+    return TrackedDetection(
+      trackId: 4,
+      className: 'bus',
+      confidence: 0.9,
+      bboxXyxy: const [0, 0, 10, 10],
+      estimatedDistanceM: distance,
+      distanceLabel: '',
+      routeLine: 'FR-7',
+      routeCode: 'FR-7',
+      routeDestination: direction == null ? null : 'G-11',
+      routeDirection: direction,
+      routeConfidence: 1,
+      routeIsStable: true,
+      routeTtsMessage: message,
+    );
+  }
+
+  test('a route-only result is spoken once even when direction is null', () {
+    final bus = feederBus();
+    expect(
+      m.next([bus]),
+      'Feeder route seven detected. Direction could not be read.',
+    );
+    tick(const Duration(milliseconds: 500));
+    expect(m.next([bus]), isNull);
+    tick(const Duration(seconds: 2));
+    expect(m.next([bus]), 'Bus approximately 8 meters away.');
+  });
+
+  test('a later confirmed direction is announced once', () {
+    expect(
+      m.next([feederBus()]),
+      'Feeder route seven detected. Direction could not be read.',
+    );
+    tick(const Duration(seconds: 2));
+    expect(
+      m.next([
+        feederBus(
+          direction: 'fr_7_toward_g11',
+          message: 'Feeder route seven toward G-11.',
+        ),
+      ]),
+      'Feeder route seven toward G-11.',
+    );
+    tick(const Duration(milliseconds: 500));
+    expect(
+      m.next([
+        feederBus(
+          direction: 'fr_7_toward_g11',
+          message: 'Feeder route seven toward G-11.',
+        ),
+      ]),
+      isNull,
+    );
+  });
+
+  test('a feeder that leaves can be announced again', () {
+    expect(
+      m.next([feederBus()]),
+      'Feeder route seven detected. Direction could not be read.',
+    );
+    tick(const Duration(seconds: 2));
+    expect(m.next([det(1, 'person', 3.0)]),
+        'Person approximately 3 meters away.');
+    tick(const Duration(seconds: 2));
+    expect(
+      m.next([feederBus()]),
+      'Feeder route seven detected. Direction could not be read.',
+    );
+  });
+
+  test('distance alerts continue when the route is not identified', () {
+    expect(m.next([det(4, 'bus', 4.0)]), 'Bus approximately 4 meters away.');
+    tick(const Duration(seconds: 6));
+    expect(
+      m.next([
+        feederBus(
+          message: '   ',
+          distance: 2.0,
+        ),
+      ]),
+      'Bus approximately 2 meters away.',
+    );
   });
 }
