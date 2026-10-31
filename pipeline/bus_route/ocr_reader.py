@@ -49,9 +49,19 @@ class BusOcrReader:
 
     def _ensure_reader(self):
         if self._reader is None:
+            import os
+            from pathlib import Path
             import easyocr
 
-            self._reader = easyocr.Reader(self._languages, gpu=self._gpu)
+            kwargs = {"gpu": self._gpu}
+            cache_dir = os.environ.get("EASYOCR_MODULE_PATH")
+            if cache_dir:
+                m_dir = Path(cache_dir) / "model"
+                m_dir.mkdir(parents=True, exist_ok=True)
+                kwargs["model_storage_directory"] = str(m_dir)
+                kwargs["user_network_directory"] = str(m_dir)
+
+            self._reader = easyocr.Reader(self._languages, **kwargs)
         return self._reader
 
     def read_text(self, image_bgr: np.ndarray) -> list[OcrText]:

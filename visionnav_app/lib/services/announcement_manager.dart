@@ -3,18 +3,24 @@ import 'package:visionnav_app/services/pipeline_models.dart';
 /// Decides WHAT to announce and WHEN, so the user is not flooded with speech.
 ///
 /// Rules (all pure Dart, no platform code, unit-testable):
-///  * At most one phrase per call. A stable bus route is spoken before any
-///    distance phrase. Otherwise the nearest qualifying object wins.
-///  * A stable route is spoken once per track, route, and direction state,
-///    while that bus is still in the latest detections. Route-only speech
-///    (no direction yet) is its own state. A later confirmed direction is
-///    spoken once more. The phrase is the server's route_tts_message.
+///  * At most one phrase per call.
+///  * An obstacle within [closeRangeM] is spoken before a bus route. Those
+///    urgent warnings may bypass the normal per-track cooldown and the global
+///    gap, but only [maxUrgentRepeats] times per close-range stay, with at
+///    least [urgentRepeatGap] between them.
+///  * A stable bus route that loses to an urgent warning stays pending and can
+///    be spoken afterward. A route is spoken once per track, route, and
+///    direction state while that bus is still in the latest detections.
+///    Route-only speech (no direction yet) is its own state. A later confirmed
+///    direction is spoken once more. The phrase is the server's
+///    route_tts_message.
+///  * Otherwise the nearest qualifying distance phrase wins.
 ///  * A track is announced the first time it is seen with a distance.
 ///  * The same track is re-announced only when BOTH
 ///      - its per-track cooldown has elapsed, and
 ///      - its distance changed by at least [distanceChangeThresholdM]
 ///        (or it crossed into the [closeRangeM] zone).
-///  * A global minimum gap keeps announcements from overlapping each other.
+///  * A global minimum gap keeps non-urgent announcements from overlapping.
 ///  * Tracks not seen for [trackExpiry] are forgotten, so a person who walks
 ///    away and comes back is announced again.
 class AnnouncementManager {
@@ -23,6 +29,8 @@ class AnnouncementManager {
     this.globalMinGap = const Duration(milliseconds: 2500),
     this.distanceChangeThresholdM = 1.0,
     this.closeRangeM = 1.5,
+    this.urgentRepeatGap = const Duration(milliseconds: 1500),
+    this.maxUrgentRepeats = 2,
     this.trackExpiry = const Duration(seconds: 10),
     DateTime Function()? now,
   }) : _now = now ?? DateTime.now;
@@ -31,6 +39,8 @@ class AnnouncementManager {
   final Duration globalMinGap;
   final double distanceChangeThresholdM;
   final double closeRangeM;
+  final Duration urgentRepeatGap;
+  final int maxUrgentRepeats;
   final Duration trackExpiry;
   final DateTime Function() _now;
 
@@ -49,10 +59,22 @@ class AnnouncementManager {
     _forgetAbsentRoutes(objects);
 
     for (final obj in objects) {
-      _tracks.putIfAbsent(obj.trackId, _TrackState.new).lastSeen = now;
+      final state = _tracks.putIfAbsent(obj.trackId, _TrackState.new);
+      state.lastSeen = now;
+      final distance = obj.estimatedDistanceM;
+      if (distance == null || distance > closeRangeM) {
+        state.urgentCount = 0;
+        state.lastUrgentAt = null;
+      }
     }
 
     if (!canSpeak) return null;
+
+    final urgent = _nextUrgent(objects, now);
+    if (urgent != null) {
+      return _speakDistance(urgent, now, urgent: true);
+    }
+
     if (_lastAnnouncementAt != null &&
         now.difference(_lastAnnouncementAt!) < globalMinGap) {
       return null;
@@ -74,13 +96,51 @@ class AnnouncementManager {
       final d = obj.estimatedDistanceM!;
       final state = _tracks[obj.trackId]!;
       if (!_qualifies(state, d, now)) continue;
-
-      state.lastAnnouncedAt = now;
-      state.lastAnnouncedDistance = d;
-      _lastAnnouncementAt = now;
-      return describe(obj.className, d);
+      return _speakDistance(obj, now);
     }
     return null;
+  }
+
+  String _speakDistance(
+    TrackedDetection obj,
+    DateTime now, {
+    bool urgent = false,
+  }) {
+    final d = obj.estimatedDistanceM!;
+    final state = _tracks[obj.trackId]!;
+    state.lastAnnouncedAt = now;
+    state.lastAnnouncedDistance = d;
+    if (urgent) {
+      state.lastUrgentAt = now;
+      state.urgentCount++;
+    }
+    _lastAnnouncementAt = now;
+    return describe(obj.className, d);
+  }
+
+  TrackedDetection? _nextUrgent(
+    List<TrackedDetection> objects,
+    DateTime now,
+  ) {
+    final close = objects
+        .where((o) {
+          final d = o.estimatedDistanceM;
+          return d != null && d > 0 && d <= closeRangeM;
+        })
+        .toList()
+      ..sort((a, b) => a.estimatedDistanceM!.compareTo(b.estimatedDistanceM!));
+
+    for (final obj in close) {
+      if (_urgentQualifies(_tracks[obj.trackId]!, now)) return obj;
+    }
+    return null;
+  }
+
+  bool _urgentQualifies(_TrackState state, DateTime now) {
+    if (state.urgentCount >= maxUrgentRepeats) return false;
+    final lastUrgent = state.lastUrgentAt;
+    if (lastUrgent == null) return true;
+    return now.difference(lastUrgent) >= urgentRepeatGap;
   }
 
   TrackedDetection? _nextStableRoute(List<TrackedDetection> objects) {
@@ -176,6 +236,8 @@ class _TrackState {
   DateTime lastSeen = DateTime.fromMillisecondsSinceEpoch(0);
   DateTime? lastAnnouncedAt;
   double? lastAnnouncedDistance;
+  DateTime? lastUrgentAt;
+  int urgentCount = 0;
 }
 
 class _RouteAnnouncementKey {

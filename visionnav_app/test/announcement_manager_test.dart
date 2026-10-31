@@ -348,4 +348,39 @@ void main() {
       'Bus approximately 2 meters away.',
     );
   });
+
+  test('urgent close obstacle is selected before a stable bus route', () {
+    expect(
+      m.next([det(1, 'person', 1.0), greenBus()]),
+      'Person approximately 1 meter away.',
+    );
+  });
+
+  test('urgent close obstacle has a short repeat limit', () {
+    expect(
+      m.next([det(1, 'person', 1.0)]),
+      'Person approximately 1 meter away.',
+    );
+    tick(const Duration(milliseconds: 500));
+    expect(m.next([det(1, 'person', 1.0)]), isNull);
+    tick(const Duration(seconds: 2));
+    expect(
+      m.next([det(1, 'person', 1.0)]),
+      'Person approximately 1 meter away.',
+    );
+    tick(const Duration(seconds: 2));
+    expect(m.next([det(1, 'person', 1.0)]), isNull);
+  });
+
+  test('pending route is spoken after the urgent obstacle', () {
+    expect(
+      m.next([det(1, 'person', 1.0), greenBus()]),
+      'Person approximately 1 meter away.',
+    );
+    tick(const Duration(seconds: 2));
+    expect(
+      m.next([det(1, 'person', 3.0), greenBus()]),
+      'Green Line toward Barakahu.',
+    );
+  });
 }

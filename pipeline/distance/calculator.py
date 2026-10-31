@@ -80,6 +80,12 @@ class DistanceCalculator:
         self.metric_scale: float = 1.0
         self.metric_shift: float = 0.0
 
+    def reset(self) -> None:
+        """Clear temporal smoothing and bbox fraction state across sessions."""
+        self.smoother.reset()
+        self.last_height_fractions.clear()
+        self.last_truncated.clear()
+
     def compute(
         self,
         tracked_objects: list[TrackedObject],

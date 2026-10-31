@@ -1,0 +1,57 @@
+.git
+.gitignore
+.gitattributes
+
+# Secrets and local env (keep the example)
+.env
+.env.*
+!.env.example
+**/*.pem
+**/*.key
+**/credentials.json
+**/secrets.json
+
+# Phone / Flutter builds and tool caches
+visionnav_app/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/build/
+
+# Python / editor junk
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.idea/
+.vscode/
+*.egg-info/
+
+# Debug media and local captures
+runs/
+**/*.jpg
+**/*.jpeg
+**/*.png
+**/*.gif
+**/*.mp4
+**/*.avi
+**/*.mov
+**/*.webm
+
+# Gitignored host weight files (image downloads its own)
+*.pt
+*.pth
+*.onnx
+*.safetensors
+models/
+
+# Local calibration dumps and tests not needed in the image
+data/
+physical_calibration*.csv
+tests/
+docs/
+*.md
+!README.md

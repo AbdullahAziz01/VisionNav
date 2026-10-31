@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:visionnav_app/services/announcement_manager.dart';
+import 'package:visionnav_app/services/capped_backoff.dart';
 import 'package:visionnav_app/services/camera_service.dart';
 import 'package:visionnav_app/services/pipeline_models.dart';
 import 'package:visionnav_app/services/tts_service.dart';
@@ -16,16 +17,26 @@ class CameraScreen extends StatefulWidget {
   State<CameraScreen> createState() => _CameraScreenState();
 }
 
-class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver {
+class _CameraScreenState extends State<CameraScreen>
+    with WidgetsBindingObserver {
   late final CameraService _cameraService;
   late final HttpVisionNavApi _api;
   late final FlutterTtsService _tts;
   final AnnouncementManager _announcer = AnnouncementManager();
   StreamSubscription<Map<String, dynamic>>? _resultSub;
   Timer? _captureTimer;
+  Timer? _reconnectTimer;
+  final CappedBackoff _reconnectBackoff = CappedBackoff();
+  Future<void>? _pipelineStartFuture;
+  Future<void> _pendingLifecycleRelease = Future<void>.value();
+  int _session = 0;
+  int _lifecycleEpoch = 0;
+  bool _screenDisposed = false;
+  bool _lifecyclePaused = false;
+  bool _resumeWaitingForRelease = false;
 
   bool _isInitializing = true;
-  bool _requestInFlight = false;
+  int? _requestInFlightSession;
   String? _errorMsg;
   String? _apiStatus;
   bool _permissionPermanentlyDenied = false;
@@ -64,34 +75,40 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     if (!_ttsEnabled) unawaited(_tts.stop());
   }
 
-  Future<void> _initCamera() async {
-    if (!mounted) return;
+  bool _isCurrentSession(int session) =>
+      !_screenDisposed && !_lifecyclePaused && session == _session && mounted;
 
+  Future<void> _initCamera() async {
+    final session = ++_session;
     _stopPipelineLoop();
-    setState(() {
-      _isInitializing = true;
-      _errorMsg = null;
-      _apiStatus = null;
-      _permissionPermanentlyDenied = false;
-    });
+    _reconnectBackoff.reset();
+    if (_screenDisposed) return;
+
+    if (mounted) {
+      setState(() {
+        _isInitializing = true;
+        _errorMsg = null;
+        _apiStatus = null;
+        _permissionPermanentlyDenied = false;
+      });
+    }
 
     try {
       await _cameraService.initialize();
-      if (mounted) {
-        setState(() {
-          _isInitializing = false;
-        });
-      }
-      await _startPipelineLoop();
+      if (!_isCurrentSession(session)) return;
+      setState(() {
+        _isInitializing = false;
+      });
+      await _startAndTrackPipeline(session);
     } on CameraPermissionException catch (e) {
-      if (!mounted) return;
+      if (!_isCurrentSession(session)) return;
       setState(() {
         _errorMsg = e.message;
         _permissionPermanentlyDenied = e.message.contains('permanently denied');
         _isInitializing = false;
       });
     } catch (e) {
-      if (!mounted) return;
+      if (!_isCurrentSession(session)) return;
       setState(() {
         _errorMsg = 'Failed to initialize camera: $e';
         _isInitializing = false;
@@ -99,10 +116,13 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     }
   }
 
-  Future<void> _startPipelineLoop() async {
+  Future<void> _startPipelineLoop(int session) async {
+    if (!_isCurrentSession(session)) return;
+
     await _resultSub?.cancel();
+    if (!_isCurrentSession(session)) return;
     _resultSub = _api.resultsStream.listen((map) {
-      if (!mounted) return;
+      if (!_isCurrentSession(session)) return;
       final result = PipelineFrameResult.fromJson(map);
       setState(() {
         _latestResult = result;
@@ -120,86 +140,265 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
 
     try {
       await _api.connect();
-      if (mounted) {
-        setState(() {
-          _apiStatus = 'Connected to $kVisionNavApiBaseUrl';
-        });
-      }
+      if (!_isCurrentSession(session)) return;
+      await _api.acquireSession();
+
+      if (!_isCurrentSession(session)) return;
+      setState(() {
+        _apiStatus = 'Connected to ${_api.baseUrl}';
+      });
+    } on BackendNetworkException catch (e) {
+      _scheduleReconnect(session, e);
+      return;
+    } on SessionConflictException catch (e) {
+      if (!_isCurrentSession(session)) return;
+      _stopCaptureTimer();
+      setState(() {
+        _apiStatus = 'Session Conflict: $e\nOpen Settings to force take over.';
+      });
+      return;
+    } on BackendAuthException {
+      if (!_isCurrentSession(session)) return;
+      _stopCaptureTimer();
+      setState(() {
+        _apiStatus = 'Authentication Failed: Invalid API Key.\nCheck Settings.';
+      });
+      return;
+    } on BackendUnavailableException catch (e) {
+      if (!_isCurrentSession(session)) return;
+      _stopCaptureTimer();
+      setState(() => _apiStatus = 'Backend not ready: $e');
+      return;
+    } on PayloadTooLargeException catch (e) {
+      if (!_isCurrentSession(session)) return;
+      _stopCaptureTimer();
+      setState(() => _apiStatus = 'Upload Limit Exceeded: $e');
+      return;
+    } on BackendHttpException catch (e) {
+      if (!_isCurrentSession(session)) return;
+      _stopCaptureTimer();
+      setState(() => _apiStatus = 'Backend error: $e');
+      return;
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _apiStatus =
-              'API offline. Start FastAPI on PC and set kVisionNavApiBaseUrl.\n$e';
-        });
-      }
+      if (!_isCurrentSession(session)) return;
+      setState(() {
+        _apiStatus = 'API offline (${_api.baseUrl}).\n$e';
+      });
       return;
     }
 
+    if (!_isCurrentSession(session)) return;
     _captureTimer?.cancel();
     _captureTimer = Timer.periodic(_captureInterval, (_) {
-      unawaited(_captureAndSend());
+      if (!_isCurrentSession(session)) return;
+      unawaited(_captureAndSend(session));
     });
   }
 
-  Future<void> _captureAndSend() async {
-    if (_requestInFlight || !_api.isConnected) return;
-    final controller = _cameraService.controller;
-    if (controller == null || !controller.value.isInitialized) return;
-
-    _requestInFlight = true;
+  Future<void> _startAndTrackPipeline(int session) async {
+    final startFuture = _startPipelineLoop(session);
+    _pipelineStartFuture = startFuture;
     try {
-      final bytes = await _cameraService.captureJpeg();
-      await _api.sendFrame(bytes);
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _apiStatus = 'Frame send failed: $e';
-        });
-      }
+      await startFuture;
     } finally {
-      _requestInFlight = false;
+      if (identical(_pipelineStartFuture, startFuture)) {
+        _pipelineStartFuture = null;
+      }
     }
   }
 
-  void _stopPipelineLoop() {
+  Future<void> _captureAndSend(int session) async {
+    if (!_isCurrentSession(session) ||
+        _requestInFlightSession != null ||
+        !_api.isConnected) {
+      return;
+    }
+    if (!_cameraService.isInitialized) return;
+
+    _requestInFlightSession = session;
+    try {
+      final bytes = await _cameraService.captureJpeg();
+      if (!_isCurrentSession(session)) return;
+      await _api.sendFrame(bytes);
+      _reconnectBackoff.reset();
+    } on SessionConflictException catch (e) {
+      if (!_isCurrentSession(session)) return;
+      _stopCaptureTimer();
+      setState(() {
+        _apiStatus = 'Session Conflict: $e\nOpen Settings to acquire session.';
+      });
+    } on BackendAuthException catch (e) {
+      if (!_isCurrentSession(session)) return;
+      _stopCaptureTimer();
+      setState(() {
+        _apiStatus = 'Auth Failed: $e\nCheck Settings.';
+      });
+    } on PayloadTooLargeException catch (e) {
+      if (!_isCurrentSession(session)) return;
+      _stopCaptureTimer();
+      setState(() {
+        _apiStatus = 'Upload Limit Exceeded: $e';
+      });
+    } on BackendUnavailableException catch (e) {
+      if (!_isCurrentSession(session)) return;
+      _stopCaptureTimer();
+      setState(() => _apiStatus = 'Backend not ready: $e');
+    } on BackendHttpException catch (e) {
+      if (!_isCurrentSession(session)) return;
+      _stopCaptureTimer();
+      setState(() => _apiStatus = 'Backend error: $e');
+    } on BackendNetworkException catch (e) {
+      _scheduleReconnect(session, e);
+    } catch (e) {
+      if (!_isCurrentSession(session)) return;
+      setState(() {
+        _apiStatus = 'Frame send failed: $e';
+      });
+    } finally {
+      if (_requestInFlightSession == session) {
+        _requestInFlightSession = null;
+      }
+    }
+  }
+
+  void _scheduleReconnect(int session, Object error) {
+    if (!_isCurrentSession(session) || _reconnectTimer != null) return;
+    _stopCaptureTimer();
+    final delay = _reconnectBackoff.nextDelay();
+    setState(() {
+      _apiStatus =
+          'Network unavailable ($error). Retrying in ${delay.inSeconds}s.';
+    });
+    _reconnectTimer = Timer(delay, () {
+      _reconnectTimer = null;
+      if (_isCurrentSession(session)) {
+        unawaited(_startAndTrackPipeline(session));
+      }
+    });
+  }
+
+  void _stopCaptureTimer() {
     _captureTimer?.cancel();
     _captureTimer = null;
-    _requestInFlight = false;
+  }
+
+  void _stopPipelineLoop() {
+    _stopCaptureTimer();
+    _reconnectTimer?.cancel();
+    _reconnectTimer = null;
+  }
+
+  Future<void> _releaseCameraForLifecycle() {
+    if (_lifecyclePaused) {
+      if (_resumeWaitingForRelease) {
+        _lifecycleEpoch++;
+        _resumeWaitingForRelease = false;
+      }
+      return _pendingLifecycleRelease;
+    }
+    _lifecyclePaused = true;
+    final lifecycleEpoch = ++_lifecycleEpoch;
+    final releasedSessionId = _api.config.sessionId;
+    _session++;
+    _stopPipelineLoop();
+    _api.invalidatePendingOperations();
+    unawaited(_tts.stop());
+    if (mounted) {
+      setState(() {
+        _isInitializing = true;
+        _errorMsg = null;
+      });
+    }
+
+    final pendingStart = _pipelineStartFuture;
+    final release = () async {
+      if (pendingStart != null) {
+        try {
+          await pendingStart;
+        } catch (_) {
+          // Startup failure must not prevent the matching session release.
+        }
+      }
+      if (_screenDisposed || lifecycleEpoch != _lifecycleEpoch) return;
+      try {
+        await _api.releaseSession(sessionId: releasedSessionId);
+      } catch (_) {
+        // Release is best-effort; the server lease will expire if offline.
+      }
+    }();
+    final cameraRelease = _cameraService.dispose().catchError((Object _) {});
+    _pendingLifecycleRelease = Future.wait<void>([release, cameraRelease]);
+    return _pendingLifecycleRelease;
+  }
+
+  Future<void> _resumeAfterLifecycle() async {
+    if (!_lifecyclePaused || _resumeWaitingForRelease) return;
+    final lifecycleEpoch = _lifecycleEpoch;
+    _resumeWaitingForRelease = true;
+    await _pendingLifecycleRelease;
+    _resumeWaitingForRelease = false;
+    if (_screenDisposed ||
+        !mounted ||
+        !_lifecyclePaused ||
+        lifecycleEpoch != _lifecycleEpoch) {
+      return;
+    }
+    // A new session ID ensures a late pause-release can never release the
+    // resumed session. If the old lease remains, the server returns 409.
+    _api.config.resetSessionId();
+    _lifecyclePaused = false;
+    _announcer.reset();
+    await _initCamera();
   }
 
   @override
   void dispose() {
+    _screenDisposed = true;
+    _lifecyclePaused = true;
+    _lifecycleEpoch++;
     WidgetsBinding.instance.removeObserver(this);
+    _session++;
     _stopPipelineLoop();
+    final releasedSessionId = _api.config.sessionId;
+    _api.invalidatePendingOperations();
     _resultSub?.cancel();
-    _api.dispose();
+    unawaited(
+      _api
+          .releaseSession(sessionId: releasedSessionId)
+          .catchError((Object _) {})
+          .whenComplete(_api.dispose),
+    );
     // Shared engine: stop our announcements but keep it alive for navigation.
     unawaited(_tts.stop());
-    _cameraService.dispose();
+    unawaited(_cameraService.dispose());
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    final controller = _cameraService.controller;
-    if (controller == null || !controller.value.isInitialized) {
-      return;
-    }
+    if (_screenDisposed) return;
 
-    if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
-      _stopPipelineLoop();
-      unawaited(_tts.stop());
-      _cameraService.dispose();
-    } else if (state == AppLifecycleState.resumed) {
-      _announcer.reset();
-      _initCamera();
+    switch (state) {
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.hidden:
+        unawaited(_releaseCameraForLifecycle());
+        break;
+      case AppLifecycleState.resumed:
+        unawaited(_resumeAfterLifecycle());
+        break;
+      case AppLifecycleState.detached:
+        unawaited(_releaseCameraForLifecycle());
+        break;
     }
   }
 
   Widget _buildPreview(CameraController controller) {
     final previewSize = controller.value.previewSize;
     if (previewSize == null) {
-      return const Center(child: CircularProgressIndicator(color: Colors.tealAccent));
+      return const Center(
+        child: CircularProgressIndicator(color: Colors.tealAccent),
+      );
     }
 
     return ClipRect(
@@ -232,10 +431,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: _initCamera,
-              child: const Text('Retry'),
-            ),
+            ElevatedButton(onPressed: _initCamera, child: const Text('Retry')),
             if (_permissionPermanentlyDenied) ...[
               const SizedBox(height: 12),
               OutlinedButton(
@@ -281,16 +477,18 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
               ),
             )
           else
-            ...objects.take(4).map(
-              (obj) => Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  '${obj.className} ID ${obj.trackId}  ${(obj.confidence * 100).round()}%  ·  ${obj.distanceLabel}',
-                  style: const TextStyle(color: Colors.white, fontSize: 15),
-                  textAlign: TextAlign.center,
+            ...objects
+                .take(4)
+                .map(
+                  (obj) => Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      '${obj.className} ID ${obj.trackId}  ${(obj.confidence * 100).round()}%  ·  ${obj.distanceLabel}',
+                      style: const TextStyle(color: Colors.white, fontSize: 15),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 ),
-              ),
-            ),
         ],
       ),
     );
@@ -308,7 +506,9 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     }
 
     final controller = _cameraService.controller;
-    if (_errorMsg != null || controller == null || !controller.value.isInitialized) {
+    if (_errorMsg != null ||
+        controller == null ||
+        !controller.value.isInitialized) {
       return Scaffold(
         appBar: AppBar(title: const Text('Live Vision')),
         body: _buildErrorBody(),
@@ -338,7 +538,8 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
               child: CustomPaint(
                 painter: _DetectionPainter(
                   objects: _latestResult!.objects,
-                  imageSize: _frameSize ??
+                  imageSize:
+                      _frameSize ??
                       Size(
                         controller.value.previewSize?.height ?? 1,
                         controller.value.previewSize?.width ?? 1,
@@ -346,12 +547,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                 ),
               ),
             ),
-          Positioned(
-            bottom: 16,
-            left: 0,
-            right: 0,
-            child: _buildStatusBar(),
-          ),
+          Positioned(bottom: 16, left: 0, right: 0, child: _buildStatusBar()),
         ],
       ),
     );
@@ -402,7 +598,10 @@ class _DetectionPainter extends CustomPainter {
         ),
       );
       textPainter.layout();
-      textPainter.paint(canvas, Offset(rect.left, (rect.top - 16).clamp(0, size.height)));
+      textPainter.paint(
+        canvas,
+        Offset(rect.left, (rect.top - 16).clamp(0, size.height)),
+      );
     }
   }
 

@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  visionnav-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: visionnav-backend:latest
+    container_name: visionnav_backend
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      - VISIONNAV_ENV=production
+      - VISIONNAV_API_KEY=${VISIONNAV_API_KEY:?VISIONNAV_API_KEY must be set and nonempty in production}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-*}
+      - MAX_UPLOAD_SIZE_MB=${MAX_UPLOAD_SIZE_MB:-10.0}
+      - SESSION_TIMEOUT_SECONDS=${SESSION_TIMEOUT_SECONDS:-30.0}
+      - DEPTH_ANYTHING_ENVIRONMENT=${DEPTH_ANYTHING_ENVIRONMENT:-indoor}
+    volumes:
+      # Persistent storage for geometric & depth calibration profiles
+      - visionnav_config:/app/config
+      # Persistent storage for Hugging Face, PyTorch, and EasyOCR models
+      - visionnav_cache:/app/cache
+      # Optional: persistent debug output snapshots
+      - visionnav_runs:/app/runs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/ready"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  visionnav_config:
+    driver: local
+  visionnav_cache:
+    driver: local
+  visionnav_runs:
+    driver: local

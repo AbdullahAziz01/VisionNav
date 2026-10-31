@@ -98,6 +98,11 @@ class BusRouteIdentifier:
         self.ocr_interval = ocr_interval
         self._last_ocr_frame: dict[int, int] = {}
 
+    def reset(self) -> None:
+        """Clear route tracker and OCR schedule state across sessions."""
+        self.tracker.reset()
+        self._last_ocr_frame.clear()
+
     def apply(self, frame_bgr: np.ndarray, objects: list, frame_index: int) -> None:
         """Update route fields on `objects`. An OCR failure does not stop the frame."""
         try:

@@ -582,6 +582,12 @@ class RouteStabilityTracker:
         self._last_seen: dict[int, float] = {}
         self._latest_match: dict[int, dict[tuple[str, str], RouteMatch]] = {}
 
+    def reset(self) -> None:
+        """Clear all route observation histories and matches across sessions."""
+        self._history.clear()
+        self._last_seen.clear()
+        self._latest_match.clear()
+
     def observe(self, track_id: int, match: RouteMatch | None) -> RouteMatch | None:
         """Record one observation. Return the match only once it is stable."""
         now = time.monotonic()

@@ -261,6 +261,22 @@ class VisionNavPipeline:
             self._stereo_caps[1].release()
             self._stereo_caps = None
 
+    def reset(self) -> None:
+        """Reset all stateful tracking, temporal smoothing, and route caches.
+
+        Guarantees that a new phone session starts with fresh tracking IDs
+        and does not mix tracking or distance smoothing state with prior sessions.
+        """
+        if hasattr(self.tracker, "reset"):
+            self.tracker.reset()
+        if hasattr(self.distance_calc, "reset"):
+            self.distance_calc.reset()
+        if hasattr(self.bus_routes, "reset"):
+            self.bus_routes.reset()
+        self._latest_mono_depth = None
+        self._prev_track_ids.clear()
+        self.frame_index = 0
+
     @staticmethod
     def save_debug_snapshot(frame: np.ndarray, path: Path) -> str:
         path.parent.mkdir(parents=True, exist_ok=True)

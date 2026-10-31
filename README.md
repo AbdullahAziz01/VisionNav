@@ -121,8 +121,15 @@ Once the server is running, access the interactive API docs at:
 * `GET /pipeline/status`: Exposes current active backends (monocular fallback model vs stereo calibration).
 * `POST /detect`: Receives an uploaded image and returns a JSON payload of classes, confidence scores, and bounding boxes.
 * `GET /pipeline/camera`: Captures a frame from the live camera, processes it through the entire tracking and depth estimation pipeline, saves a debug snapshot, and returns estimated physical distances.
+* `POST /pipeline/frame`: Ingests a frame from the mobile app, tracks obstacles, estimates metric depth, and isolates sessions.
+* `GET /ready`: Lightweight non-blocking readiness check (ideal for Docker and cloud health probes).
 
----
+### 3. Remote Backend & Mobile Phone App
+VisionNav supports remote deployment over Wi-Fi and mobile data without requiring a tethered laptop. See [docs/deployment_guide.md](docs/deployment_guide.md) for full instructions:
+* **Docker Deployment**: Run via `docker compose up -d` with persistent volume caching and readiness probes.
+* **Security & HTTPS**: API key authentication (`VISIONNAV_API_KEY`) and strict HTTPS enforcement in production mobile builds.
+* **State Isolation**: Single active phone session management prevents different phone feeds from corrupting object tracking and distance smoothing.
+
 
 ## 📊 Calibration & Evaluation
 
