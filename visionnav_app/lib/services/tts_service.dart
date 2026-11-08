@@ -22,6 +22,39 @@ class FlutterTtsService implements TtsService {
   final FlutterTts _tts = FlutterTts();
   bool _ready = false;
   bool _speaking = false;
+  bool _cameraSpeech = false;
+  int _navigationRequests = 0;
+  int _speechGeneration = 0;
+
+  bool get canSpeakCamera =>
+      !_speaking && !_cameraSpeech && _navigationRequests == 0;
+
+  Future<void> speakCamera(String text) async {
+    if (!canSpeakCamera) return;
+    _cameraSpeech = true;
+    try {
+      await speakAndWait(text);
+    } finally {
+      _cameraSpeech = false;
+    }
+  }
+
+  Future<void> stopCameraSpeech() async {
+    if (!_cameraSpeech) return;
+    _cameraSpeech = false;
+    await stop();
+  }
+
+  Future<void> speakNavigation(String text) async {
+    _navigationRequests++;
+    try {
+      await stopCameraSpeech();
+      await speak(text);
+    } finally {
+      _navigationRequests--;
+    }
+  }
+
   Timer? _stuckGuard;
   Duration _speechTimeout = const Duration(seconds: 10);
   Completer<void>? _idle;
@@ -60,8 +93,9 @@ class FlutterTtsService implements TtsService {
 
   @override
   Future<void> speak(String text) async {
+    final generation = _speechGeneration;
     if (!_ready) await initialize();
-    if (!_ready || text.isEmpty) return;
+    if (!_ready || text.isEmpty || generation != _speechGeneration) return;
     _speechTimeout = Duration(
       seconds: (text.split(RegExp(r'\s+')).length * 0.8 + 8).ceil().clamp(
         10,
@@ -71,7 +105,7 @@ class FlutterTtsService implements TtsService {
     _setSpeaking(true);
     try {
       await beforeSpeak?.call();
-      await _tts.speak(text);
+      if (generation == _speechGeneration) await _tts.speak(text);
     } catch (e) {
       debugPrint('TTS speak failed: $e');
       _setSpeaking(false);
@@ -81,13 +115,15 @@ class FlutterTtsService implements TtsService {
   /// Speaks [text] and resolves when the engine finishes (or times out).
   /// Used by the Nav prompt so the microphone does not start mid-sentence.
   Future<void> speakAndWait(String text) async {
+    final generation = _speechGeneration;
     await speak(text);
-    if (!_speaking) return;
+    if (!_speaking || generation != _speechGeneration) return;
     await (_idle?.future ?? Future<void>.value());
   }
 
   @override
   Future<void> stop() async {
+    _speechGeneration++;
     _stuckGuard?.cancel();
     if (!_ready) {
       _setSpeaking(false);

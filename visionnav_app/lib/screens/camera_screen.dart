@@ -9,14 +9,23 @@ import 'package:visionnav_app/services/bus_trip.dart';
 import 'package:visionnav_app/services/capped_backoff.dart';
 import 'package:visionnav_app/services/camera_service.dart';
 import 'package:visionnav_app/services/pipeline_models.dart';
+import 'package:visionnav_app/services/navigation/route_navigation_service.dart';
 import 'package:visionnav_app/services/tts_service.dart';
 import 'package:visionnav_app/services/visionnav_api.dart';
 
 class CameraScreen extends StatefulWidget {
-  const CameraScreen({super.key, this.busTrip, this.onEndBusTrip});
+  const CameraScreen({
+    super.key,
+    this.busTrip,
+    this.onEndBusTrip,
+    this.walkingNavigation,
+    this.scheduledWait,
+  });
 
   final BusTrip? busTrip;
   final VoidCallback? onEndBusTrip;
+  final RouteNavigationService? walkingNavigation;
+  final String Function()? scheduledWait;
 
   @override
   State<CameraScreen> createState() => _CameraScreenState();
@@ -50,10 +59,20 @@ class _CameraScreenState extends State<CameraScreen>
   PipelineFrameResult? _latestResult;
   Size? _frameSize;
   bool _scanPromptSpoken = false;
+  bool _delaySpoken = false;
+  Stopwatch? _frameAge;
+  int _mode = 0;
+  int _capturedMode = 0;
+
+  bool get _walking => widget.walkingNavigation != null;
 
   static const Duration _captureInterval = Duration(milliseconds: 500);
 
-  String get _title => widget.busTrip == null ? 'Live Vision' : 'Bus Scanner';
+  String get _title => _walking
+      ? 'Walk to bus stop'
+      : widget.busTrip == null
+      ? 'Live Vision'
+      : 'Bus Scanner';
 
   @override
   void initState() {
@@ -70,7 +89,10 @@ class _CameraScreenState extends State<CameraScreen>
   @override
   void didUpdateWidget(CameraScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.busTrip != widget.busTrip) {
+    if (oldWidget.busTrip != widget.busTrip ||
+        oldWidget.walkingNavigation != widget.walkingNavigation) {
+      _mode++;
+      _latestResult = null;
       _announcer.reset();
       _scanPromptSpoken = false;
       _lastSpoken = null;
@@ -80,11 +102,19 @@ class _CameraScreenState extends State<CameraScreen>
   /// Runs on every pipeline result; speaks at most one short phrase and never
   /// awaits the engine, so the preview and upload loop are unaffected.
   void _announce(PipelineFrameResult result) {
-    final canSpeak = _ttsEnabled && !_tts.isSpeaking;
+    final canSpeak = _ttsEnabled && _tts.canSpeakCamera;
+    if (canSpeak && !_scanPromptSpoken && widget.scheduledWait != null) {
+      _scanPromptSpoken = true;
+      const prompt = 'Bus scanner ready. Point the camera at the bus sign.';
+      _lastSpoken = prompt;
+      unawaited(_tts.speakCamera(prompt));
+      return;
+    }
     final phrase = _announcer.next(
       result.objects,
       canSpeak: canSpeak,
       busTrip: widget.busTrip,
+      nearbyOnly: _walking,
     );
     final trip = widget.busTrip;
     if (phrase != null) {
@@ -92,13 +122,13 @@ class _CameraScreenState extends State<CameraScreen>
       if (phrase.startsWith('Your selected bus was detected.')) {
         _scanPromptSpoken = true;
       }
-      unawaited(_tts.speak(phrase));
+      unawaited(_tts.speakCamera(phrase));
     } else if (trip != null && canSpeak && !_scanPromptSpoken) {
       _scanPromptSpoken = true;
       const prompt =
           'Bus scanner ready. Point the rear camera at the bus sign.';
       _lastSpoken = prompt;
-      unawaited(_tts.speak(prompt));
+      unawaited(_tts.speakCamera(prompt));
     }
   }
 
@@ -116,6 +146,12 @@ class _CameraScreenState extends State<CameraScreen>
       if (!_isInitializing) unawaited(_initCamera());
     } else if (c == 'repeat' || c == 'repeat detection') {
       await voice.say(_lastSpoken ?? 'No detection announcement yet.');
+    } else if (_walking && c == 'repeat instruction') {
+      await widget.walkingNavigation!.repeatInstruction();
+    } else if (_walking && c == 'stop navigation') {
+      widget.onEndBusTrip?.call();
+    } else if (c == 'check wait' && widget.scheduledWait != null) {
+      await voice.say(widget.scheduledWait!());
     } else if (c == 'camera status') {
       await voice.say(_errorMsg ?? _apiStatus ?? 'Camera is initializing.');
     } else if (c == 'open permission settings') {
@@ -132,7 +168,7 @@ class _CameraScreenState extends State<CameraScreen>
 
   void _toggleTts() {
     setState(() => _ttsEnabled = !_ttsEnabled);
-    if (!_ttsEnabled) unawaited(_tts.stop());
+    if (!_ttsEnabled) unawaited(_tts.stopCameraSpeech());
   }
 
   bool _isCurrentSession(int session) =>
@@ -185,7 +221,20 @@ class _CameraScreenState extends State<CameraScreen>
     await _resultSub?.cancel();
     if (!_isCurrentSession(session)) return;
     _resultSub = _api.resultsStream.listen((map) {
-      if (!_isCurrentSession(session)) return;
+      if (!_isCurrentSession(session) || _capturedMode != _mode) return;
+      if ((_walking || widget.scheduledWait != null) &&
+          (_frameAge?.elapsed ?? Duration.zero) > const Duration(seconds: 3)) {
+        setState(() {
+          _latestResult = null;
+          _apiStatus = 'Camera results delayed';
+        });
+        if (!_delaySpoken && _ttsEnabled && _tts.canSpeakCamera) {
+          _delaySpoken = true;
+          unawaited(_tts.speakCamera('Camera results are delayed.'));
+        }
+        return;
+      }
+      _delaySpoken = false;
       final result = PipelineFrameResult.fromJson(map);
       setState(() {
         _latestResult = result;
@@ -279,6 +328,8 @@ class _CameraScreenState extends State<CameraScreen>
     if (!_cameraService.isInitialized) return;
 
     _requestInFlightSession = session;
+    _capturedMode = _mode;
+    _frameAge = Stopwatch()..start();
     try {
       final bytes = await _cameraService.captureJpeg();
       if (!_isCurrentSession(session)) return;
@@ -519,6 +570,18 @@ class _CameraScreenState extends State<CameraScreen>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          if (widget.walkingNavigation case final navigation?)
+            ValueListenableBuilder<NavigationSnapshot>(
+              valueListenable: navigation.snapshot,
+              builder: (context, snapshot, _) => Text(
+                snapshot.error ??
+                    snapshot.nextInstruction ??
+                    snapshot.currentInstruction ??
+                    'Calculating walking directions...',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+            ),
           if (trip != null)
             Text(
               'Looking for ${trip.label}',
@@ -592,7 +655,7 @@ class _CameraScreenState extends State<CameraScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
-          if (widget.busTrip != null)
+          if (widget.busTrip != null || _walking)
             IconButton(
               tooltip: 'End bus trip',
               icon: const Icon(Icons.stop_circle_outlined),

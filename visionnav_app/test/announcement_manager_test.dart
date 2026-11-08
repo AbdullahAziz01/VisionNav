@@ -64,6 +64,13 @@ void main() {
     expect(phrase, startsWith('Person'));
   });
 
+  test('walking alerts report nearby objects only and do not queue behind speech', () {
+    expect(m.next([det(1, 'person', 3)], nearbyOnly: true), isNull);
+    expect(m.next([det(1, 'person', 1)], nearbyOnly: true, canSpeak: false), isNull);
+    expect(m.next([det(1, 'person', 3)], nearbyOnly: true), isNull);
+    expect(m.next([det(1, 'person', 1)], nearbyOnly: true), startsWith('Person'));
+  });
+
   test('global gap prevents back-to-back announcements', () {
     expect(m.next([det(1, 'person', 2.0), det(2, 'bus', 5.0)]), isNotNull);
     tick(const Duration(milliseconds: 800));

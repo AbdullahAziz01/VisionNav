@@ -1,4 +1,4 @@
-import 'package:visionnav_app/services/navigation/route_models.dart';
+import 'package:visionnav_app/services/direct_bus_planner.dart';
 import 'dart:async';
 import 'package:visionnav_app/services/voice_commands.dart';
 import 'package:flutter/material.dart';
@@ -150,13 +150,15 @@ class _MainLayoutState extends State<MainLayout> {
   bool _planningTrip = false;
   BusTrip? _busTrip;
   RouteNavigationService? _tripNavigation;
+  bool _walkingToBoard = false;
+  DirectBusPlan? _activeBusPlan;
 
   Future<void> _planBusTrip() async {
     if (_planningTrip) return;
     _planningTrip = true;
     if (_currentIndex != 0) setState(() => _currentIndex = 0);
     try {
-      final walkTo = await Navigator.of(context).push<Place>(
+      final walkTo = await Navigator.of(context).push<TripWalk>(
         MaterialPageRoute(builder: (_) => const DestinationTripScreen()),
       );
       if (!mounted || walkTo == null) return;
@@ -165,10 +167,20 @@ class _MainLayoutState extends State<MainLayout> {
       _tripNavigation = null;
       await navigation.stopNavigation(clearDestination: true);
       if (!mounted) return;
-      final walking = navigation.startWalkingTo(walkTo);
+      final busPlan = walkTo.busPlan;
+      if (busPlan != null) {
+        _tripNavigation = navigation;
+        navigation.snapshot.addListener(_onTripNavigationChanged);
+      }
+      final walking = navigation.startWalkingTo(
+        walkTo.destination,
+        shortest: busPlan == null,
+      );
       setState(() {
-        _busTrip = null;
-        _currentIndex = 2;
+        _busTrip = busPlan?.scannerTrip;
+        _activeBusPlan = busPlan;
+        _walkingToBoard = busPlan != null;
+        _currentIndex = busPlan == null ? 2 : 1;
       });
       try {
         await walking;
@@ -199,16 +211,51 @@ class _MainLayoutState extends State<MainLayout> {
     navigation.snapshot.addListener(_onTripNavigationChanged);
     setState(() {
       _busTrip = trip;
+      _activeBusPlan = null;
+      _walkingToBoard = false;
       _currentIndex = 2;
     });
   }
 
   void _onTripNavigationChanged() {
-    if (_currentIndex == 2 &&
-        _tripNavigation?.current.state == NavState.arrived &&
-        WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed) {
-      _openVision();
+    final state = _tripNavigation?.current.state;
+    if (state == NavState.arrived) {
+      final plan = _activeBusPlan;
+      final reachedBoardingTarget =
+          plan == null ||
+          _tripNavigation?.current.place?.location == plan.boarding.location;
+      final announceArrival =
+          _walkingToBoard &&
+          reachedBoardingTarget &&
+          (_currentIndex == 1 || _currentIndex == 2) &&
+          WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed;
+      _tripNavigation?.snapshot.removeListener(_onTripNavigationChanged);
+      setState(() {
+        _walkingToBoard = false;
+        if (!reachedBoardingTarget) {
+          _busTrip = null;
+          _activeBusPlan = null;
+          _tripNavigation = null;
+        } else if (_currentIndex == 1 || _currentIndex == 2) {
+          _currentIndex = 1;
+        }
+      });
+      if (announceArrival) {
+        unawaited(
+          _voice.say(
+            'Near the mapped stop. Confirm the boarding point. ${_scheduledWait()}',
+          ),
+        );
+      }
     }
+  }
+
+  String _scheduledWait() {
+    final now = DateTime.now();
+    final next = _activeBusPlan?.nextDeparture(now);
+    if (next == null) return 'No more departures are listed today.';
+    final minutes = (next.difference(now).inSeconds / 60).ceil();
+    return 'The scheduled wait is about $minutes minutes.';
   }
 
   void _openVision() => setState(() => _currentIndex = 1);
@@ -217,7 +264,11 @@ class _MainLayoutState extends State<MainLayout> {
     _tripNavigation?.snapshot.removeListener(_onTripNavigationChanged);
     final navigation = _tripNavigation;
     _tripNavigation = null;
-    setState(() => _busTrip = null);
+    setState(() {
+      _busTrip = null;
+      _activeBusPlan = null;
+      _walkingToBoard = false;
+    });
     navigation?.stopNavigation(clearDestination: true);
   }
 
@@ -237,7 +288,14 @@ class _MainLayoutState extends State<MainLayout> {
           onManualTrip: _planManualBusTrip,
         );
       case 1:
-        return CameraScreen(busTrip: _busTrip, onEndBusTrip: _endBusTrip);
+        return CameraScreen(
+          busTrip: _walkingToBoard ? null : _busTrip,
+          walkingNavigation: _walkingToBoard ? _tripNavigation : null,
+          scheduledWait: !_walkingToBoard && _activeBusPlan != null
+              ? _scheduledWait
+              : null,
+          onEndBusTrip: _endBusTrip,
+        );
       case 2:
         return NavigationScreen(busTrip: _busTrip, onScanBus: _openVision);
       case 3:

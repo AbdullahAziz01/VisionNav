@@ -58,6 +58,7 @@ class AnnouncementManager {
     List<TrackedDetection> objects, {
     bool canSpeak = true,
     BusTrip? busTrip,
+    bool nearbyOnly = false,
   }) {
     final now = _now();
     _prune(now);
@@ -79,6 +80,8 @@ class AnnouncementManager {
     if (urgent != null) {
       return _speakDistance(urgent, now, urgent: true);
     }
+
+    if (nearbyOnly) return null;
 
     if (_lastAnnouncementAt != null &&
         now.difference(_lastAnnouncementAt!) < globalMinGap) {

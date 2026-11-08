@@ -7,6 +7,9 @@
     {
       "route": "FR-07",
       "toward": "Police Foundation Metro Station",
+      "scanCode": "FR-7",
+      "scanDirection": "fr_7_toward_g11",
+      "scanExitKeys": ["g 9 markaz", "g 10 markaz"],
       "stopKeys": [
         "karachi company",
         "g 9 markaz",
@@ -24,6 +27,8 @@
     {
       "route": "FR-07",
       "toward": "PIMS Hospital",
+      "scanCode": "FR-7",
+      "scanDirection": "fr_7_toward_pims",
       "stopKeys": [
         "police foundation",
         "nust",

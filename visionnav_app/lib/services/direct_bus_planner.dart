@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:visionnav_app/services/navigation/transit_gazetteer.dart';
+import 'package:visionnav_app/services/bus_trip.dart';
 
 class DirectBusPlan {
   const DirectBusPlan(
@@ -11,6 +12,8 @@ class DirectBusPlan {
     this.boarding,
     this.exit,
     this.departures,
+    this.scanDirection,
+    this.scanCode,
   );
 
   final String route;
@@ -18,6 +21,16 @@ class DirectBusPlan {
   final TransitStop boarding;
   final TransitStop exit;
   final List<Duration> departures;
+  final String? scanDirection;
+  final String? scanCode;
+
+  BusTrip get scannerTrip => BusTrip(
+    line: route,
+    code: scanCode ?? route,
+    direction: scanDirection,
+    destination: toward,
+    exitStop: exit.name,
+  );
 
   /// CDA publishes Islamabad wall-clock times. Return an absolute UTC instant.
   DateTime? nextDeparture(
@@ -53,6 +66,9 @@ class DirectBusPlanner {
     ({
       String route,
       String toward,
+      String? scanDirection,
+      String? scanCode,
+      List<String>? scanExitKeys,
       List<TransitStop> stops,
       Map<String, List<Duration>> departures,
     })
@@ -71,6 +87,9 @@ class DirectBusPlanner {
         (
           route: record['route'] as String,
           toward: record['toward'] as String,
+          scanDirection: record['scanDirection'] as String?,
+          scanCode: record['scanCode'] as String?,
+          scanExitKeys: (record['scanExitKeys'] as List?)?.cast<String>(),
           departures: {
             for (final entry
                 in (record['departures'] as Map<String, dynamic>? ?? {})
@@ -132,6 +151,10 @@ class DirectBusPlanner {
             boarding,
             exit,
             direction.departures[boarding.key] ?? const [],
+            direction.scanExitKeys?.contains(exit.key) == false
+                ? null
+                : direction.scanDirection,
+            direction.scanCode,
           );
         }
       }

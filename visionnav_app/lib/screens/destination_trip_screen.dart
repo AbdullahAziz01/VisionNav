@@ -8,6 +8,8 @@ import 'package:visionnav_app/services/navigation/route_models.dart';
 import 'package:visionnav_app/services/navigation/route_navigation_service.dart';
 import 'package:visionnav_app/services/voice_commands.dart';
 
+typedef TripWalk = ({Place destination, DirectBusPlan? busPlan});
+
 class DestinationTripScreen extends StatefulWidget {
   const DestinationTripScreen({
     super.key,
@@ -29,6 +31,7 @@ class _DestinationTripScreenState extends State<DestinationTripScreen> {
   String? _message;
   DirectBusPlanner? _planner;
   Place? _walkTo;
+  DirectBusPlan? _boardingPlan;
   bool _canRefreshWait = false;
 
   @override
@@ -69,6 +72,10 @@ class _DestinationTripScreenState extends State<DestinationTripScreen> {
       }
       return true;
     }
+    if (command == 'walk to mapped stop' && _boardingPlan != null) {
+      _startBoardingWalk();
+      return true;
+    }
     if (command == 'check wait' && _canRefreshWait) {
       await _plan(_destination.text);
       return true;
@@ -92,10 +99,12 @@ class _DestinationTripScreenState extends State<DestinationTripScreen> {
       _busy = true;
       _message = null;
       _walkTo = null;
+      _boardingPlan = null;
       _canRefreshWait = false;
     });
     String message;
     Place? walkTo;
+    DirectBusPlan? boardingPlan;
     var canRefreshWait = false;
     try {
       final planner = _planner ??= await DirectBusPlanner.load();
@@ -116,6 +125,7 @@ class _DestinationTripScreenState extends State<DestinationTripScreen> {
           final status = await _checkSchedule(plan, origin);
           message = status.message;
           walkTo = status.walkTo;
+          if (walkTo == null) boardingPlan = plan;
           canRefreshWait = true;
         }
       }
@@ -131,6 +141,7 @@ class _DestinationTripScreenState extends State<DestinationTripScreen> {
       _busy = false;
       _message = message;
       _walkTo = walkTo;
+      _boardingPlan = boardingPlan;
       _canRefreshWait = canRefreshWait;
     });
     await _voice.say(message);
@@ -199,7 +210,7 @@ class _DestinationTripScreenState extends State<DestinationTripScreen> {
         : 'The scheduled wait after your estimated walk is about $minutes minutes.';
     return (
       message:
-          '${plan.summary} A departure is listed for $hour:$minute $period Islamabad time. $wait Confirm the boarding point and service before leaving.',
+          '${plan.summary} A departure is listed for $hour:$minute $period Islamabad time. $wait The map pin is approximate. Confirm the boarding point and service. To walk to the mapped stop, say walk to mapped stop.',
       walkTo: null,
     );
   }
@@ -213,7 +224,21 @@ class _DestinationTripScreenState extends State<DestinationTripScreen> {
     });
     if (!accepted) await _voice.say('Trip cancelled.');
     if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
-    Navigator.of(context).pop(accepted ? destination : null);
+    Navigator.of(context).pop<TripWalk>(
+      accepted ? (destination: destination, busPlan: null) : null,
+    );
+  }
+
+  void _startBoardingWalk() {
+    final plan = _boardingPlan;
+    if (_busy || plan == null) return;
+    Navigator.of(context).pop<TripWalk>((
+      destination: Place(
+        name: plan.boarding.name,
+        location: plan.boarding.location,
+      ),
+      busPlan: plan,
+    ));
   }
 
   @override
@@ -249,6 +274,7 @@ class _DestinationTripScreenState extends State<DestinationTripScreen> {
             setState(() {
               _message = null;
               _walkTo = null;
+              _boardingPlan = null;
               _canRefreshWait = false;
             });
           },
@@ -272,6 +298,11 @@ class _DestinationTripScreenState extends State<DestinationTripScreen> {
             child: const Text('No, cancel trip'),
           ),
         ] else if (_canRefreshWait && !_busy) ...[
+          if (_boardingPlan != null)
+            FilledButton(
+              onPressed: _startBoardingWalk,
+              child: const Text('Walk to mapped stop'),
+            ),
           TextButton(
             onPressed: () => _plan(_destination.text),
             child: const Text('Check scheduled wait again'),

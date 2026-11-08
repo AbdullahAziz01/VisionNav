@@ -134,7 +134,12 @@ class RouteNavigationService implements NavigationService {
 
   Future<void> _say(String text) async {
     _set(current.copyWith(lastSpoken: text));
-    await tts.speak(text);
+    final speech = tts;
+    if (speech is FlutterTtsService) {
+      await speech.speakNavigation(text);
+    } else {
+      await speech.speak(text);
+    }
   }
 
   // ── NavigationService ────────────────────────────────────────────────────
@@ -171,9 +176,9 @@ class RouteNavigationService implements NavigationService {
     }
   }
 
-  Future<void> startWalkingTo(Place destination) {
+  Future<void> startWalkingTo(Place destination, {bool shortest = true}) {
     _set(NavigationSnapshot(state: NavState.ready, destinationText: destination.name, place: destination, position: current.position));
-    return startNavigation(shortest: true);
+    return startNavigation(shortest: shortest);
   }
 
   @override

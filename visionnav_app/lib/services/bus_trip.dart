@@ -7,6 +7,7 @@ class BusTrip {
     required this.code,
     required this.direction,
     required this.destination,
+    this.exitStop,
   });
 
   factory BusTrip.fromJson(Map<String, dynamic> json) => BusTrip(
@@ -18,7 +19,8 @@ class BusTrip {
 
   final String line;
   final String? code;
-  final String direction;
+  final String? direction;
+  final String? exitStop;
   final String destination;
 
   String get label => '$line toward $destination';
@@ -28,6 +30,7 @@ class BusTrip {
       : bus.routeCode == code;
 
   bool matches(TrackedDetection bus) =>
+      direction != null &&
       bus.className == 'bus' &&
       bus.routeIsStable &&
       isSameRoute(bus) &&
@@ -35,10 +38,17 @@ class BusTrip {
 
   String announcement(TrackedDetection bus) {
     final reading = bus.routeTtsMessage!;
-    if (matches(bus)) return 'Your selected bus was detected. $reading';
+    final askDriver = exitStop == null
+        ? ''
+        : ' Ask the driver if it stops at $exitStop.';
+    if (matches(bus)) {
+      return 'Your selected bus was detected. $reading$askDriver';
+    }
     if (!isSameRoute(bus)) return 'Different bus. $reading';
-    if (bus.routeDirection == null || bus.routeDirection!.isEmpty) {
-      return reading;
+    if (direction == null ||
+        bus.routeDirection == null ||
+        bus.routeDirection!.isEmpty) {
+      return '$reading$askDriver';
     }
     return 'Your route, going in the other direction. $reading';
   }

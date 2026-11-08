@@ -61,4 +61,15 @@ void main() {
       );
     },
   );
+  test('G-11 sign does not confirm an exit beyond G-11', () async {
+    final planner = await DirectBusPlanner.load();
+    const origin = LatLng(33.689317, 73.034402);
+    expect(
+      planner.plan('G-10 Markaz', origin)?.scannerTrip.direction,
+      'fr_7_toward_g11',
+    );
+    final nust = planner.plan('NUST', origin)!.scannerTrip;
+    expect(nust.code, 'FR-7');
+    expect(nust.direction, isNull);
+  });
 }
