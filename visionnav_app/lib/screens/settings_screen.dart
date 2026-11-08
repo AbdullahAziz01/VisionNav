@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:visionnav_app/services/backend_config.dart';
 import 'package:visionnav_app/services/navigation/navigation_config.dart';
 import 'package:visionnav_app/services/visionnav_api.dart';
+import 'package:visionnav_app/services/saved_settings.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -14,6 +15,8 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   final _formKey = GlobalKey<FormState>();
   late final BackendConfig _config;
+  late BackendEnvironment _environment;
+  bool _saving = false;
   late final TextEditingController _urlController;
   late final TextEditingController _apiKeyController;
   late final TextEditingController _routingKeyController;
@@ -68,7 +71,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _pendingValue = null;
       await _voice.say('Say the exact $_voiceField, or cancel.');
     } else if (c == 'save settings' || c == 'save') {
-      _saveSettings();
+      await _saveSettings();
     } else if (c == 'test connection' || c == 'test server connection') {
       if (!_testingConnection) await _testConnection();
     } else if (c == 'new session' || c == 'new session id') {
@@ -89,7 +92,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ? BackendEnvironment.development
           : BackendEnvironment.production;
       setState(() {
-        _config.setEnvironment(env);
+        _environment = env;
         if (env == BackendEnvironment.production &&
             _urlController.text.startsWith('http://')) {
           _urlController.text = _urlController.text.replaceFirst(
@@ -119,6 +122,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.initState();
     _voice.register(this, _handleVoice);
     _config = BackendConfig.instance;
+    _environment = _config.environment;
     _urlController = TextEditingController(text: _config.baseUrl);
     _apiKeyController = TextEditingController(text: _config.apiKey);
     _routingKeyController = TextEditingController(text: routingApiKey);
@@ -133,42 +137,55 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.dispose();
   }
 
-  void _saveSettings() {
+  Future<bool> _saveSettings() async {
+    if (_saving || !mounted) return false;
     if (!_formKey.currentState!.validate()) {
-      _voice.say('Check the backend URL. It is invalid for the selected mode.');
-      return;
+      await _voice.say(
+        'Check the backend URL. It is invalid for the selected mode.',
+      );
+      return false;
     }
 
+    final settings = SavedSettings(
+      environment: _environment,
+      backendUrl: _urlController.text.trim(),
+      backendKey: _apiKeyController.text.trim(),
+      routingKey: _routingKeyController.text.trim(),
+    );
+    setState(() => _saving = true);
     try {
-      _config.updateSettings(
-        baseUrl: _urlController.text.trim(),
-        apiKey: _apiKeyController.text.trim(),
-      );
-      routingApiKey = _routingKeyController.text.trim();
-      _voice.say('Settings saved.');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Settings saved successfully.'),
-          backgroundColor: Colors.teal,
-        ),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Save error: $e'),
-          backgroundColor: Colors.redAccent,
-        ),
-      );
+      await settings.write();
+      settings.apply();
+      if (mounted) {
+        final message = SavedSettings.canPersist
+            ? 'Settings saved on this device.'
+            : 'Settings applied for this session.';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message), backgroundColor: Colors.teal),
+        );
+        await _voice.say(message);
+      }
+      return true;
+    } catch (_) {
+      if (mounted) {
+        const message =
+            'Could not save settings on this device. Please try again.';
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(message),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+        await _voice.say(message);
+      }
+      return false;
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
   }
 
   Future<void> _testConnection() async {
-    if (!_formKey.currentState!.validate()) {
-      _voice.say('Check the backend URL. It is invalid for the selected mode.');
-      return;
-    }
-
-    _saveSettings();
+    if (_testingConnection || !await _saveSettings() || !mounted) return;
     setState(() {
       _testingConnection = true;
       _testResult = null;
@@ -247,7 +264,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isProd = _config.isProduction;
+    final isProd = _environment == BackendEnvironment.production;
 
     return Scaffold(
       appBar: AppBar(
@@ -256,7 +273,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           IconButton(
             icon: const Icon(Icons.check),
             tooltip: 'Save',
-            onPressed: _saveSettings,
+            onPressed: _saving ? null : _saveSettings,
           ),
         ],
       ),
@@ -284,11 +301,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icon(Icons.security),
                 ),
               ],
-              selected: {_config.environment},
+              selected: {_environment},
               onSelectionChanged: (set) {
                 final chosen = set.first;
                 setState(() {
-                  _config.setEnvironment(chosen);
+                  _environment = chosen;
                   if (chosen == BackendEnvironment.production &&
                       _urlController.text.startsWith('http://')) {
                     _urlController.text = _urlController.text.replaceFirst(
@@ -362,7 +379,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               decoration: const InputDecoration(
                 labelText: 'OpenRouteService key',
                 helperText:
-                    'Required for walking directions. Saved for this app session.',
+                    'Required for walking directions. Tap Save to keep your key.',
                 helperMaxLines: 2,
               ),
             ),
@@ -389,7 +406,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     : 'Use local IP or adb reverse 127.0.0.1.',
               ),
               validator: (val) =>
-                  BackendConfig.validateUrl(val ?? '', _config.environment),
+                  BackendConfig.validateUrl(val ?? '', _environment),
             ),
             const SizedBox(height: 20),
 

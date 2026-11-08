@@ -1,3 +1,4 @@
+import 'package:visionnav_app/services/saved_settings.dart';
 import 'package:visionnav_app/services/direct_bus_planner.dart';
 import 'dart:async';
 import 'package:visionnav_app/services/voice_commands.dart';
@@ -13,8 +14,13 @@ import 'package:visionnav_app/screens/help_screen.dart';
 import 'package:visionnav_app/services/bus_trip.dart';
 import 'package:visionnav_app/services/navigation/route_navigation_service.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  try {
+    (await SavedSettings.read())?.apply();
+  } catch (_) {
+    debugPrint('Could not restore saved connection settings.');
+  }
   runApp(const VisionNavApp());
 }
 
