@@ -9,7 +9,7 @@ The app opens on Live Vision. Its foreground command listener starts after micro
 | Any main screen | Open home; open camera; add location; open GPS; open settings; open help; plan a bus trip; go back; voice help; stop listening |
 | Live Vision | Mute announcements; unmute announcements; repeat detection; camera status; retry camera; open permission settings; end bus trip |
 | Navigation | Add location; change destination; start navigation; stop navigation; repeat instruction; my location; scan bus |
-| Destination planner | Say a destination, such as Karachi Company, or say screen commands. |
+| Destination planner | Say a destination, such as Karachi Company. Say check wait to refresh the scheduled estimate. Answer yes or no if walking is offered. |
 | Manual bus planner | List routes; next routes; previous routes; select route [name or displayed page number]; list directions; select direction [name or number]; continue; cancel |
 | Settings | Edit backend URL; edit API key; edit routing key; confirm; cancel; save settings; test connection; development mode; production mode; show API key; hide API key; new session; force takeover |
 | Help | Read help |
@@ -18,6 +18,8 @@ The app opens on Live Vision. Its foreground command listener starts after micro
 In the manual bus planner, route numbers are 1–5 within the current spoken page. Route selection reads the available directions. Say continue only after selecting the route and direction. Routes come from the existing bundled records.
 
 Settings dictation receives the next phrase as the exact field value, then requires confirm before applying it to the field. Say save settings to apply the form. Keys are not spoken back or shown in the command status. Arbitrary mixed-case keys and URLs can be misrecognized; touch/paste remains available. Force takeover requires a separate spoken confirm.
+
+FR-07 departures come from CDA's [forward](https://www.cda.gov.pk/public/Assets/metro_transit_route/FR-07_Forward.pdf) and [return](https://www.cda.gov.pk/Assets/metro_transit_route/FR-07_Backward.pdf) timetables. The app uses Islamabad time. These PDFs list scheduled trips without a service-day calendar or live updates. When available, the planner adds the pedestrian route estimate to the mapped stop and a two-minute boarding allowance. At the stop, say check wait to refresh. The exact boarding point still needs field verification.
 
 ## Microphone behavior
 

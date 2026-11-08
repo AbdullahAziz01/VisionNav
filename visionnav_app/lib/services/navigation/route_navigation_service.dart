@@ -124,6 +124,7 @@ class RouteNavigationService implements NavigationService {
   StreamSubscription<Map<String, double>>? _posSub;
   DateTime? _lastRerouteAt;
   bool _rerouting = false;
+  bool _shortest = false;
   int _requestId = 0;
 
   NavigationSnapshot get current => snapshot.value;
@@ -170,25 +171,27 @@ class RouteNavigationService implements NavigationService {
     }
   }
 
+  Future<void> startWalkingTo(Place destination) {
+    _set(NavigationSnapshot(state: NavState.ready, destinationText: destination.name, place: destination, position: current.position));
+    return startNavigation(shortest: true);
+  }
+
   @override
-  Future<void> startNavigation() async {
+  Future<void> startNavigation({bool shortest = false}) async {
     final place = current.place;
     if (place == null) throw StateError('Set a destination before starting navigation.');
     final requestId = ++_requestId;
-    final permitted = await location.requestPermissions();
-    if (requestId != _requestId) return;
-    if (!permitted) {
-      const msg = 'Location permission or GPS is off. Please enable it.';
-      _set(current.copyWith(state: NavState.error, error: msg));
-      await _say(msg);
-      throw StateError(msg);
-    }
-
+    _shortest = shortest;
     _set(current.copyWith(state: NavState.routing, clearError: true));
     try {
+      final permitted = await location.requestPermissions();
+      if (requestId != _requestId) return;
+      if (!permitted) {
+        throw RoutingException('Location permission or GPS is off. Please enable it.');
+      }
       final from = await currentPosition();
       if (requestId != _requestId) return;
-      final route = await router.walkingRoute(from, place);
+      final route = await router.walkingRoute(from, place, shortest: _shortest);
       if (requestId != _requestId) return;
       _installRoute(route, from);
       final start = _engine!.start();
@@ -307,7 +310,7 @@ class RouteNavigationService implements NavigationService {
     _rerouting = true;
     _lastRerouteAt = DateTime.now();
     try {
-      final route = await router.walkingRoute(from, place);
+      final route = await router.walkingRoute(from, place, shortest: _shortest);
       if (requestId != _requestId || !identical(_engine, engine)) return;
       _installRoute(route, from);
       _engine!.start(); // prime internal state; speak a short version instead

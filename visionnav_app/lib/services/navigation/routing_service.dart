@@ -13,7 +13,7 @@ class RoutingException implements Exception {
 }
 
 abstract class RoutingService {
-  Future<NavRoute> walkingRoute(LatLng from, Place to);
+  Future<NavRoute> walkingRoute(LatLng from, Place to, {bool shortest = false});
 }
 
 /// OpenRouteService pedestrian routing with turn-by-turn instructions.
@@ -34,7 +34,7 @@ class OrsRoutingService implements RoutingService {
       Uri.parse('https://api.openrouteservice.org/v2/directions/foot-walking/geojson');
 
   @override
-  Future<NavRoute> walkingRoute(LatLng from, Place to) async {
+  Future<NavRoute> walkingRoute(LatLng from, Place to, {bool shortest = false}) async {
     final key = apiKey;
     if (key.isEmpty) {
       throw RoutingException(
@@ -49,7 +49,7 @@ class OrsRoutingService implements RoutingService {
       'instructions': true,
       'language': 'en',
       'units': 'm',
-      'preference': 'recommended',
+      'preference': shortest ? 'shortest' : 'recommended',
     });
     final res = await _client
         .post(

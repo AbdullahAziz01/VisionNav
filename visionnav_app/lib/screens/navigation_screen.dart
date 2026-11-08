@@ -71,7 +71,10 @@ class _NavigationScreenState extends State<NavigationScreen>
     _nav.snapshot.addListener(_onNavChanged);
 
     // Ask for a destination only if we are not already guiding the user.
-    if (!_nav.isNavigating && _nav.current.state != NavState.arrived) {
+    if (!_nav.isNavigating &&
+        _nav.current.state != NavState.arrived &&
+        _nav.current.state != NavState.routing &&
+        _nav.current.state != NavState.geocoding) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) unawaited(_beginDestination());
       });

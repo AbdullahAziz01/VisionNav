@@ -1,3 +1,4 @@
+import 'package:visionnav_app/services/navigation/route_models.dart';
 import 'dart:async';
 import 'package:visionnav_app/services/voice_commands.dart';
 import 'package:flutter/material.dart';
@@ -153,11 +154,27 @@ class _MainLayoutState extends State<MainLayout> {
   Future<void> _planBusTrip() async {
     if (_planningTrip) return;
     _planningTrip = true;
-    if (_currentIndex == 1) setState(() => _currentIndex = 0);
+    if (_currentIndex != 0) setState(() => _currentIndex = 0);
     try {
-      await Navigator.of(context).push<void>(
+      final walkTo = await Navigator.of(context).push<Place>(
         MaterialPageRoute(builder: (_) => const DestinationTripScreen()),
       );
+      if (!mounted || walkTo == null) return;
+      final navigation = RouteNavigationService.instance;
+      _tripNavigation?.snapshot.removeListener(_onTripNavigationChanged);
+      _tripNavigation = null;
+      await navigation.stopNavigation(clearDestination: true);
+      if (!mounted) return;
+      final walking = navigation.startWalkingTo(walkTo);
+      setState(() {
+        _busTrip = null;
+        _currentIndex = 2;
+      });
+      try {
+        await walking;
+      } catch (_) {
+        // Navigation already reports routing errors in its snapshot and speech.
+      }
     } finally {
       _planningTrip = false;
     }

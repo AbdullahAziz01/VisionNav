@@ -5,12 +5,39 @@ import 'package:latlong2/latlong.dart';
 import 'package:visionnav_app/services/navigation/transit_gazetteer.dart';
 
 class DirectBusPlan {
-  const DirectBusPlan(this.route, this.toward, this.boarding, this.exit);
+  const DirectBusPlan(
+    this.route,
+    this.toward,
+    this.boarding,
+    this.exit,
+    this.departures,
+  );
 
   final String route;
   final String toward;
   final TransitStop boarding;
   final TransitStop exit;
+  final List<Duration> departures;
+
+  /// CDA publishes Islamabad wall-clock times. Return an absolute UTC instant.
+  DateTime? nextDeparture(
+    DateTime now, {
+    Duration timeToBoard = Duration.zero,
+  }) {
+    const offset = Duration(hours: 5);
+    final localClock = now.toUtc().add(offset);
+    final serviceDay = DateTime.utc(
+      localClock.year,
+      localClock.month,
+      localClock.day,
+    ).subtract(offset);
+    final ready = now.add(timeToBoard);
+    for (final time in departures) {
+      final departure = serviceDay.add(time);
+      if (!departure.isBefore(ready)) return departure;
+    }
+    return null;
+  }
 
   String get summary =>
       'Suggested trip: $route toward $toward. Board at ${boarding.name}. '
@@ -22,7 +49,14 @@ class DirectBusPlan {
 class DirectBusPlanner {
   DirectBusPlanner._(this._directions);
 
-  final List<({String route, String toward, List<TransitStop> stops})>
+  final List<
+    ({
+      String route,
+      String toward,
+      List<TransitStop> stops,
+      Map<String, List<Duration>> departures,
+    })
+  >
   _directions;
 
   static Future<DirectBusPlanner> load() async {
@@ -37,6 +71,14 @@ class DirectBusPlanner {
         (
           route: record['route'] as String,
           toward: record['toward'] as String,
+          departures: {
+            for (final entry
+                in (record['departures'] as Map<String, dynamic>? ?? {})
+                    .entries)
+              entry.key:
+                  (entry.value as List).cast<String>().map(_parseTime).toList()
+                    ..sort(),
+          },
           stops: [
             for (final key in record['stopKeys'] as List)
               stops[key] ??
@@ -44,6 +86,11 @@ class DirectBusPlanner {
           ],
         ),
     ]);
+  }
+
+  static Duration _parseTime(String value) {
+    final parts = value.split(':').map(int.parse).toList();
+    return Duration(hours: parts[0], minutes: parts[1], seconds: parts[2]);
   }
 
   Set<String> get destinations => {
@@ -84,6 +131,7 @@ class DirectBusPlanner {
             direction.toward,
             boarding,
             exit,
+            direction.departures[boarding.key] ?? const [],
           );
         }
       }
