@@ -1,7 +1,7 @@
 /// Navigation provider configuration.
 ///
-/// Routing uses OpenRouteService (free key, 2,000 requests/day):
-///   1. Sign up at https://openrouteservice.org/dev/#/signup
+/// Routing uses an OpenRouteService API key.
+///   1. Sign in at https://account.heigit.org/ to get a key.
 ///   2. Enter a token in the app's Settings or pass it at build time:
 ///        flutter run --dart-define=ORS_API_KEY=your_key_here
 ///

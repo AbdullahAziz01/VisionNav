@@ -120,7 +120,7 @@ class _DestinationTripScreenState extends State<DestinationTripScreen> {
         final plan = planner.plan(destination, origin);
         if (plan == null) {
           message =
-              'No suitable boarding stop near your current location for $destination.';
+              'This pilot could not find a supported boarding stop within about 1 kilometre that takes you toward $destination. If you are already near your destination, try walking directions. To test this bus trip, start near G-10 Markaz and choose Karachi Company.';
         } else {
           final status = await _checkSchedule(plan, origin);
           message = status.message;

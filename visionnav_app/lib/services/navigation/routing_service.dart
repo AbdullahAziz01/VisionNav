@@ -31,7 +31,7 @@ class OrsRoutingService implements RoutingService {
   final Duration timeout;
 
   static final Uri _endpoint =
-      Uri.parse('https://api.openrouteservice.org/v2/directions/foot-walking/geojson');
+      Uri.parse('https://api.heigit.org/openrouteservice/v2/directions/foot-walking/geojson');
 
   @override
   Future<NavRoute> walkingRoute(LatLng from, Place to, {bool shortest = false}) async {
