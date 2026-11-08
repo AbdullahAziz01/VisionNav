@@ -109,4 +109,23 @@ void main() {
       expect(trip?.route, 'FR-07');
     },
   );
+  test('matches typed and spoken sector spellings to G-10 Markaz', () async {
+    final planner = await DirectBusPlanner.load();
+    const origin = LatLng(33.689317, 73.034402);
+    for (final name in [
+      'G10 Markaz',
+      'G 10 Markaz',
+      'G-10 Markaz',
+      'G ten Markaz',
+    ]) {
+      expect(planner.serves(name), isTrue, reason: name);
+      expect(
+        planner.plan(name, origin)?.exit.name,
+        'G-10 Markaz',
+        reason: name,
+      );
+      expect(planner.plan(name, origin)?.route, 'FR-07', reason: name);
+    }
+    expect(planner.serves('G99 Markaz'), isFalse);
+  });
 }

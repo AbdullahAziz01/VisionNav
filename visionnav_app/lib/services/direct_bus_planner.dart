@@ -140,8 +140,32 @@ class DirectBusPlanner {
       for (final stop in direction.stops) stop.name,
   };
 
-  static String _key(String text) =>
-      TransitGazetteer.coreTokens(text).join(' ');
+  static const _sectorNumbers = {
+    'five': '5',
+    'six': '6',
+    'seven': '7',
+    'eight': '8',
+    'nine': '9',
+    'ten': '10',
+    'eleven': '11',
+    'twelve': '12',
+    'thirteen': '13',
+    'fourteen': '14',
+    'fifteen': '15',
+    'sixteen': '16',
+  };
+  static final _sector = RegExp(
+    r'\b([efghi])(?:\s*(\d{1,2})|\s+(' +
+        _sectorNumbers.keys.join('|') +
+        r'))\b',
+  );
+
+  static String _key(String text) => TransitGazetteer.coreTokens(text)
+      .join(' ')
+      .replaceAllMapped(_sector, (match) {
+        final number = match[2] ?? _sectorNumbers[match[3]];
+        return '${match[1]} $number';
+      });
 
   bool _matches(
     TransitStop stop,
@@ -149,7 +173,7 @@ class DirectBusPlanner {
     Map<String, String> aliases,
   ) =>
       _key(stop.name) == destination ||
-      stop.key == destination ||
+      _key(stop.key) == destination ||
       _key(aliases[stop.key] ?? '') == destination;
 
   bool listsStop(String destination) =>
