@@ -115,6 +115,44 @@ void main() {
       api.dispose();
     });
 
+    test(
+      'connection test checks protected access after public readiness',
+      () async {
+        final config = BackendConfig(
+          baseUrl: 'http://localhost:8000',
+          apiKey: 'wrong',
+        );
+        final paths = <String>[];
+        final api = HttpVisionNavApi(
+          config: config,
+          client: MockClient((request) async {
+            paths.add(request.url.path);
+            if (request.url.path == '/ready') {
+              return http.Response('{"status":"ready"}', 200);
+            }
+            expect(request.url.path, '/pipeline/status');
+            return request.headers['X-API-Key'] == 'right'
+                ? http.Response(
+                    '{"mono_depth_backend":"depth_anything_v2"}',
+                    200,
+                  )
+                : http.Response('{"detail":"Invalid API Key"}', 401);
+          }),
+        );
+        addTearDown(api.dispose);
+        await expectLater(
+          api.testConnection(),
+          throwsA(isA<BackendAuthException>()),
+        );
+        expect(paths, ['/ready', '/pipeline/status']);
+        config.updateSettings(apiKey: 'right');
+        expect(
+          (await api.testConnection())['mono_depth_backend'],
+          'depth_anything_v2',
+        );
+      },
+    );
+
     test('Handles 409 Session Conflict exception', () async {
       final config = BackendConfig(
         environment: BackendEnvironment.development,

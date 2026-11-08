@@ -202,14 +202,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _testSuccess = true;
         _testResult =
             'Connected in ${info['latency_ms']} ms\n'
-            'Model: ${info['yolo_model'] ?? 'Ready'}\n'
-            'Depth Backend: ${info['mono_depth_backend'] ?? 'Ready'}\n'
-            'Auth: ${info['auth_enabled'] == true ? 'Protected' : 'Open (Dev)'}';
+            'Pipeline access verified\n'
+            'Depth backend: ${info['mono_depth_backend'] ?? 'Ready'}';
       });
     } catch (e) {
       if (!mounted) return;
       await _voice.say(
-        'Connection failed. Check the server address, key, and Wi-Fi.',
+        e is BackendAuthException
+            ? 'The server rejected the backend API key. Check the Backend API key field.'
+            : 'Connection failed. Check the server address and Wi-Fi.',
       );
       if (!mounted) return;
       setState(() {

@@ -233,21 +233,24 @@ class HttpVisionNavApi implements VisionNavApi {
   /// Test server connection and latency.
   Future<Map<String, dynamic>> testConnection() async {
     final stopwatch = Stopwatch()..start();
-    final uri = Uri.parse('$baseUrl/ready');
-    final response = await _networkRequest(
-      () => _client
-          .get(uri, headers: _authAndSessionHeaders)
-          .timeout(const Duration(seconds: 8)),
-    );
-    stopwatch.stop();
-
-    if (response.statusCode != 200) {
-      _throwHttpError(response.statusCode, response.body, 'Connection test');
+    final headers = _authAndSessionHeaders;
+    final url = baseUrl;
+    Future<Map<String, dynamic>> check(String path) async {
+      final response = await _networkRequest(
+        () => _client
+            .get(Uri.parse('$url$path'), headers: headers)
+            .timeout(const Duration(seconds: 8)),
+      );
+      if (response.statusCode != 200) {
+        _throwHttpError(response.statusCode, response.body, 'Connection test');
+      }
+      return jsonDecode(response.body) as Map<String, dynamic>;
     }
 
-    final data = jsonDecode(response.body) as Map<String, dynamic>;
-    data['latency_ms'] = stopwatch.elapsedMilliseconds;
-    return data;
+    await check('/ready');
+    final status = await check('/pipeline/status');
+    stopwatch.stop();
+    return {...status, 'latency_ms': stopwatch.elapsedMilliseconds};
   }
 
   @override
