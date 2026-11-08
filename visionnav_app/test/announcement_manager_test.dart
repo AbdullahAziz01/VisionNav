@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:visionnav_app/services/announcement_manager.dart';
+import 'package:visionnav_app/services/bus_trip.dart';
 import 'package:visionnav_app/services/pipeline_models.dart';
 
 TrackedDetection det(int id, String cls, double? d) => TrackedDetection(
@@ -117,6 +118,64 @@ void main() {
       greenBus(),
     ]);
     expect(phrase, 'Green Line toward Barakahu.');
+  });
+
+  const trip = BusTrip(
+    line: 'Green Line',
+    code: null,
+    direction: 'toward_barakahu',
+    destination: 'Barakahu',
+  );
+
+  test('trip prefers the exact route and direction over a closer bus', () {
+    final selected = greenBus(id: 7);
+    final other = greenBus(
+      id: 8,
+      distance: 3,
+      line: 'Orange Line',
+      direction: 'toward_n5',
+      message: 'Orange Line toward N-5.',
+    );
+    expect(
+      m.next([other, selected], busTrip: trip),
+      'Your selected bus was detected. Green Line toward Barakahu.',
+    );
+    tick(const Duration(seconds: 2));
+    expect(
+      m.next([other, selected], busTrip: trip),
+      'Different bus. Orange Line toward N-5.',
+    );
+  });
+
+  test('trip confirms the match only after the requested direction is stable', () {
+    expect(
+      m.next([
+        greenBus(direction: null, message: 'Direction could not be read.'),
+      ], busTrip: trip),
+      'Direction could not be read.',
+    );
+    tick(const Duration(seconds: 2));
+    expect(
+      m.next([
+        greenBus(direction: 'toward_pims', message: 'Green Line toward PIMS.'),
+      ], busTrip: trip),
+      'Your route, going in the other direction. Green Line toward PIMS.',
+    );
+    tick(const Duration(seconds: 2));
+    expect(m.next([greenBus(stable: false)], busTrip: trip),
+        'Bus approximately 8 meters away.');
+    tick(const Duration(seconds: 2));
+    expect(
+      m.next([greenBus()], busTrip: trip),
+      'Your selected bus was detected. Green Line toward Barakahu.',
+    );
+  });
+
+  test('urgent obstacles still take precedence in trip mode', () {
+    expect(
+      m.next([greenBus(), det(2, 'person', 0.8)], busTrip: trip),
+      'Person less than 1 meter away.',
+    );
   });
 
   test('the same track, route, and direction is announced once only', () {

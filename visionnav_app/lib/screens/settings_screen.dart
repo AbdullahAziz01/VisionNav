@@ -1,9 +1,11 @@
+import 'package:visionnav_app/services/voice_commands.dart';
 import 'package:flutter/material.dart';
 import 'package:visionnav_app/services/backend_config.dart';
+import 'package:visionnav_app/services/navigation/navigation_config.dart';
 import 'package:visionnav_app/services/visionnav_api.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({Key? key}) : super(key: key);
+  const SettingsScreen({super.key});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -14,6 +16,98 @@ class _SettingsScreenState extends State<SettingsScreen> {
   late final BackendConfig _config;
   late final TextEditingController _urlController;
   late final TextEditingController _apiKeyController;
+  late final TextEditingController _routingKeyController;
+
+  final _voice = VoiceCommands.shared;
+  String? _voiceField;
+  String? _pendingValue;
+  bool _pendingTakeover = false;
+
+  Future<bool> _handleVoice(String words) async {
+    if (!mounted || ModalRoute.of(context)?.isCurrent != true) return false;
+    final c = normalizeCommand(words);
+    if (c == 'cancel' && (_voiceField != null || _pendingTakeover)) {
+      _voiceField = null;
+      _pendingValue = null;
+      _pendingTakeover = false;
+      await _voice.say('Change cancelled.');
+      return true;
+    }
+    if (c == 'confirm' && _pendingTakeover) {
+      _pendingTakeover = false;
+      await _forceTakeoverSession();
+      return true;
+    }
+    if (c == 'confirm' && _voiceField != null && _pendingValue != null) {
+      final controller = _voiceField == 'backend url'
+          ? _urlController
+          : _voiceField == 'api key'
+          ? _apiKeyController
+          : _routingKeyController;
+      controller.text = _pendingValue!;
+      _voiceField = null;
+      _pendingValue = null;
+      await _voice.say('Field updated. Say save settings to apply it.');
+      return true;
+    }
+    if (_voiceField != null &&
+        _pendingValue == null &&
+        !isGlobalVoiceCommand(c)) {
+      _pendingValue = words.trim();
+      await _voice.say(
+        _voiceField == 'backend url'
+            ? 'URL received: $_pendingValue. Say confirm or cancel.'
+            : 'Key received. Say confirm or cancel. The key will not be read aloud.',
+      );
+      return true;
+    }
+    if (c == 'edit backend url' ||
+        c == 'edit api key' ||
+        c == 'edit routing key') {
+      _voiceField = c.substring(5);
+      _pendingValue = null;
+      await _voice.say('Say the exact $_voiceField, or cancel.');
+    } else if (c == 'save settings' || c == 'save') {
+      _saveSettings();
+    } else if (c == 'test connection' || c == 'test server connection') {
+      if (!_testingConnection) await _testConnection();
+    } else if (c == 'new session' || c == 'new session id') {
+      _generateNewSession();
+      await _voice.say('New session ID generated.');
+    } else if (c == 'force takeover') {
+      _pendingTakeover = true;
+      await _voice.say(
+        'This will take over the backend session from another phone. Say confirm or cancel.',
+      );
+    } else if (c == 'show api key' || c == 'hide api key') {
+      setState(() => _obscureApiKey = c == 'hide api key');
+      await _voice.say(
+        _obscureApiKey ? 'Key hidden.' : 'Key visible on screen.',
+      );
+    } else if (c == 'development mode' || c == 'production mode') {
+      final env = c == 'development mode'
+          ? BackendEnvironment.development
+          : BackendEnvironment.production;
+      setState(() {
+        _config.setEnvironment(env);
+        if (env == BackendEnvironment.production &&
+            _urlController.text.startsWith('http://')) {
+          _urlController.text = _urlController.text.replaceFirst(
+            'http://',
+            'https://',
+          );
+        }
+      });
+      await _voice.say('$c selected. Save settings to apply the address.');
+    } else if (c == 'screen commands') {
+      await _voice.say(
+        'Say save settings, test connection, edit backend URL, edit API key, edit routing key, show API key, hide API key, development mode, production mode, new session, or force takeover.',
+      );
+    } else {
+      return false;
+    }
+    return true;
+  }
 
   bool _obscureApiKey = true;
   bool _testingConnection = false;
@@ -23,20 +117,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
+    _voice.register(this, _handleVoice);
     _config = BackendConfig.instance;
     _urlController = TextEditingController(text: _config.baseUrl);
     _apiKeyController = TextEditingController(text: _config.apiKey);
+    _routingKeyController = TextEditingController(text: routingApiKey);
   }
 
   @override
   void dispose() {
+    _voice.unregister(this);
     _urlController.dispose();
     _apiKeyController.dispose();
+    _routingKeyController.dispose();
     super.dispose();
   }
 
   void _saveSettings() {
     if (!_formKey.currentState!.validate()) {
+      _voice.say('Check the backend URL. It is invalid for the selected mode.');
       return;
     }
 
@@ -45,6 +144,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         baseUrl: _urlController.text.trim(),
         apiKey: _apiKeyController.text.trim(),
       );
+      routingApiKey = _routingKeyController.text.trim();
+      _voice.say('Settings saved.');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Settings saved successfully.'),
@@ -63,6 +164,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _testConnection() async {
     if (!_formKey.currentState!.validate()) {
+      _voice.say('Check the backend URL. It is invalid for the selected mode.');
       return;
     }
 
@@ -75,15 +177,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final api = HttpVisionNavApi(config: _config);
     try {
       final info = await api.testConnection();
+      if (!mounted) return;
+      await _voice.say('Backend connected successfully.');
+      if (!mounted) return;
       setState(() {
         _testingConnection = false;
         _testSuccess = true;
-        _testResult = 'Connected in ${info['latency_ms']} ms\n'
+        _testResult =
+            'Connected in ${info['latency_ms']} ms\n'
             'Model: ${info['yolo_model'] ?? 'Ready'}\n'
             'Depth Backend: ${info['mono_depth_backend'] ?? 'Ready'}\n'
             'Auth: ${info['auth_enabled'] == true ? 'Protected' : 'Open (Dev)'}';
       });
     } catch (e) {
+      if (!mounted) return;
+      await _voice.say(
+        'Connection failed. Check the server address, key, and Wi-Fi.',
+      );
+      if (!mounted) return;
       setState(() {
         _testingConnection = false;
         _testSuccess = false;
@@ -98,6 +209,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final api = HttpVisionNavApi(config: _config);
     try {
       final res = await api.acquireSession(force: true);
+      if (!mounted) return;
+      await _voice.say('Backend session acquired.');
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Session acquired: ${res['message'] ?? 'OK'}'),
@@ -106,6 +220,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       );
       setState(() {});
     } catch (e) {
+      if (!mounted) return;
+      await _voice.say('Session takeover failed.');
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Takeover failed: $e'),
@@ -174,8 +291,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   _config.setEnvironment(chosen);
                   if (chosen == BackendEnvironment.production &&
                       _urlController.text.startsWith('http://')) {
-                    _urlController.text =
-                        _urlController.text.replaceFirst('http://', 'https://');
+                    _urlController.text = _urlController.text.replaceFirst(
+                      'http://',
+                      'https://',
+                    );
                   }
                 });
               },
@@ -185,7 +304,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.teal.withOpacity(0.15),
+                  color: Colors.teal.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.teal.shade400),
                 ),
@@ -196,7 +315,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Expanded(
                       child: Text(
                         'Production Mode: Insecure HTTP is blocked. Server communication must use HTTPS.',
-                        style: TextStyle(fontSize: 13, color: Colors.tealAccent),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.tealAccent,
+                        ),
                       ),
                     ),
                   ],
@@ -206,23 +328,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.amber.withOpacity(0.12),
+                  color: Colors.amber.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.amber.shade400),
                 ),
                 child: const Row(
                   children: [
-                    Icon(Icons.info_outline, color: Colors.amberAccent, size: 20),
+                    Icon(
+                      Icons.info_outline,
+                      color: Colors.amberAccent,
+                      size: 20,
+                    ),
                     SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'Development Mode: HTTP and LAN addresses allowed for local testing.',
-                        style: TextStyle(fontSize: 13, color: Colors.amberAccent),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.amberAccent,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
+            const SizedBox(height: 20),
+
+            TextFormField(
+              controller: _routingKeyController,
+              obscureText: true,
+              autocorrect: false,
+              enableSuggestions: false,
+              decoration: const InputDecoration(
+                labelText: 'OpenRouteService key',
+                helperText:
+                    'Required for walking directions. Saved for this app session.',
+                helperMaxLines: 2,
+              ),
+            ),
             const SizedBox(height: 20),
 
             // Backend URL
@@ -238,16 +381,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 hintText: isProd
                     ? 'https://api.visionnav.yourdomain.com'
                     : 'http://192.168.1.100:8000',
+                labelText: 'Backend URL',
                 prefixIcon: Icon(isProd ? Icons.https : Icons.link),
                 border: const OutlineInputBorder(),
                 helperText: isProd
                     ? 'Production requires a valid HTTPS URL.'
                     : 'Use local IP or adb reverse 127.0.0.1.',
               ),
-              validator: (val) => BackendConfig.validateUrl(
-                val ?? '',
-                _config.environment,
-              ),
+              validator: (val) =>
+                  BackendConfig.validateUrl(val ?? '', _config.environment),
             ),
             const SizedBox(height: 20),
 
@@ -261,16 +403,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
               controller: _apiKeyController,
               obscureText: _obscureApiKey,
               decoration: InputDecoration(
+                labelText: 'Backend API key',
                 hintText: 'Optional for dev; required for protected servers',
                 prefixIcon: const Icon(Icons.key),
                 border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
-                  icon: Icon(_obscureApiKey ? Icons.visibility : Icons.visibility_off),
+                  tooltip: _obscureApiKey ? 'Show API key' : 'Hide API key',
+                  icon: Icon(
+                    _obscureApiKey ? Icons.visibility : Icons.visibility_off,
+                  ),
                   onPressed: () {
                     setState(() => _obscureApiKey = !_obscureApiKey);
                   },
                 ),
-                helperText: 'Kept in client configuration, outside source code.',
+                helperText:
+                    'Kept in client configuration, outside source code.',
               ),
             ),
             const SizedBox(height: 24),
@@ -313,10 +460,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ? const SizedBox(
                       width: 18,
                       height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
                     )
                   : const Icon(Icons.network_check),
-              label: Text(_testingConnection ? 'Testing...' : 'Test Server Connection'),
+              label: Text(
+                _testingConnection ? 'Testing...' : 'Test Server Connection',
+              ),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 backgroundColor: Colors.teal.shade700,
@@ -331,8 +483,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: _testSuccess
-                      ? Colors.teal.withOpacity(0.2)
-                      : Colors.redAccent.withOpacity(0.2),
+                      ? Colors.teal.withValues(alpha: 0.2)
+                      : Colors.redAccent.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: _testSuccess ? Colors.teal : Colors.redAccent,
@@ -341,7 +493,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Text(
                   _testResult!,
                   style: TextStyle(
-                    color: _testSuccess ? Colors.tealAccent : Colors.redAccent.shade100,
+                    color: _testSuccess
+                        ? Colors.tealAccent
+                        : Colors.redAccent.shade100,
                     fontFamily: 'monospace',
                     fontSize: 13,
                   ),

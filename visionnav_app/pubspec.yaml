@@ -69,6 +69,8 @@ flutter:
     # Local bus stands / Metro Bus stations (OpenStreetMap, ODbL).
     # Regenerate with: python tools/build_transit_gazetteer.py
     - assets/transit_stops.json
+    - assets/bus_trip_options.json
+    - assets/direct_bus_routes.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:

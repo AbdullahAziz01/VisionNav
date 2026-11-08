@@ -23,7 +23,10 @@ class FlutterTtsService implements TtsService {
   bool _ready = false;
   bool _speaking = false;
   Timer? _stuckGuard;
+  Duration _speechTimeout = const Duration(seconds: 10);
   Completer<void>? _idle;
+
+  Future<void> Function()? beforeSpeak;
 
   bool get isSpeaking => _speaking;
   bool get isReady => _ready;
@@ -59,8 +62,15 @@ class FlutterTtsService implements TtsService {
   Future<void> speak(String text) async {
     if (!_ready) await initialize();
     if (!_ready || text.isEmpty) return;
+    _speechTimeout = Duration(
+      seconds: (text.split(RegExp(r'\s+')).length * 0.8 + 8).ceil().clamp(
+        10,
+        180,
+      ),
+    );
     _setSpeaking(true);
     try {
+      await beforeSpeak?.call();
       await _tts.speak(text);
     } catch (e) {
       debugPrint('TTS speak failed: $e');
@@ -96,8 +106,8 @@ class FlutterTtsService implements TtsService {
       if (_idle == null || _idle!.isCompleted) {
         _idle = Completer<void>();
       }
-      // Safety net: if the engine never fires completion, unblock after 6 s.
-      _stuckGuard = Timer(const Duration(seconds: 6), () => _setSpeaking(false));
+      // Allow long spoken menus to finish before recognition resumes.
+      _stuckGuard = Timer(_speechTimeout, () => _setSpeaking(false));
     } else if (_idle != null && !_idle!.isCompleted) {
       _idle!.complete();
     }

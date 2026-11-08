@@ -1,10 +1,16 @@
+import 'dart:async';
+import 'package:visionnav_app/services/voice_commands.dart';
 import 'package:flutter/material.dart';
 import 'package:visionnav_app/core/theme.dart';
+import 'package:visionnav_app/screens/bus_trip_screen.dart';
+import 'package:visionnav_app/screens/destination_trip_screen.dart';
 import 'package:visionnav_app/screens/home_screen.dart';
 import 'package:visionnav_app/screens/camera_screen.dart';
 import 'package:visionnav_app/screens/navigation_screen.dart';
 import 'package:visionnav_app/screens/settings_screen.dart';
 import 'package:visionnav_app/screens/help_screen.dart';
+import 'package:visionnav_app/services/bus_trip.dart';
+import 'package:visionnav_app/services/navigation/route_navigation_service.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,37 +18,211 @@ void main() {
 }
 
 class VisionNavApp extends StatelessWidget {
-  const VisionNavApp({Key? key}) : super(key: key);
+  const VisionNavApp({
+    super.key,
+    this.enableVoice = true,
+    this.startWithCamera = true,
+  });
+  final bool enableVoice;
+  final bool startWithCamera;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'VisionNav',
       theme: AppTheme.darkTheme,
-      home: const MainLayout(),
+      home: MainLayout(
+        enableVoice: enableVoice,
+        startWithCamera: startWithCamera,
+      ),
       debugShowCheckedModeBanner: false,
     );
   }
 }
 
 class MainLayout extends StatefulWidget {
-  const MainLayout({Key? key}) : super(key: key);
+  const MainLayout({
+    super.key,
+    this.enableVoice = true,
+    this.startWithCamera = true,
+  });
+  final bool enableVoice;
+  final bool startWithCamera;
 
   @override
   State<MainLayout> createState() => _MainLayoutState();
 }
 
 class _MainLayoutState extends State<MainLayout> {
-  int _currentIndex = 0;
+  late int _currentIndex;
+  final _voice = VoiceCommands.shared;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.startWithCamera ? 1 : 0;
+    _voice.register(this, _handleVoice);
+    if (widget.enableVoice) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) unawaited(_voice.start());
+      });
+    }
+  }
+
+  Future<bool> _handleVoice(String words) async {
+    final command = normalizeCommand(words);
+    final destinations = {
+      'open home': 0,
+      'home': 0,
+      'go home': 0,
+      'open vision': 1,
+      'open camera': 1,
+      'camera': 1,
+      'scan bus': 1,
+      'open visionnav': 1,
+      'open vision nav': 1,
+      'add location': 2,
+      'open gps': 2,
+      'open navigation': 2,
+      'navigation': 2,
+      'open settings': 3,
+      'settings': 3,
+      'open help': 4,
+      'help': 4,
+    };
+    if (destinations.containsKey(command)) {
+      final index = destinations[command]!;
+      await _voice.say(
+        [
+          'Opening home.',
+          'Opening camera.',
+          'Opening navigation.',
+          'Opening settings.',
+          'Opening help.',
+        ][index],
+      );
+      if (!mounted) return true;
+      Navigator.of(context).popUntil((route) => route.isFirst);
+      setState(() => _currentIndex = index);
+      return true;
+    }
+    if (command == 'plan a bus trip' || command == 'plan bus trip') {
+      if (mounted) unawaited(_planBusTrip());
+      return true;
+    }
+    if (command == 'go back' || command == 'back' || command == 'cancel') {
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      } else {
+        setState(() => _currentIndex = 0);
+      }
+      await _voice.say('Going back.');
+      return true;
+    }
+    if (command == 'end bus trip') {
+      _endBusTrip();
+      await _voice.say('Bus trip ended.');
+      return true;
+    }
+    if (command == 'screen commands' && _currentIndex == 0) {
+      await _voice.say(
+        'Say plan a bus trip, open camera, add location, open settings, or open help.',
+      );
+      return true;
+    }
+    if ((command == 'read help' || command == 'screen commands') &&
+        _currentIndex == 4) {
+      await _voice.say(
+        'Say plan a bus trip, then say your destination. The planner proposes a boarding stop, bus direction, and exit stop. Confirm the boarding point and service before leaving. Say voice help for more commands.',
+      );
+      return true;
+    }
+    if (command == 'voice help' || command == 'what can i say') {
+      await _voice.say(
+        'Say open home, open camera, add location, plan a bus trip, open settings, open help, go back, or stop listening. Say screen commands for controls on this screen.',
+      );
+      return true;
+    }
+    return false;
+  }
+
+  bool _planningTrip = false;
+  BusTrip? _busTrip;
+  RouteNavigationService? _tripNavigation;
+
+  Future<void> _planBusTrip() async {
+    if (_planningTrip) return;
+    _planningTrip = true;
+    if (_currentIndex == 1) setState(() => _currentIndex = 0);
+    try {
+      await Navigator.of(context).push<void>(
+        MaterialPageRoute(builder: (_) => const DestinationTripScreen()),
+      );
+    } finally {
+      _planningTrip = false;
+    }
+  }
+
+  Future<void> _planManualBusTrip() async {
+    if (_planningTrip) return;
+    _planningTrip = true;
+    if (_currentIndex == 1) setState(() => _currentIndex = 0);
+    final trip = await Navigator.of(
+      context,
+    ).push<BusTrip>(MaterialPageRoute(builder: (_) => const BusTripScreen()));
+    _planningTrip = false;
+    if (!mounted || trip == null) return;
+
+    final navigation = RouteNavigationService.instance;
+    _tripNavigation?.snapshot.removeListener(_onTripNavigationChanged);
+    await navigation.stopNavigation(clearDestination: true);
+    if (!mounted) return;
+
+    _tripNavigation = navigation;
+    navigation.snapshot.addListener(_onTripNavigationChanged);
+    setState(() {
+      _busTrip = trip;
+      _currentIndex = 2;
+    });
+  }
+
+  void _onTripNavigationChanged() {
+    if (_currentIndex == 2 &&
+        _tripNavigation?.current.state == NavState.arrived &&
+        WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed) {
+      _openVision();
+    }
+  }
+
+  void _openVision() => setState(() => _currentIndex = 1);
+
+  void _endBusTrip() {
+    _tripNavigation?.snapshot.removeListener(_onTripNavigationChanged);
+    final navigation = _tripNavigation;
+    _tripNavigation = null;
+    setState(() => _busTrip = null);
+    navigation?.stopNavigation(clearDestination: true);
+  }
+
+  @override
+  void dispose() {
+    _tripNavigation?.snapshot.removeListener(_onTripNavigationChanged);
+    _voice.unregister(this);
+    unawaited(_voice.stop());
+    super.dispose();
+  }
 
   Widget _screenForIndex(int index) {
     switch (index) {
       case 0:
-        return const HomeScreen();
+        return HomeScreen(
+          onPlanBusTrip: _planBusTrip,
+          onManualTrip: _planManualBusTrip,
+        );
       case 1:
-        return const CameraScreen();
+        return CameraScreen(busTrip: _busTrip, onEndBusTrip: _endBusTrip);
       case 2:
-        return const NavigationScreen();
+        return NavigationScreen(busTrip: _busTrip, onScanBus: _openVision);
       case 3:
         return const SettingsScreen();
       case 4:
@@ -55,7 +235,31 @@ class _MainLayoutState extends State<MainLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screenForIndex(_currentIndex),
+      body: Column(
+        children: [
+          Expanded(child: _screenForIndex(_currentIndex)),
+          if (widget.enableVoice)
+            AnimatedBuilder(
+              animation: _voice,
+              builder: (context, _) => SafeArea(
+                top: false,
+                bottom: false,
+                child: ListTile(
+                  dense: true,
+                  leading: const Icon(Icons.mic),
+                  title: Text(_voice.status),
+                  trailing: TextButton(
+                    onPressed: () =>
+                        _voice.enabled ? _voice.stop() : _voice.start(),
+                    child: Text(
+                      _voice.enabled ? 'Pause voice' : 'Resume voice',
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
@@ -66,9 +270,15 @@ class _MainLayoutState extends State<MainLayout> {
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.camera_alt), label: 'Vision'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.camera_alt),
+            label: 'Vision',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.navigation), label: 'Nav'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.help), label: 'Help'),
         ],
       ),

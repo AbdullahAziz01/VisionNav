@@ -1,3 +1,4 @@
+import 'package:visionnav_app/services/app_permissions.dart';
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
@@ -18,14 +19,21 @@ class SpeechUnavailableException implements Exception {
 /// [finalResults] emits one phrase when the recognizer finishes an utterance.
 /// [listenEnded] fires when a listen session stops with no usable phrase.
 class SpeechToTextService implements SpeechRecognitionService {
-  SpeechToTextService({SpeechToText? engine}) : _engine = engine ?? SpeechToText();
+  SpeechToTextService({SpeechToText? engine})
+    : _engine = engine ?? SpeechToText();
+
+  static final shared = SpeechToTextService();
 
   final SpeechToText _engine;
   final StreamController<String> _text = StreamController<String>.broadcast();
   final StreamController<String> _finals = StreamController<String>.broadcast();
   final StreamController<void> _ended = StreamController<void>.broadcast();
 
+  final _failures = StreamController<String>.broadcast();
+  Stream<String> get failures => _failures.stream;
+
   bool _initialized = false;
+  int _generation = 0;
   bool _listening = false;
   String _lastWords = '';
   bool _emittedFinal = false;
@@ -41,7 +49,7 @@ class SpeechToTextService implements SpeechRecognitionService {
 
   Future<void> initialize() async {
     if (_initialized) return;
-    final mic = await Permission.microphone.request();
+    final mic = await requestAppPermission(Permission.microphone);
     if (!mic.isGranted) {
       throw SpeechUnavailableException(
         'Microphone permission denied. Enable it in Settings to speak a destination.',
@@ -50,6 +58,12 @@ class SpeechToTextService implements SpeechRecognitionService {
     final ok = await _engine.initialize(
       onError: (error) {
         debugPrint('Speech error: ${error.errorMsg}');
+        if (!const {
+          'error_no_match',
+          'error_speech_timeout',
+        }.contains(error.errorMsg)) {
+          _failures.add(error.errorMsg);
+        }
         _finishListen();
       },
       onStatus: (status) {
@@ -74,8 +88,10 @@ class SpeechToTextService implements SpeechRecognitionService {
     _lastWords = '';
     _emittedFinal = false;
     _listening = true;
+    final generation = ++_generation;
     await _engine.listen(
       onResult: (result) {
+        if (!_listening || generation != _generation) return;
         final words = result.recognizedWords.trim();
         if (words.isEmpty) return;
         _lastWords = words;
@@ -93,6 +109,14 @@ class SpeechToTextService implements SpeechRecognitionService {
         localeId: 'en_US',
       ),
     );
+  }
+
+  Future<void> cancelListening() async {
+    _generation++;
+    _lastWords = '';
+    _emittedFinal = true;
+    _listening = false;
+    if (_initialized) await _engine.cancel();
   }
 
   @override
@@ -126,5 +150,6 @@ class SpeechToTextService implements SpeechRecognitionService {
     await _text.close();
     await _finals.close();
     await _ended.close();
+    await _failures.close();
   }
 }

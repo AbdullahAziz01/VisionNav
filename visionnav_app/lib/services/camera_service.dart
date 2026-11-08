@@ -1,3 +1,4 @@
+import 'package:visionnav_app/services/app_permissions.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -31,7 +32,7 @@ class CameraService {
 
     final epoch = ++_epoch;
 
-    final permission = await Permission.camera.request();
+    final permission = await requestAppPermission(Permission.camera);
     if (epoch != _epoch) return;
     if (!permission.isGranted) {
       if (permission.isPermanentlyDenied) {
@@ -95,7 +96,9 @@ class CameraService {
 
   Future<List<int>> captureJpeg() async {
     final controller = _controller;
-    if (!_isInitialized || controller == null || !controller.value.isInitialized) {
+    if (!_isInitialized ||
+        controller == null ||
+        !controller.value.isInitialized) {
       throw StateError('Camera is not initialized.');
     }
     if (controller.value.isTakingPicture) {

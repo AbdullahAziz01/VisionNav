@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'package:visionnav_app/services/voice_commands.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:visionnav_app/services/bus_trip.dart';
 import 'package:visionnav_app/services/navigation/geo_utils.dart';
 import 'package:visionnav_app/services/navigation/navigation_config.dart';
 import 'package:visionnav_app/services/navigation/route_navigation_service.dart';
@@ -14,26 +16,35 @@ import 'package:visionnav_app/services/voice_destination_session.dart';
 /// Navigation itself lives in [RouteNavigationService.instance] so it keeps
 /// running when the user switches to the Vision tab.
 class NavigationScreen extends StatefulWidget {
-  const NavigationScreen({super.key});
+  const NavigationScreen({super.key, this.busTrip, this.onScanBus});
+
+  final BusTrip? busTrip;
+  final VoidCallback? onScanBus;
 
   @override
   State<NavigationScreen> createState() => _NavigationScreenState();
 }
 
-class _NavigationScreenState extends State<NavigationScreen> {
+class _NavigationScreenState extends State<NavigationScreen>
+    with WidgetsBindingObserver {
   final RouteNavigationService _nav = RouteNavigationService.instance;
   final FlutterTtsService _tts = FlutterTtsService.shared;
-  final SpeechToTextService _speech = SpeechToTextService();
+  final SpeechToTextService _speech = SpeechToTextService.shared;
+  final _voice = VoiceCommands.shared;
   final MapController _map = MapController();
   late final VoiceDestinationSession _session;
 
   VoiceDestinationPhase _lastPhase = VoiceDestinationPhase.idle;
   bool _mapReady = false;
+  bool _resumeDestination = false;
   bool _followUser = true;
 
   @override
   void initState() {
     super.initState();
+    _voice.register(this, _handleVoice);
+    WidgetsBinding.instance.addObserver(this);
+    _voice.addListener(_onVoiceState);
     _session = VoiceDestinationSession(
       tts: _tts,
       speech: _speech,
@@ -42,18 +53,107 @@ class _NavigationScreenState extends State<NavigationScreen> {
       confirmedUtterances: _speech.finalResults,
       listenEnded: _speech.listenEnded,
       onChanged: _onSessionChanged,
+      onCommand: (words) async {
+        final c = normalizeCommand(words);
+        if (!isGlobalVoiceCommand(c) || c == 'add location') return false;
+        await _speech.cancelListening();
+        _voice.release(this);
+        if (c == 'stop listening' || c == 'pause voice commands') {
+          await _voice.stop();
+          return true;
+        }
+        return _voice.dispatch(words);
+      },
+      prompt: widget.busTrip == null
+          ? VoiceDestinationSession.promptPhrase
+          : 'Which bus stand would you like to walk to?',
     );
     _nav.snapshot.addListener(_onNavChanged);
 
     // Ask for a destination only if we are not already guiding the user.
     if (!_nav.isNavigating && _nav.current.state != NavState.arrived) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(_session.begin()));
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) unawaited(_beginDestination());
+      });
     }
+  }
+
+  void _onVoiceState() {
+    if (!_voice.enabled &&
+        (_session.phase == VoiceDestinationPhase.listening ||
+            _session.phase == VoiceDestinationPhase.prompting)) {
+      unawaited(_session.cancel().whenComplete(() => _voice.release(this)));
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      _resumeDestination =
+          _session.phase == VoiceDestinationPhase.listening ||
+          _session.phase == VoiceDestinationPhase.prompting;
+      if (_resumeDestination) {
+        unawaited(_session.cancel().whenComplete(() => _voice.release(this)));
+      }
+    } else if (state == AppLifecycleState.resumed && _resumeDestination) {
+      _resumeDestination = false;
+      if (mounted && ModalRoute.of(context)?.isCurrent == true) {
+        unawaited(_beginDestination());
+      }
+    }
+  }
+
+  Future<void> _beginDestination() async {
+    await _voice.hold(this);
+    if (!mounted) {
+      _voice.release(this);
+      return;
+    }
+    await _session.begin();
+  }
+
+  Future<bool> _handleVoice(String words) async {
+    if (!mounted || ModalRoute.of(context)?.isCurrent != true) return false;
+    final c = normalizeCommand(words);
+    if (['add location', 'destination', 'change destination'].contains(c)) {
+      unawaited(_beginDestination());
+    } else if (c == 'stop navigation' || c == 'stop') {
+      await _nav.stopNavigation();
+      await _voice.say('Navigation stopped.');
+    } else if (c == 'start navigation' || c == 'start') {
+      if (_nav.current.place == null) {
+        await _voice.say('First say add location to choose your destination.');
+      } else {
+        await _startNavigation();
+      }
+    } else if (c == 'repeat instruction' || c == 'repeat') {
+      await _nav.repeatInstruction();
+    } else if (c == 'recenter' || c == 're centre' || c == 'my location') {
+      setState(() => _followUser = true);
+      final p = _nav.current.position;
+      if (p != null && _mapReady) _map.move(p, 17);
+      await _voice.say(
+        p == null
+            ? 'Waiting for your GPS location.'
+            : 'Map centered on your location.',
+      );
+    } else if (c == 'screen commands') {
+      await _voice.say(
+        'Say add location, start navigation, stop navigation, repeat instruction, my location, or scan bus.',
+      );
+    } else {
+      return false;
+    }
+    return true;
   }
 
   void _onSessionChanged() {
     if (!mounted) return;
     setState(() {});
+    if (_session.phase == VoiceDestinationPhase.done ||
+        _session.phase == VoiceDestinationPhase.failed) {
+      _voice.release(this);
+    }
     // Destination recognised and geocoded → start guidance automatically.
     if (_session.phase == VoiceDestinationPhase.done &&
         _lastPhase != VoiceDestinationPhase.done &&
@@ -89,11 +189,59 @@ class _NavigationScreenState extends State<NavigationScreen> {
     }
   }
 
+  Future<void> _typeBusStand() async {
+    await _session.cancel();
+    await _voice.hold(this);
+    if (!mounted) {
+      _voice.release(this);
+      return;
+    }
+    var text = '';
+    final stand = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          widget.busTrip == null
+              ? 'Enter your destination'
+              : 'Enter your bus stand',
+        ),
+        content: TextField(
+          autofocus: true,
+          decoration: InputDecoration(
+            labelText: widget.busTrip == null
+                ? 'Destination'
+                : 'Bus stand name',
+          ),
+          textInputAction: TextInputAction.go,
+          onChanged: (value) => text = value,
+          onSubmitted: (value) => Navigator.pop(context, value),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, text),
+            child: const Text('Use this stop'),
+          ),
+        ],
+      ),
+    );
+    _voice.release(this);
+    if (!mounted || stand == null || stand.trim().isEmpty) return;
+    // A voice result may have started guidance while the dialog was open.
+    if (_nav.isNavigating || _nav.current.state == NavState.routing) return;
+    await _session.submitDestination(stand);
+  }
+
   @override
   void dispose() {
     _nav.snapshot.removeListener(_onNavChanged);
-    unawaited(_session.dispose());
-    unawaited(_speech.dispose());
+    _voice.unregister(this);
+    _voice.removeListener(_onVoiceState);
+    WidgetsBinding.instance.removeObserver(this);
+    unawaited(_session.dispose().whenComplete(() => _voice.release(this)));
     _map.dispose();
     super.dispose();
   }
@@ -154,7 +302,10 @@ class _NavigationScreenState extends State<NavigationScreen> {
               Expanded(
                 child: Text(
                   _headline,
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ],
@@ -186,11 +337,11 @@ class _NavigationScreenState extends State<NavigationScreen> {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-          if (kOrsApiKey.isEmpty)
+          if (routingApiKey.isEmpty)
             const Padding(
               padding: EdgeInsets.only(top: 6),
               child: Text(
-                'Routing key missing — set ORS_API_KEY (see navigation_config.dart).',
+                'Walking directions need an OpenRouteService key. Add it in Settings.',
                 style: TextStyle(color: Colors.orangeAccent, fontSize: 12),
               ),
             ),
@@ -204,7 +355,8 @@ class _NavigationScreenState extends State<NavigationScreen> {
     final pos = s.position;
     final route = s.route;
     final dest = s.place?.location;
-    final center = pos ?? dest ?? const LatLng(33.6844, 73.0479); // Islamabad fallback
+    final center =
+        pos ?? dest ?? const LatLng(33.6844, 73.0479); // Islamabad fallback
 
     return FlutterMap(
       mapController: _map,
@@ -214,10 +366,12 @@ class _NavigationScreenState extends State<NavigationScreen> {
         onMapReady: () {
           _mapReady = true;
           if (route != null) {
-            _map.fitCamera(CameraFit.coordinates(
-              coordinates: route.geometry,
-              padding: const EdgeInsets.all(48),
-            ));
+            _map.fitCamera(
+              CameraFit.coordinates(
+                coordinates: route.geometry,
+                padding: const EdgeInsets.all(48),
+              ),
+            );
           }
         },
         onPositionChanged: (camera, hasGesture) {
@@ -232,7 +386,11 @@ class _NavigationScreenState extends State<NavigationScreen> {
         if (route != null)
           PolylineLayer(
             polylines: [
-              Polyline(points: route.geometry, strokeWidth: 6, color: Colors.tealAccent),
+              Polyline(
+                points: route.geometry,
+                strokeWidth: 6,
+                color: Colors.tealAccent,
+              ),
             ],
           ),
         MarkerLayer(
@@ -242,7 +400,11 @@ class _NavigationScreenState extends State<NavigationScreen> {
                 point: dest,
                 width: 40,
                 height: 40,
-                child: const Icon(Icons.flag, color: Colors.redAccent, size: 36),
+                child: const Icon(
+                  Icons.flag,
+                  color: Colors.redAccent,
+                  size: 36,
+                ),
               ),
             if (pos != null)
               Marker(
@@ -269,7 +431,8 @@ class _NavigationScreenState extends State<NavigationScreen> {
   Widget _controls() {
     final s = _nav.current;
     final navigating = s.state == NavState.navigating;
-    final busy = s.state == NavState.geocoding ||
+    final busy =
+        s.state == NavState.geocoding ||
         s.state == NavState.routing ||
         _session.phase == VoiceDestinationPhase.prompting;
 
@@ -280,7 +443,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
         children: [
           Expanded(
             child: ElevatedButton.icon(
-              onPressed: busy ? null : () => unawaited(_session.begin()),
+              onPressed: busy ? null : () => unawaited(_beginDestination()),
               icon: const Icon(Icons.mic),
               label: const Text('Destination'),
             ),
@@ -289,13 +452,17 @@ class _NavigationScreenState extends State<NavigationScreen> {
           Expanded(
             child: navigating
                 ? ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent,
+                    ),
                     onPressed: () => unawaited(_nav.stopNavigation()),
                     icon: const Icon(Icons.stop),
                     label: const Text('Stop'),
                   )
                 : ElevatedButton.icon(
-                    onPressed: (s.place == null || busy) ? null : () => unawaited(_startNavigation()),
+                    onPressed: (s.place == null || busy)
+                        ? null
+                        : () => unawaited(_startNavigation()),
                     icon: const Icon(Icons.navigation),
                     label: const Text('Start'),
                   ),
@@ -303,7 +470,9 @@ class _NavigationScreenState extends State<NavigationScreen> {
           const SizedBox(width: 8),
           IconButton.filledTonal(
             tooltip: 'Repeat instruction',
-            onPressed: navigating ? () => unawaited(_nav.repeatInstruction()) : null,
+            onPressed: navigating
+                ? () => unawaited(_nav.repeatInstruction())
+                : null,
             icon: const Icon(Icons.replay),
           ),
           IconButton.filledTonal(
@@ -313,7 +482,9 @@ class _NavigationScreenState extends State<NavigationScreen> {
               final p = _nav.current.position;
               if (p != null && _mapReady) _map.move(p, 17);
             },
-            icon: Icon(_followUser ? Icons.my_location : Icons.location_searching),
+            icon: Icon(
+              _followUser ? Icons.my_location : Icons.location_searching,
+            ),
           ),
         ],
       ),
@@ -322,12 +493,36 @@ class _NavigationScreenState extends State<NavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final state = _nav.current.state;
     return Scaffold(
       appBar: AppBar(title: const Text('Navigation')),
       body: Column(
         children: [
           _instructionPanel(),
           Expanded(child: _mapView()),
+          if (widget.busTrip case final trip?)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Text('Selected bus: ${trip.label}'),
+            ),
+          if (state == NavState.idle || state == NavState.error)
+            TextButton.icon(
+              onPressed: _session.phase == VoiceDestinationPhase.prompting
+                  ? null
+                  : _typeBusStand,
+              icon: const Icon(Icons.keyboard),
+              label: Text(
+                widget.busTrip == null
+                    ? 'Type destination'
+                    : 'Type bus stand name',
+              ),
+            ),
+          if (widget.busTrip != null && state == NavState.arrived)
+            FilledButton.icon(
+              onPressed: widget.onScanBus,
+              icon: const Icon(Icons.camera_alt),
+              label: const Text('Scan for your bus'),
+            ),
           _controls(),
         ],
       ),

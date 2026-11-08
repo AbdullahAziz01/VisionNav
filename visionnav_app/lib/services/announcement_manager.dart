@@ -1,3 +1,4 @@
+import 'package:visionnav_app/services/bus_trip.dart';
 import 'package:visionnav_app/services/pipeline_models.dart';
 
 /// Decides WHAT to announce and WHEN, so the user is not flooded with speech.
@@ -53,7 +54,11 @@ class AnnouncementManager {
   /// Always updates internal state (last-seen, pruning). Only returns a phrase
   /// when [canSpeak] is true, so callers can pass `!tts.isSpeaking` and no
   /// announcement is "consumed" while the engine is busy.
-  String? next(List<TrackedDetection> objects, {bool canSpeak = true}) {
+  String? next(
+    List<TrackedDetection> objects, {
+    bool canSpeak = true,
+    BusTrip? busTrip,
+  }) {
     final now = _now();
     _prune(now);
     _forgetAbsentRoutes(objects);
@@ -80,11 +85,11 @@ class AnnouncementManager {
       return null;
     }
 
-    final route = _nextStableRoute(objects);
+    final route = _nextStableRoute(objects, busTrip);
     if (route != null) {
       _announcedRoutes.add(_routeKey(route));
       _lastAnnouncementAt = now;
-      return route.routeTtsMessage;
+      return busTrip?.announcement(route) ?? route.routeTtsMessage;
     }
 
     final candidates = objects
@@ -143,7 +148,10 @@ class AnnouncementManager {
     return now.difference(lastUrgent) >= urgentRepeatGap;
   }
 
-  TrackedDetection? _nextStableRoute(List<TrackedDetection> objects) {
+  TrackedDetection? _nextStableRoute(
+    List<TrackedDetection> objects,
+    BusTrip? busTrip,
+  ) {
     final eligible = objects.where((obj) {
       if (!_routeEligible(obj)) return false;
       return !_announcedRoutes.contains(_routeKey(obj));
@@ -151,6 +159,11 @@ class AnnouncementManager {
     if (eligible.isEmpty) return null;
 
     eligible.sort((a, b) {
+      if (busTrip != null) {
+        final aMatches = busTrip.matches(a);
+        final bMatches = busTrip.matches(b);
+        if (aMatches != bMatches) return aMatches ? -1 : 1;
+      }
       final aDistance = a.estimatedDistanceM;
       final bDistance = b.estimatedDistanceM;
       final aHasDistance = aDistance != null && aDistance > 0;

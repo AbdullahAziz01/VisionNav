@@ -111,4 +111,60 @@ void main() {
     expect(nav.destination, 'airport');
     expect(spokenWait.where((s) => s.startsWith('Destination set')).length, 1);
   });
+  test('navigation command is not geocoded as a destination', () async {
+    await session.dispose();
+    final commands = <String>[];
+    session = VoiceDestinationSession(
+      tts: tts,
+      speech: speech,
+      navigation: nav,
+      listenGap: Duration.zero,
+      speakAndWait: (text) async => spokenWait.add(text),
+      onCommand: (text) async {
+        if (text != 'go back') return false;
+        commands.add(text);
+        return true;
+      },
+    );
+    await session.begin();
+    speech.controller.add('go back');
+    await Future<void>.delayed(Duration.zero);
+    expect(commands, ['go back']);
+    expect(nav.destination, isNull);
+    expect(session.phase, VoiceDestinationPhase.idle);
+  });
+
+  test(
+    'cancellation ignores late results and allows a new destination',
+    () async {
+      await session.begin();
+      await session.cancel();
+      speech.controller.add('stale location');
+      await Future<void>.delayed(Duration.zero);
+      expect(nav.destination, isNull);
+      await session.begin();
+      speech.controller.add('new location');
+      await Future<void>.delayed(Duration.zero);
+      expect(nav.destination, 'new location');
+    },
+  );
+  test('cancelling an in-flight prompt never starts the microphone', () async {
+    await session.dispose();
+    final prompt = Completer<void>();
+    session = VoiceDestinationSession(
+      tts: tts,
+      speech: speech,
+      navigation: nav,
+      listenGap: Duration.zero,
+      speakAndWait: (_) => prompt.future,
+    );
+    final beginning = session.begin();
+    await Future<void>.delayed(Duration.zero);
+    expect(session.phase, VoiceDestinationPhase.prompting);
+    await session.cancel();
+    prompt.complete();
+    await beginning;
+    expect(speech.startCount, 0);
+    expect(session.phase, VoiceDestinationPhase.idle);
+  });
 }

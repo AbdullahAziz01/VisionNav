@@ -2,8 +2,7 @@
 ///
 /// Routing uses OpenRouteService (free key, 2,000 requests/day):
 ///   1. Sign up at https://openrouteservice.org/dev/#/signup
-///   2. Create a token, paste it into [kOrsApiKeyDefault] below
-///      OR pass it at build time:
+///   2. Enter a token in the app's Settings or pass it at build time:
 ///        flutter run --dart-define=ORS_API_KEY=your_key_here
 ///
 /// Geocoding (spoken place -> coordinates) uses OpenStreetMap Nominatim and
@@ -16,6 +15,9 @@ const String kOrsApiKey = String.fromEnvironment(
   'ORS_API_KEY',
   defaultValue: kOrsApiKeyDefault,
 );
+
+/// Runtime override set from Settings for this app session.
+String routingApiKey = kOrsApiKey;
 
 /// ISO country code used to bias geocoding results ("pk" = Pakistan).
 const String kGeocodeCountryCode = 'pk';

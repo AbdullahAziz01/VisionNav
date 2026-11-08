@@ -10,11 +10,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:visionnav_app/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('Home opens the bus trip planner', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const VisionNavApp());
+    await tester.pumpWidget(
+      const VisionNavApp(enableVoice: false, startWithCamera: false),
+    );
 
     // Basic app loads
     expect(find.text('VisionNav Home'), findsOneWidget);
+    await tester.tap(find.text('Plan a bus trip'));
+    await tester.pumpAndSettle();
+    expect(find.text('Where would you like to go?'), findsOneWidget);
+    expect(find.text('Destination'), findsOneWidget);
   });
 }

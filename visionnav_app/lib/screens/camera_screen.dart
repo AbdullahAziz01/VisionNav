@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'package:visionnav_app/services/voice_commands.dart';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:visionnav_app/services/announcement_manager.dart';
+import 'package:visionnav_app/services/bus_trip.dart';
 import 'package:visionnav_app/services/capped_backoff.dart';
 import 'package:visionnav_app/services/camera_service.dart';
 import 'package:visionnav_app/services/pipeline_models.dart';
@@ -11,7 +13,10 @@ import 'package:visionnav_app/services/tts_service.dart';
 import 'package:visionnav_app/services/visionnav_api.dart';
 
 class CameraScreen extends StatefulWidget {
-  const CameraScreen({super.key});
+  const CameraScreen({super.key, this.busTrip, this.onEndBusTrip});
+
+  final BusTrip? busTrip;
+  final VoidCallback? onEndBusTrip;
 
   @override
   State<CameraScreen> createState() => _CameraScreenState();
@@ -44,8 +49,11 @@ class _CameraScreenState extends State<CameraScreen>
   String? _lastSpoken;
   PipelineFrameResult? _latestResult;
   Size? _frameSize;
+  bool _scanPromptSpoken = false;
 
   static const Duration _captureInterval = Duration(milliseconds: 500);
+
+  String get _title => widget.busTrip == null ? 'Live Vision' : 'Bus Scanner';
 
   @override
   void initState() {
@@ -55,19 +63,71 @@ class _CameraScreenState extends State<CameraScreen>
     _api = HttpVisionNavApi();
     _tts = FlutterTtsService.shared;
     unawaited(_tts.initialize());
+    VoiceCommands.shared.register(this, _handleVoice);
     _initCamera();
+  }
+
+  @override
+  void didUpdateWidget(CameraScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.busTrip != widget.busTrip) {
+      _announcer.reset();
+      _scanPromptSpoken = false;
+      _lastSpoken = null;
+    }
   }
 
   /// Runs on every pipeline result; speaks at most one short phrase and never
   /// awaits the engine, so the preview and upload loop are unaffected.
   void _announce(PipelineFrameResult result) {
+    final canSpeak = _ttsEnabled && !_tts.isSpeaking;
     final phrase = _announcer.next(
       result.objects,
-      canSpeak: _ttsEnabled && !_tts.isSpeaking,
+      canSpeak: canSpeak,
+      busTrip: widget.busTrip,
     );
-    if (phrase == null) return;
-    _lastSpoken = phrase;
-    unawaited(_tts.speak(phrase));
+    final trip = widget.busTrip;
+    if (phrase != null) {
+      _lastSpoken = phrase;
+      if (phrase.startsWith('Your selected bus was detected.')) {
+        _scanPromptSpoken = true;
+      }
+      unawaited(_tts.speak(phrase));
+    } else if (trip != null && canSpeak && !_scanPromptSpoken) {
+      _scanPromptSpoken = true;
+      const prompt =
+          'Bus scanner ready. Point the rear camera at the bus sign.';
+      _lastSpoken = prompt;
+      unawaited(_tts.speak(prompt));
+    }
+  }
+
+  Future<bool> _handleVoice(String words) async {
+    if (!mounted || ModalRoute.of(context)?.isCurrent != true) return false;
+    final c = normalizeCommand(words);
+    final voice = VoiceCommands.shared;
+    if (c == 'mute voice' || c == 'mute announcements') {
+      if (_ttsEnabled) _toggleTts();
+      await voice.say('Camera announcements muted. Commands remain available.');
+    } else if (c == 'unmute voice' || c == 'unmute announcements') {
+      if (!_ttsEnabled) _toggleTts();
+      await voice.say('Camera announcements enabled.');
+    } else if (c == 'retry' || c == 'retry camera') {
+      if (!_isInitializing) unawaited(_initCamera());
+    } else if (c == 'repeat' || c == 'repeat detection') {
+      await voice.say(_lastSpoken ?? 'No detection announcement yet.');
+    } else if (c == 'camera status') {
+      await voice.say(_errorMsg ?? _apiStatus ?? 'Camera is initializing.');
+    } else if (c == 'open permission settings') {
+      await openAppSettings();
+    } else if (c == 'screen commands') {
+      await voice.say(
+        'Say add location, plan a bus trip, mute announcements, unmute announcements, repeat detection, camera status, retry camera, or end bus trip.',
+      );
+    } else {
+      return false;
+    }
+    return true;
   }
 
   void _toggleTts() {
@@ -107,6 +167,9 @@ class _CameraScreenState extends State<CameraScreen>
         _permissionPermanentlyDenied = e.message.contains('permanently denied');
         _isInitializing = false;
       });
+      if (widget.busTrip != null && _ttsEnabled) {
+        unawaited(_tts.speak('Bus scanner needs camera permission.'));
+      }
     } catch (e) {
       if (!_isCurrentSession(session)) return;
       setState(() {
@@ -353,6 +416,7 @@ class _CameraScreenState extends State<CameraScreen>
 
   @override
   void dispose() {
+    VoiceCommands.shared.unregister(this);
     _screenDisposed = true;
     _lifecyclePaused = true;
     _lifecycleEpoch++;
@@ -447,6 +511,7 @@ class _CameraScreenState extends State<CameraScreen>
 
   Widget _buildStatusBar() {
     final objects = _latestResult?.objects ?? const <TrackedDetection>[];
+    final trip = widget.busTrip;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -454,6 +519,12 @@ class _CameraScreenState extends State<CameraScreen>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          if (trip != null)
+            Text(
+              'Looking for ${trip.label}',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
           Text(
             _apiStatus ?? 'Connecting to pipeline...',
             style: const TextStyle(color: Colors.white70, fontSize: 13),
@@ -498,7 +569,7 @@ class _CameraScreenState extends State<CameraScreen>
   Widget build(BuildContext context) {
     if (_isInitializing) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Live Vision')),
+        appBar: AppBar(title: Text(_title)),
         body: const Center(
           child: CircularProgressIndicator(color: Colors.tealAccent),
         ),
@@ -510,17 +581,23 @@ class _CameraScreenState extends State<CameraScreen>
         controller == null ||
         !controller.value.isInitialized) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Live Vision')),
+        appBar: AppBar(title: Text(_title)),
         body: _buildErrorBody(),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Live Vision'),
+        title: Text(_title),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
+          if (widget.busTrip != null)
+            IconButton(
+              tooltip: 'End bus trip',
+              icon: const Icon(Icons.stop_circle_outlined),
+              onPressed: widget.onEndBusTrip,
+            ),
           IconButton(
             tooltip: _ttsEnabled ? 'Mute voice' : 'Unmute voice',
             icon: Icon(_ttsEnabled ? Icons.volume_up : Icons.volume_off),

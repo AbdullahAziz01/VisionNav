@@ -1,0 +1,290 @@
+[
+  {
+    "line": "Green Line",
+    "code": null,
+    "direction": "toward_barakahu",
+    "destination": "Barakahu"
+  },
+  {
+    "line": "Green Line",
+    "code": null,
+    "direction": "toward_pims",
+    "destination": "PIMS Hospital"
+  },
+  {
+    "line": "Orange Line",
+    "code": null,
+    "direction": "toward_n5",
+    "destination": "N-5"
+  },
+  {
+    "line": "Orange Line",
+    "code": null,
+    "direction": "toward_faiz_ahmad_faiz",
+    "destination": "Faiz Ahmad Faiz"
+  },
+  {
+    "line": "FR-1",
+    "code": "FR-1",
+    "direction": "fr_1_toward_khanna_pul",
+    "destination": "Khanna Pul"
+  },
+  {
+    "line": "FR-1",
+    "code": "FR-1",
+    "direction": "fr_1_toward_nust",
+    "destination": "NUST Metro Station"
+  },
+  {
+    "line": "FR-2",
+    "code": "FR-2",
+    "direction": "fr_2_toward_pims",
+    "destination": "PIMS"
+  },
+  {
+    "line": "FR-2",
+    "code": "FR-2",
+    "direction": "fr_2_toward_faizabad",
+    "destination": "Faizabad"
+  },
+  {
+    "line": "FR-3A",
+    "code": "FR-3A",
+    "direction": "fr_3a_toward_pims",
+    "destination": "PIMS"
+  },
+  {
+    "line": "FR-3A",
+    "code": "FR-3A",
+    "direction": "fr_3a_toward_faisal_masjid",
+    "destination": "Faisal Masjid"
+  },
+  {
+    "line": "FR-04",
+    "code": "FR-04",
+    "direction": "fr_04_toward_pims",
+    "destination": "PIMS"
+  },
+  {
+    "line": "FR-04",
+    "code": "FR-04",
+    "direction": "fr_04_toward_bari_imam",
+    "destination": "Bari Imam"
+  },
+  {
+    "line": "FR-4",
+    "code": "FR-4",
+    "direction": "fr_4_toward_pims",
+    "destination": "PIMS"
+  },
+  {
+    "line": "FR-4",
+    "code": "FR-4",
+    "direction": "fr_4_toward_aiwan",
+    "destination": "Aiwan e Saddar"
+  },
+  {
+    "line": "FR-4A",
+    "code": "FR-4A",
+    "direction": "fr_4a_toward_pims",
+    "destination": "PIMS"
+  },
+  {
+    "line": "FR-4A",
+    "code": "FR-4A",
+    "direction": "fr_4a_toward_qau",
+    "destination": "QAU"
+  },
+  {
+    "line": "FR-6",
+    "code": "FR-6",
+    "direction": "fr_6_toward_pims",
+    "destination": "PIMS"
+  },
+  {
+    "line": "FR-6",
+    "code": "FR-6",
+    "direction": "fr_6_toward_golra_shareef",
+    "destination": "Golra Shareef"
+  },
+  {
+    "line": "FR-7",
+    "code": "FR-7",
+    "direction": "fr_7_toward_pims",
+    "destination": "PIMS"
+  },
+  {
+    "line": "FR-7",
+    "code": "FR-7",
+    "direction": "fr_7_toward_g11",
+    "destination": "G-11"
+  },
+  {
+    "line": "FR-8A",
+    "code": "FR-8A",
+    "direction": "fr_8a_toward_pims",
+    "destination": "PIMS"
+  },
+  {
+    "line": "FR-8A",
+    "code": "FR-8A",
+    "direction": "fr_8a_toward_tramri",
+    "destination": "Tramri"
+  },
+  {
+    "line": "FR-8B",
+    "code": "FR-8B",
+    "direction": "fr_8b_toward_khanna_pul",
+    "destination": "Khanna Pul"
+  },
+  {
+    "line": "FR-8B",
+    "code": "FR-8B",
+    "direction": "fr_8b_toward_nilore",
+    "destination": "Nilore"
+  },
+  {
+    "line": "FR-8C",
+    "code": "FR-8C",
+    "direction": "fr_8c_toward_pims",
+    "destination": "PIMS"
+  },
+  {
+    "line": "FR-8C",
+    "code": "FR-8C",
+    "direction": "fr_8c_toward_tramri_faizabad",
+    "destination": "Tramri Faizabad"
+  },
+  {
+    "line": "FR-9",
+    "code": "FR-9",
+    "direction": "fr_9_toward_khanna_pul",
+    "destination": "Khanna Pul"
+  },
+  {
+    "line": "FR-9",
+    "code": "FR-9",
+    "direction": "fr_9_toward_golra_mor",
+    "destination": "Golra Mor Station"
+  },
+  {
+    "line": "FR-10",
+    "code": "FR-10",
+    "direction": "fr_10_toward_golra_mor",
+    "destination": "Golra Mor Station"
+  },
+  {
+    "line": "FR-10",
+    "code": "FR-10",
+    "direction": "fr_10_toward_taxila",
+    "destination": "Taxila"
+  },
+  {
+    "line": "FR-11",
+    "code": "FR-11",
+    "direction": "fr_11_toward_golra_morh",
+    "destination": "Golra Morh"
+  },
+  {
+    "line": "FR-11",
+    "code": "FR-11",
+    "direction": "fr_11_toward_noon",
+    "destination": "Noon"
+  },
+  {
+    "line": "FR-12",
+    "code": "FR-12",
+    "direction": "fr_12_toward_taxila",
+    "destination": "Taxila"
+  },
+  {
+    "line": "FR-12",
+    "code": "FR-12",
+    "direction": "fr_12_toward_hassan_abdal",
+    "destination": "Hassan Abdal"
+  },
+  {
+    "line": "FR-13",
+    "code": "FR-13",
+    "direction": "fr_13_toward_golra_morh",
+    "destination": "Golra Morh"
+  },
+  {
+    "line": "FR-13",
+    "code": "FR-13",
+    "direction": "fr_13_toward_fateh_jang",
+    "destination": "Fateh Jang"
+  },
+  {
+    "line": "FR-14",
+    "code": "FR-14",
+    "direction": "fr_14_toward_mandi_mor",
+    "destination": "Mandi Mor"
+  },
+  {
+    "line": "FR-14",
+    "code": "FR-14",
+    "direction": "fr_14_toward_bahra_kahu",
+    "destination": "Bahra Kahu"
+  },
+  {
+    "line": "FR-14A",
+    "code": "FR-14A",
+    "direction": "fr_14a_toward_jillani",
+    "destination": "Jillani Stop"
+  },
+  {
+    "line": "FR-14A",
+    "code": "FR-14A",
+    "direction": "fr_14a_toward_17_meel",
+    "destination": "17 Meel"
+  },
+  {
+    "line": "FR-15",
+    "code": "FR-15",
+    "direction": "fr_15_toward_pims",
+    "destination": "PIMS"
+  },
+  {
+    "line": "FR-15",
+    "code": "FR-15",
+    "direction": "fr_15_toward_bhara_khu",
+    "destination": "Bhara Khu"
+  },
+  {
+    "line": "EXP-16",
+    "code": "EXP-16",
+    "direction": "exp_16_toward_pims",
+    "destination": "PIMS"
+  },
+  {
+    "line": "EXP-16",
+    "code": "EXP-16",
+    "direction": "exp_16_toward_media_town",
+    "destination": "Media Town"
+  },
+  {
+    "line": "FR-17",
+    "code": "FR-17",
+    "direction": "fr_17_toward_t_chowk",
+    "destination": "T Chowk"
+  },
+  {
+    "line": "FR-17",
+    "code": "FR-17",
+    "direction": "fr_17_toward_aari_syedan",
+    "destination": "Aari Syedan"
+  },
+  {
+    "line": "FRG-01",
+    "code": "FRG-01",
+    "direction": "frg_01_toward_pims",
+    "destination": "PIMS"
+  },
+  {
+    "line": "FRG-01",
+    "code": "FRG-01",
+    "direction": "frg_01_toward_barakahu",
+    "destination": "BaraKahu"
+  }
+]

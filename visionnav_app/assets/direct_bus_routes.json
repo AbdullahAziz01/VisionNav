@@ -1,0 +1,18 @@
+{
+  "sources": [
+    "https://www.cda.gov.pk/public/Assets/metro_transit_route/FR-07_Forward.pdf",
+    "https://www.cda.gov.pk/Assets/metro_transit_route/FR-07_Backward.pdf"
+  ],
+  "directions": [
+    {
+      "route": "FR-07",
+      "toward": "Police Foundation Metro Station",
+      "stopKeys": ["karachi company", "g 9 markaz", "g 10 markaz", "nust", "police foundation"]
+    },
+    {
+      "route": "FR-07",
+      "toward": "PIMS Hospital",
+      "stopKeys": ["police foundation", "nust", "g 10 markaz", "g 9 markaz", "karachi company"]
+    }
+  ]
+}

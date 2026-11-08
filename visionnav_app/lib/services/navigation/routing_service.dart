@@ -20,12 +20,14 @@ abstract class RoutingService {
 class OrsRoutingService implements RoutingService {
   OrsRoutingService({
     http.Client? client,
-    this.apiKey = kOrsApiKey,
+    String? apiKey,
     this.timeout = const Duration(seconds: 20),
-  }) : _client = client ?? http.Client();
+  }) : _client = client ?? http.Client(),
+       _apiKey = apiKey;
 
   final http.Client _client;
-  final String apiKey;
+  final String? _apiKey;
+  String get apiKey => _apiKey ?? routingApiKey;
   final Duration timeout;
 
   static final Uri _endpoint =
@@ -33,10 +35,10 @@ class OrsRoutingService implements RoutingService {
 
   @override
   Future<NavRoute> walkingRoute(LatLng from, Place to) async {
-    if (apiKey.isEmpty) {
+    final key = apiKey;
+    if (key.isEmpty) {
       throw RoutingException(
-        'No routing API key. Add your OpenRouteService key in navigation_config.dart '
-        'or pass --dart-define=ORS_API_KEY=...',
+        'Walking directions need an OpenRouteService key. Add it in Settings.',
       );
     }
     final body = jsonEncode({
@@ -53,7 +55,7 @@ class OrsRoutingService implements RoutingService {
         .post(
           _endpoint,
           headers: {
-            'Authorization': apiKey,
+            'Authorization': key,
             'Content-Type': 'application/json',
             'Accept': 'application/geo+json, application/json',
             'User-Agent': kHttpUserAgent,

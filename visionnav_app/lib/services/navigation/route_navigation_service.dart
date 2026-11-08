@@ -124,6 +124,7 @@ class RouteNavigationService implements NavigationService {
   StreamSubscription<Map<String, double>>? _posSub;
   DateTime? _lastRerouteAt;
   bool _rerouting = false;
+  int _requestId = 0;
 
   NavigationSnapshot get current => snapshot.value;
   bool get isNavigating => current.state == NavState.navigating;
@@ -142,6 +143,7 @@ class RouteNavigationService implements NavigationService {
   Future<void> setDestination(String destination) async {
     final text = destination.trim();
     if (text.isEmpty) throw StateError('Empty destination.');
+    final requestId = ++_requestId;
     _set(current.copyWith(
       state: NavState.geocoding,
       destinationText: text,
@@ -154,11 +156,14 @@ class RouteNavigationService implements NavigationService {
     } catch (_) {
       near = null; // geocode without bias
     }
+    if (requestId != _requestId) return;
     try {
       final place = await geocoder.geocode(text, near: near);
+      if (requestId != _requestId) return;
       _set(current.copyWith(state: NavState.ready, place: place, position: near));
       debugPrint('Destination geocoded: $place');
     } catch (e) {
+      if (requestId != _requestId) return;
       _set(current.copyWith(state: NavState.error, error: e.toString()));
       await _say(e is GeocodingException ? e.message : 'I could not find that place.');
       rethrow;
@@ -169,7 +174,10 @@ class RouteNavigationService implements NavigationService {
   Future<void> startNavigation() async {
     final place = current.place;
     if (place == null) throw StateError('Set a destination before starting navigation.');
-    if (!await location.requestPermissions()) {
+    final requestId = ++_requestId;
+    final permitted = await location.requestPermissions();
+    if (requestId != _requestId) return;
+    if (!permitted) {
       const msg = 'Location permission or GPS is off. Please enable it.';
       _set(current.copyWith(state: NavState.error, error: msg));
       await _say(msg);
@@ -179,14 +187,18 @@ class RouteNavigationService implements NavigationService {
     _set(current.copyWith(state: NavState.routing, clearError: true));
     try {
       final from = await currentPosition();
+      if (requestId != _requestId) return;
       final route = await router.walkingRoute(from, place);
+      if (requestId != _requestId) return;
       _installRoute(route, from);
       final start = _engine!.start();
       _emit(start);
       await _say(start.speech);
+      if (requestId != _requestId) return;
       _set(current.copyWith(state: NavState.navigating));
       _listen();
     } catch (e) {
+      if (requestId != _requestId) return;
       final msg = e is RoutingException ? e.message : 'Could not calculate a route: $e';
       _set(current.copyWith(state: NavState.error, error: msg));
       await _say(msg);
@@ -195,12 +207,17 @@ class RouteNavigationService implements NavigationService {
   }
 
   @override
-  Future<void> stopNavigation() async {
+  Future<void> stopNavigation({bool clearDestination = false}) async {
+    final requestId = ++_requestId;
     final wasActive = _posSub != null || _engine != null;
-    await _posSub?.cancel();
+    final subscription = _posSub;
     _posSub = null;
     _engine = null;
-    _set(current.copyWith(state: NavState.idle, clearRoute: true, distanceToNextM: 0, remainingM: 0));
+    _set(clearDestination
+        ? NavigationSnapshot(position: current.position)
+        : current.copyWith(state: NavState.idle, clearRoute: true, distanceToNextM: 0, remainingM: 0));
+    await subscription?.cancel();
+    if (requestId != _requestId) return;
     if (wasActive) await _say('Navigation stopped.');
   }
 
@@ -263,11 +280,13 @@ class RouteNavigationService implements NavigationService {
     for (final ev in events) {
       _emit(ev);
       await _say(ev.speech);
+      if (!identical(_engine, engine)) return;
       if (ev.type == GuidanceEventType.arrived) {
-        await _posSub?.cancel();
+        final subscription = _posSub;
         _posSub = null;
         _engine = null;
         _set(current.copyWith(state: NavState.arrived, distanceToNextM: 0, remainingM: 0));
+        await subscription?.cancel();
         return;
       }
       if (ev.type == GuidanceEventType.offRoute) {
@@ -282,12 +301,14 @@ class RouteNavigationService implements NavigationService {
     if (last != null && DateTime.now().difference(last) < rerouteCooldown) return;
     final place = current.place;
     if (place == null) return;
+    final engine = _engine;
+    final requestId = _requestId;
 
     _rerouting = true;
     _lastRerouteAt = DateTime.now();
     try {
       final route = await router.walkingRoute(from, place);
-      if (_engine == null) return; // stopped meanwhile
+      if (requestId != _requestId || !identical(_engine, engine)) return;
       _installRoute(route, from);
       _engine!.start(); // prime internal state; speak a short version instead
       final first = route.steps.first;
@@ -297,6 +318,7 @@ class RouteNavigationService implements NavigationService {
       }
       await _say(buf.toString());
     } catch (e) {
+      if (requestId != _requestId || _engine == null) return;
       debugPrint('Reroute failed: $e');
       await _say('Could not update the route. Continue carefully.');
     } finally {
@@ -309,6 +331,7 @@ class RouteNavigationService implements NavigationService {
   }
 
   Future<void> dispose() async {
+    _requestId++;
     await _posSub?.cancel();
     await _events.close();
     snapshot.dispose();
