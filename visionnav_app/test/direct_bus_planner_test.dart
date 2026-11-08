@@ -28,14 +28,23 @@ void main() {
   );
 
   test(
-    'rejects unsupported destinations, far origins, and boarding at the exit',
+    'returns a boarding stop for a supported destination regardless of distance',
     () async {
       final planner = await DirectBusPlanner.load();
       const atKarachiCompany = LatLng(33.689317, 73.034402);
       expect(planner.serves('Karachi Company bus stop'), isTrue);
       expect(planner.serves('Faisal Mosque'), isFalse);
-      expect(planner.plan('Karachi Company', const LatLng(0, 0)), isNull);
-      expect(planner.plan('Karachi Company', atKarachiCompany), isNull);
+      final distant = planner.plan(
+        'Karachi Company',
+        const LatLng(33.61, 73.12),
+      );
+      expect(distant?.exit.name, 'Karachi Company');
+      expect(distant?.boardingDistanceM, greaterThan(1000));
+      expect(distant?.summary, contains('in a straight line'));
+      expect(
+        planner.plan('Karachi Company', atKarachiCompany)?.boarding.key,
+        isNot('karachi company'),
+      );
     },
   );
 

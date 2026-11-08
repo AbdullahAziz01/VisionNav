@@ -120,7 +120,7 @@ class _DestinationTripScreenState extends State<DestinationTripScreen> {
         final plan = planner.plan(destination, origin, now: widget.now());
         if (plan == null) {
           message =
-              'No mapped boarding stop within about 1 kilometre has a direct bus to $destination from here. Try a different destination or use Nav for walking directions.';
+              'No mapped boarding stop has a direct bus to $destination. Try another destination or use Nav for walking directions.';
         } else {
           final status = await _checkSchedule(plan, origin);
           message = status.message;
@@ -191,7 +191,7 @@ class _DestinationTripScreenState extends State<DestinationTripScreen> {
           : 'The last listed bus leaves before your estimated boarding time.';
       return (
         message:
-            '$reason Would you like walking directions to ${plan.exit.name}? Say yes or no.',
+            '${plan.summary} $reason Would you like walking directions to ${plan.exit.name}? Say yes or no.',
         walkTo: Place(name: plan.exit.name, location: plan.exit.location),
       );
     }

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:visionnav_app/services/navigation/transit_gazetteer.dart';
+import 'package:visionnav_app/services/navigation/geo_utils.dart';
 import 'package:visionnav_app/services/bus_trip.dart';
 
 class DirectBusPlan {
@@ -14,6 +15,7 @@ class DirectBusPlan {
     this.departures,
     this.scanDirection,
     this.scanCode,
+    this.boardingDistanceM,
   );
 
   final String route;
@@ -23,6 +25,7 @@ class DirectBusPlan {
   final List<Duration> departures;
   final String? scanDirection;
   final String? scanCode;
+  final double boardingDistanceM;
 
   BusTrip get scannerTrip => BusTrip(
     line: route,
@@ -54,6 +57,7 @@ class DirectBusPlan {
 
   String get summary =>
       'Suggested trip: $route toward $toward. Board at ${boarding.name}. '
+      'The boarding stop is about ${GeoUtils.speakDistance(boardingDistanceM)} away in a straight line. '
       'Get off at ${exit.name}.';
 }
 
@@ -165,9 +169,7 @@ class DirectBusPlanner {
     final key = _key(destination);
     if (key.isEmpty) return null;
     const distance = Distance();
-    // Pilot coverage uses a straight-line radius, never a walking estimate.
-    const radiusMeters = 1000.0;
-    var bestMeters = radiusMeters;
+    var bestMeters = double.infinity;
     var bestServiceRank = 3;
     DateTime? bestDeparture;
     DirectBusPlan? best;
@@ -175,10 +177,8 @@ class DirectBusPlanner {
       for (var i = 1; i < direction.stops.length; i++) {
         final exit = direction.stops[i];
         if (!_matches(exit, key, direction.aliases)) continue;
-        final exitMeters = distance(origin, exit.location);
         for (final boarding in direction.stops.take(i)) {
           final meters = distance(origin, boarding.location);
-          if (meters >= radiusMeters || meters >= exitMeters) continue;
           final candidate = DirectBusPlan(
             direction.route,
             direction.toward,
@@ -189,6 +189,7 @@ class DirectBusPlanner {
                 ? null
                 : direction.scanDirection,
             direction.scanCode,
+            meters,
           );
           final departure = now == null ? null : candidate.nextDeparture(now);
           final serviceRank = now == null || departure != null
