@@ -3,11 +3,11 @@
  "area": "Islamabad / Rawalpindi",
  "bbox": [
   33.4,
-  72.8,
-  33.8,
+  72.64033,
+  33.821577,
   73.3
  ],
- "count": 216,
+ "count": 219,
  "stops": [
   {
    "name": "Metro Bus Terminal 7th Avenue",
@@ -1520,6 +1520,30 @@
    "lat": 33.709981,
    "lon": 73.091837,
    "metro": false
+  },
+  {
+   "name": "bus stop hasaan abdal",
+   "key": "hasaan abdal",
+   "lat": 33.821577,
+   "lon": 72.680362,
+   "metro": false,
+   "osm": "node/5324994924"
+  },
+  {
+   "name": "Fateh Jang",
+   "key": "fateh jang",
+   "lat": 33.564907,
+   "lon": 72.64033,
+   "metro": false,
+   "osm": "node/13296213001"
+  },
+  {
+   "name": "Basti Adda",
+   "key": "basti",
+   "lat": 33.783647,
+   "lon": 72.72371,
+   "metro": false,
+   "osm": "way/233732729"
   }
  ]
 }

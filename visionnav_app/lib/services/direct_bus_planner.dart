@@ -60,7 +60,9 @@ class DirectBusPlan {
 /// Plans over ordered, directly served stops. Map locations are used for a
 /// proximity estimate only; they are not direction-specific boarding pins.
 class DirectBusPlanner {
-  DirectBusPlanner._(this._directions);
+  DirectBusPlanner._(this._directions, this._publishedStops);
+
+  final Set<String> _publishedStops;
 
   final List<
     ({
@@ -71,40 +73,54 @@ class DirectBusPlanner {
       List<String>? scanExitKeys,
       List<TransitStop> stops,
       Map<String, List<Duration>> departures,
+      Map<String, String> aliases,
     })
   >
   _directions;
 
   static Future<DirectBusPlanner> load() async {
     final raw = await rootBundle.loadString('assets/direct_bus_routes.json');
-    final records =
-        (jsonDecode(raw) as Map<String, dynamic>)['directions'] as List;
+    final data = jsonDecode(raw) as Map<String, dynamic>;
+    final records = data['directions'] as List;
     final stops = {
       for (final stop in await TransitGazetteer().load()) stop.key: stop,
     };
-    return DirectBusPlanner._([
-      for (final record in records)
-        (
-          route: record['route'] as String,
-          toward: record['toward'] as String,
-          scanDirection: record['scanDirection'] as String?,
-          scanCode: record['scanCode'] as String?,
-          scanExitKeys: (record['scanExitKeys'] as List?)?.cast<String>(),
-          departures: {
-            for (final entry
-                in (record['departures'] as Map<String, dynamic>? ?? {})
-                    .entries)
-              entry.key:
-                  (entry.value as List).cast<String>().map(_parseTime).toList()
-                    ..sort(),
-          },
-          stops: [
-            for (final key in record['stopKeys'] as List)
-              stops[key] ??
-                  (throw FormatException('Unknown transit stop: $key')),
-          ],
-        ),
-    ]);
+    return DirectBusPlanner._(
+      [
+        for (final record in records)
+          (
+            route: record['route'] as String,
+            toward: record['toward'] as String,
+            scanDirection: record['scanDirection'] as String?,
+            scanCode: record['scanCode'] as String?,
+            aliases: (record['stopAliases'] as Map<String, dynamic>? ?? {})
+                .cast<String, String>(),
+            scanExitKeys: (record['scanExitKeys'] as List?)?.cast<String>(),
+            departures: {
+              for (final entry
+                  in (record['departures'] as Map<String, dynamic>? ?? {})
+                      .entries)
+                entry.key:
+                    (entry.value as List)
+                        .cast<String>()
+                        .map(_parseTime)
+                        .toList()
+                      ..sort(),
+            },
+            stops: [
+              for (final key in record['stopKeys'] as List)
+                stops[key] ??
+                    (throw FormatException('Unknown transit stop: $key')),
+            ],
+          ),
+      ],
+      {
+        for (final audit in data['coverage'] as List? ?? const [])
+          for (final name
+              in (audit['publishedStops'] as List? ?? const []).cast<String>())
+            _key(name),
+      },
+    );
   }
 
   static Duration _parseTime(String value) {
@@ -112,40 +128,58 @@ class DirectBusPlanner {
     return Duration(hours: parts[0], minutes: parts[1], seconds: parts[2]);
   }
 
+  int get routeCount =>
+      _directions.map((direction) => direction.route).toSet().length;
+
   Set<String> get destinations => {
     for (final direction in _directions)
       for (final stop in direction.stops) stop.name,
   };
 
-  String _key(String text) => TransitGazetteer.coreTokens(text).join(' ');
+  static String _key(String text) =>
+      TransitGazetteer.coreTokens(text).join(' ');
 
-  bool _matches(TransitStop stop, String destination) =>
-      _key(stop.name) == destination || stop.key == destination;
+  bool _matches(
+    TransitStop stop,
+    String destination,
+    Map<String, String> aliases,
+  ) =>
+      _key(stop.name) == destination ||
+      stop.key == destination ||
+      _key(aliases[stop.key] ?? '') == destination;
+
+  bool listsStop(String destination) =>
+      _publishedStops.contains(_key(destination));
 
   bool serves(String destination) {
     final key = _key(destination);
     return key.isNotEmpty &&
         _directions.any(
-          (direction) => direction.stops.any((stop) => _matches(stop, key)),
+          (direction) => direction.stops.any(
+            (stop) => _matches(stop, key, direction.aliases),
+          ),
         );
   }
 
-  DirectBusPlan? plan(String destination, LatLng origin) {
+  DirectBusPlan? plan(String destination, LatLng origin, {DateTime? now}) {
     final key = _key(destination);
+    if (key.isEmpty) return null;
     const distance = Distance();
     // Pilot coverage uses a straight-line radius, never a walking estimate.
-    var nearestMeters = 1000.0;
+    const radiusMeters = 1000.0;
+    var bestMeters = radiusMeters;
+    var bestServiceRank = 3;
+    DateTime? bestDeparture;
     DirectBusPlan? best;
     for (final direction in _directions) {
       for (var i = 1; i < direction.stops.length; i++) {
         final exit = direction.stops[i];
-        if (!_matches(exit, key)) continue;
+        if (!_matches(exit, key, direction.aliases)) continue;
         final exitMeters = distance(origin, exit.location);
         for (final boarding in direction.stops.take(i)) {
           final meters = distance(origin, boarding.location);
-          if (meters >= nearestMeters || meters >= exitMeters) continue;
-          nearestMeters = meters;
-          best = DirectBusPlan(
+          if (meters >= radiusMeters || meters >= exitMeters) continue;
+          final candidate = DirectBusPlan(
             direction.route,
             direction.toward,
             boarding,
@@ -156,6 +190,26 @@ class DirectBusPlanner {
                 : direction.scanDirection,
             direction.scanCode,
           );
+          final departure = now == null ? null : candidate.nextDeparture(now);
+          final serviceRank = now == null || departure != null
+              ? 0
+              : candidate.departures.isEmpty
+              ? 1
+              : 2;
+          if (serviceRank > bestServiceRank) continue;
+          if (serviceRank == bestServiceRank) {
+            if (meters > bestMeters) continue;
+            if (meters == bestMeters &&
+                (departure == null ||
+                    (bestDeparture != null &&
+                        !departure.isBefore(bestDeparture)))) {
+              continue;
+            }
+          }
+          best = candidate;
+          bestMeters = meters;
+          bestServiceRank = serviceRank;
+          bestDeparture = departure;
         }
       }
     }

@@ -72,4 +72,32 @@ void main() {
     expect(nust.code, 'FR-7');
     expect(nust.direction, isNull);
   });
+  test('plans a route outside FR-07 using the official stop name', () async {
+    final planner = await DirectBusPlanner.load();
+    expect(planner.routeCount, 15);
+    final trip = planner.plan(
+      'Hassan Abdal',
+      const LatLng(33.783647, 72.723710),
+    );
+    expect(trip?.route, 'FR-12');
+    expect(trip?.boarding.key, 'basti');
+    expect(trip?.exit.key, 'hasaan abdal');
+    expect(trip?.departures, isNotEmpty);
+    expect(planner.listsStop('Quaid Azam University'), isTrue);
+    expect(planner.serves('Quaid Azam University'), isFalse);
+  });
+
+  test(
+    'chooses the earlier remaining bus when routes share a boarding stop',
+    () async {
+      final planner = await DirectBusPlanner.load();
+      final trip = planner.plan(
+        'G-9 Markaz',
+        const LatLng(33.689317, 73.034402),
+        now: DateTime.utc(2026, 11, 8, 1, 10),
+      );
+      expect(trip?.boarding.key, 'karachi company');
+      expect(trip?.route, 'FR-07');
+    },
+  );
 }

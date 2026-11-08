@@ -112,11 +112,17 @@ void main() {
     final json = jsonDecode(raw) as Map<String, dynamic>;
     final stops = json['stops'] as List<dynamic>;
     expect(json['count'], stops.length);
+    // Includes mapped feeder stops in the Taxila, Hassan Abdal and Fateh Jang area.
+    final bbox = (json['bbox'] as List).cast<num>();
+    expect(bbox[0], greaterThanOrEqualTo(33.40));
+    expect(bbox[1], greaterThanOrEqualTo(72.35));
+    expect(bbox[2], lessThanOrEqualTo(34.02));
+    expect(bbox[3], lessThanOrEqualTo(73.45));
     for (final s in stops.whereType<Map<String, dynamic>>()) {
       final lat = (s['lat'] as num).toDouble();
       final lon = (s['lon'] as num).toDouble();
-      expect(lat, inInclusiveRange(33.40, 33.80));
-      expect(lon, inInclusiveRange(72.80, 73.30));
+      expect(lat, inInclusiveRange(bbox[0], bbox[2]));
+      expect(lon, inInclusiveRange(bbox[1], bbox[3]));
       expect((s['name'] as String).trim(), isNotEmpty);
     }
   });

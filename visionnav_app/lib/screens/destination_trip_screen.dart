@@ -110,17 +110,17 @@ class _DestinationTripScreenState extends State<DestinationTripScreen> {
       final planner = _planner ??= await DirectBusPlanner.load();
       if (!mounted) return;
       if (!planner.serves(destination)) {
-        message =
-            'No supported direct route for $destination. '
-            'Try ${planner.destinations.join(', ')}.';
+        message = planner.listsStop(destination)
+            ? 'CDA lists $destination, but this app does not have a usable mapped route for that stop yet.'
+            : 'I could not match $destination to a mapped stop on the ${planner.routeCount} supported CDA routes. Say a bus stop name, such as Karachi Company or Faizabad.';
       } else {
         final origin = await (widget.locate ?? _currentLocation)().timeout(
           const Duration(seconds: 15),
         );
-        final plan = planner.plan(destination, origin);
+        final plan = planner.plan(destination, origin, now: widget.now());
         if (plan == null) {
           message =
-              'This pilot could not find a supported boarding stop within about 1 kilometre that takes you toward $destination. If you are already near your destination, try walking directions. To test this bus trip, start near G-10 Markaz and choose Karachi Company.';
+              'No mapped boarding stop within about 1 kilometre has a direct bus to $destination from here. Try a different destination or use Nav for walking directions.';
         } else {
           final status = await _checkSchedule(plan, origin);
           message = status.message;
@@ -261,7 +261,9 @@ class _DestinationTripScreenState extends State<DestinationTripScreen> {
           style: Theme.of(context).textTheme.titleLarge,
         ),
         const SizedBox(height: 12),
-        const Text('Say or type a destination. Try Karachi Company on FR-07.'),
+        const Text(
+          'Say or type a bus stop name, such as Karachi Company or Faizabad.',
+        ),
         const SizedBox(height: 16),
         TextField(
           controller: _destination,
