@@ -7,7 +7,7 @@ The app opens on Live Vision. Its foreground command listener starts after micro
 | Screen | Say |
 |---|---|
 | Any main screen | Open home; open camera; add location; open GPS; open settings; open help; plan a bus trip; go back; voice help; stop listening |
-| Live Vision | Mute announcements; unmute announcements; repeat detection; camera status; retry camera; open permission settings; end bus trip |
+| Live Vision | Mute announcements; unmute announcements; repeat detection; check wait; check direction (or check facing / face bus / which way); camera status; retry camera; open permission settings; end bus trip |
 | Navigation | Add location; change destination; start navigation; stop navigation; repeat instruction; my location; scan bus |
 | Destination planner | Say a destination, such as Karachi Company. Say check wait to refresh the scheduled estimate. Say walk to mapped stop to start the pilot walk. Answer yes or no if walking is offered. |
 | Manual bus planner | List routes; next routes; previous routes; select route [name or displayed page number]; list directions; select direction [name or number]; continue; cancel |
@@ -19,9 +19,11 @@ In the manual bus planner, route numbers are 1-5 within the current spoken page.
 
 Settings dictation receives the next phrase as the exact field value, then requires confirm before applying it to the field. Say save settings to apply the form. Keys are not spoken back or shown in the command status. Arbitrary mixed-case keys and URLs can be misrecognized; touch/paste remains available. Force takeover requires a separate spoken confirm.
 
-The direct-trip planner uses [CDA timetables](https://www.cda.gov.pk/cdaTransitMap) and mapped OpenStreetMap stops. The asset audits all 22 listed routes and supports 15 routes across 49 mapped stops. Some stops are missing on supported routes. The app uses Islamabad time. These PDFs list scheduled trips without a service-day calendar or live updates. When available, the planner adds the pedestrian route estimate to the mapped stop and a two-minute boarding allowance. At the stop, say check wait to refresh. The exact boarding point still needs field verification.
+The direct-trip planner uses [CDA timetables](https://www.cda.gov.pk/cdaTransitMap) and mapped OpenStreetMap stops. The asset covers all **22** catalog routes (full stop sequences where mapped; index/terminals-only where mid-stop pins or PDF conflicts remain — see `docs/cda_route_audit_report.md`). The app uses Islamabad time. Timetables are **scheduled** only — not live GPS ETAs. At trip offer and again at boarding-stop arrival (or when you say **check wait**), the app speaks the next published departure and wait.
 
-While walking to a mapped stop, the camera shows the GPS instruction. Turn guidance can interrupt camera speech. Walking camera alerts use nearby detections and discard frames older than three seconds. At arrival, use check wait in the scanner. The FR-07 G-11 sign is used only for supported exits before G-11. Confirm the boarding point and your exit with the driver. Imported routes without a verified OCR direction also require driver confirmation.
+Boarding uses an estimated left-hand kerb offset from route travel direction, then an **approach-facing coach**: face where the bus comes from (travel + 180°) so it arrives in front of the camera, not behind. Say **check direction** anytime while waiting; the scanner also re-coaches about every 8 seconds until you are aligned. Compass can drift near metal — confirm with staff when unsure. OCR still rejects the opposite-direction bus when a sign is in view.
+
+While walking to a mapped stop, the camera shows the GPS instruction. Turn guidance can interrupt camera speech. Walking camera alerts use nearby detections and discard frames older than three seconds. At arrival, use check wait and check direction in the scanner. The FR-07 G-11 sign is used only for supported exits before G-11. Confirm the boarding point and your exit with the driver. Imported routes without a verified OCR direction also require driver confirmation.
 
 ## Microphone behavior
 

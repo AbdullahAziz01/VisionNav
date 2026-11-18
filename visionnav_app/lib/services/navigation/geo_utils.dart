@@ -33,6 +33,57 @@ class GeoUtils {
     return (_deg(math.atan2(y, x)) + 360.0) % 360.0;
   }
 
+  /// Move [origin] by [distanceM] along [bearingDeg] (0 = north, clockwise).
+  static LatLng offsetByBearing(LatLng origin, double bearingDeg, double distanceM) {
+    if (distanceM <= 0) return origin;
+    final br = _rad(bearingDeg);
+    final lat1 = _rad(origin.latitude);
+    final lon1 = _rad(origin.longitude);
+    final ang = distanceM / earthRadiusM;
+    final lat2 = math.asin(
+      math.sin(lat1) * math.cos(ang) +
+          math.cos(lat1) * math.sin(ang) * math.cos(br),
+    );
+    final lon2 = lon1 +
+        math.atan2(
+          math.sin(br) * math.sin(ang) * math.cos(lat1),
+          math.cos(ang) - math.sin(lat1) * math.sin(lat2),
+        );
+    return LatLng(_deg(lat2), _deg(lon2));
+  }
+
+  /// Coarse compass label for speech ("north", "north-east", …).
+  static String speakCompass(double bearingDeg) {
+    const labels = [
+      'north',
+      'north-east',
+      'east',
+      'south-east',
+      'south',
+      'south-west',
+      'west',
+      'north-west',
+    ];
+    final index = ((bearingDeg % 360) / 45).round() % 8;
+    return labels[index];
+  }
+
+  /// Estimated boarding curb for left-hand traffic (Pakistan).
+  ///
+  /// From the mapped stop pin, offset ~[offsetM] to the left of the bus travel
+  /// bearing so walking guidance prefers the kerb where doors open, not the
+  /// opposite sidewalk. This is an estimate, not a surveyed platform.
+  static LatLng estimatedBoardingCurb({
+    required LatLng stop,
+    required LatLng nextAlongRoute,
+    double offsetM = 18,
+  }) {
+    if (distanceM(stop, nextAlongRoute) < 5) return stop;
+    final travel = bearingDeg(stop, nextAlongRoute);
+    final curbBearing = (travel - 90 + 360) % 360;
+    return offsetByBearing(stop, curbBearing, offsetM);
+  }
+
   /// Shortest distance in metres from [p] to the segment [a]-[b].
   /// Uses a local equirectangular projection (accurate for walking scales).
   static double distanceToSegmentM(LatLng p, LatLng a, LatLng b) {

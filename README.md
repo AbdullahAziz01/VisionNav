@@ -17,9 +17,11 @@ The system dynamically adapts to the available hardware, utilising a **dual-came
 * **Monocular Fallback (Zero-Shot)**: Leverages **Depth-Anything-V2** or **Metric3D** models to predict dense depth maps from a single camera feed when stereo calibration is unavailable.
 * **Temporal Smoothing**: Exponential Moving Average (EMA) filtering on estimated distances to prevent depth jitter and provide stable audio/visual feedback cues.
 
-### 📍 GPS & Spatial Localization (Planned Integration)
-* Outdoor coordinate tracking and path navigation mapping.
-* Dynamic route planning and destination guidance using GPS sensor modules.
+### 📍 Walking directions and bus trips
+* The Android app accepts a spoken destination and uses GPS and OpenRouteService for turn-by-turn walking directions.
+* From Home, select a known bus route and the destination on its sign, then say or type the name of the bus stand. Arrival opens the camera scanner when Navigation is in the foreground.
+* The scanner prioritizes nearby obstacle warnings and confirms the selected bus when the recognized route and direction both match. A partial reading can identify the route without confirming a match.
+* Set the OpenRouteService key and vision backend in the app's Settings. See the [Android setup and demo steps](visionnav_app/README.md).
 
 ### 📝 Bus route reading
 * **EasyOCR** reads destination text on a detected bus. ByteTrack keeps the bus identity, and a route is announced only after the same route agrees in 3 of the last 5 reads.

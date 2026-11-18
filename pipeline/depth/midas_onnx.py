@@ -3,9 +3,13 @@
 from __future__ import annotations
 
 import os
+from typing import TYPE_CHECKING
+
 import cv2
 import numpy as np
-import onnxruntime as ort
+
+if TYPE_CHECKING:
+    import onnxruntime as ort
 
 from pipeline.depth.base import BaseDepthBackend
 from pipeline.models import DepthMap
@@ -74,6 +78,8 @@ class MiDaSONNXBackend(BaseDepthBackend):
                 f"MiDaS ONNX model not found: {os.path.abspath(self.model_path)}\n"
                 "Download from: https://github.com/isl-org/MiDaS/releases/download/v2_1/model-small.onnx"
             )
+
+        import onnxruntime as ort
 
         opts = ort.SessionOptions()
         # Full ONNX graph fusion + constant folding

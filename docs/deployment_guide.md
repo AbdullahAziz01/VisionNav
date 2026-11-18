@@ -41,6 +41,26 @@ This guide documents the architecture, containerization, access protection, and 
 
 The Flutter app captures camera frames on the phone and transmits compressed JPEGs via HTTP multipart POST to the `/pipeline/frame` endpoint. The remotely hosted backend performs YOLOv8 obstacle detection, ByteTrack multi-object tracking, Depth Anything V2 metric distance estimation, bus route recognition, and returns structured predictions for on-device Text-to-Speech guidance.
 
+## Phone-only viva using Cloud Run
+
+This option requires a Google Cloud project with billing and access to Cloud Run, Cloud Build, Artifact Registry, and Secret Manager. Cloud Run provides an HTTPS URL. The phone uses Wi-Fi or mobile data and the laptop can be off.
+
+1. Unpack the backend deployment archive in Google Cloud Shell and open the directory containing `Dockerfile`.
+2. In Secret Manager, create a secret named `visionnav-api-key` with a strong key. Grant the Cloud Run service account **Secret Manager Secret Accessor** on that secret.
+3. Deploy the Docker source with the following settings. Cloud Run allows the phone to reach the service URL. VisionNav's own API key protects inference and diagnostics.
+
+   ```bash
+   gcloud run deploy visionnav --source . --port 8000 --cpu 2 --memory 4Gi \
+     --concurrency 1 --max-instances 1 --timeout 60s --allow-unauthenticated \
+     --set-env-vars VISIONNAV_ENV=production \
+     --set-secrets VISIONNAV_API_KEY=visionnav-api-key:latest
+   ```
+
+4. Open the resulting HTTPS URL with `/ready` appended. In the app's Settings, select **Production**, enter the base HTTPS URL, backend key, and OpenRouteService key, then select **Test Connection**.
+5. Before the viva, open `/ready` to warm up the service and rehearse a full trip from the phone using mobile data with the laptop off.
+
+See [Cloud Run source deployment](https://docs.cloud.google.com/run/docs/deploying-source-code) and [Cloud Run service settings](https://docs.cloud.google.com/run/docs/configuring).
+
 ---
 
 ## 2. Docker & Container Deployment

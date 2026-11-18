@@ -12,6 +12,8 @@ import 'package:visionnav_app/screens/navigation_screen.dart';
 import 'package:visionnav_app/screens/settings_screen.dart';
 import 'package:visionnav_app/screens/help_screen.dart';
 import 'package:visionnav_app/services/bus_trip.dart';
+import 'package:visionnav_app/services/navigation/heading_service.dart';
+import 'package:visionnav_app/services/navigation/route_models.dart';
 import 'package:visionnav_app/services/navigation/route_navigation_service.dart';
 
 Future<void> main() async {
@@ -63,6 +65,7 @@ class MainLayout extends StatefulWidget {
 class _MainLayoutState extends State<MainLayout> {
   late int _currentIndex;
   final _voice = VoiceCommands.shared;
+  final _heading = const HeadingService();
 
   @override
   void initState() {
@@ -178,8 +181,20 @@ class _MainLayoutState extends State<MainLayout> {
         _tripNavigation = navigation;
         navigation.snapshot.addListener(_onTripNavigationChanged);
       }
+      // Bus trips must walk to the boarding stand only — never the destination
+      // exit stop (e.g. PIMS / Karachi Company). Prefer the estimated kerb-side
+      // pin so guidance targets the correct side of a dual-sided stop area.
+      final walkTarget = busPlan == null
+          ? walkTo.destination
+          : Place(
+              name: busPlan.boarding.name,
+              location: busPlan.boardingWalkLocation,
+              displayName: busPlan.boardingCurbLocation == null
+                  ? null
+                  : 'Estimated boarding kerb for ${busPlan.route} toward ${busPlan.toward}',
+            );
       final walking = navigation.startWalkingTo(
-        walkTo.destination,
+        walkTarget,
         shortest: busPlan == null,
       );
       setState(() {
@@ -227,9 +242,12 @@ class _MainLayoutState extends State<MainLayout> {
     final state = _tripNavigation?.current.state;
     if (state == NavState.arrived) {
       final plan = _activeBusPlan;
-      final reachedBoardingTarget =
-          plan == null ||
-          _tripNavigation?.current.place?.location == plan.boarding.location;
+      final arrivedAt = _tripNavigation?.current.place?.location;
+      final reachedBoardingTarget = plan == null ||
+          arrivedAt == null ||
+          arrivedAt == plan.boardingWalkLocation ||
+          arrivedAt == plan.boarding.location ||
+          _tripNavigation?.current.place?.name == plan.boarding.name;
       final announceArrival =
           _walkingToBoard &&
           reachedBoardingTarget &&
@@ -247,21 +265,38 @@ class _MainLayoutState extends State<MainLayout> {
         }
       });
       if (announceArrival) {
-        unawaited(
-          _voice.say(
-            'Near the mapped stop. Confirm the boarding point. ${_scheduledWait()}',
-          ),
-        );
+        unawaited(_announceBoardingArrival(plan));
       }
     }
   }
 
+  Future<void> _announceBoardingArrival(DirectBusPlan? plan) async {
+    final facing = plan == null
+        ? ''
+        : ' ${await _facingCoachSpeech(plan)}';
+    await _voice.say(
+      'Near the boarding area for ${plan?.boarding.name ?? ""}. '
+      '${plan?.roadSideGuidanceSpeech ?? "Confirm the roadside with stop staff."}'
+      '$facing '
+      '${_scheduledWait()}',
+    );
+  }
+
   String _scheduledWait() {
-    final now = DateTime.now();
-    final next = _activeBusPlan?.nextDeparture(now);
-    if (next == null) return 'No more departures are listed today.';
-    final minutes = (next.difference(now).inSeconds / 60).ceil();
-    return 'The scheduled wait is about $minutes minutes.';
+    final plan = _activeBusPlan;
+    if (plan == null) {
+      return 'No active bus schedule is attached to this trip.';
+    }
+    return plan.scheduledWaitSpeech(DateTime.now());
+  }
+
+  Future<String> _facingCoachSpeech([DirectBusPlan? plan]) async {
+    final active = plan ?? _activeBusPlan;
+    if (active == null) {
+      return 'No active bus trip facing guidance is available.';
+    }
+    final heading = await _heading.currentHeadingDeg();
+    return active.facingCoachSpeech(headingDeg: heading);
   }
 
   void _openVision() => setState(() => _currentIndex = 1);
@@ -299,6 +334,11 @@ class _MainLayoutState extends State<MainLayout> {
           walkingNavigation: _walkingToBoard ? _tripNavigation : null,
           scheduledWait: !_walkingToBoard && _activeBusPlan != null
               ? _scheduledWait
+              : null,
+          facingCoach: !_walkingToBoard &&
+                  _activeBusPlan != null &&
+                  _activeBusPlan!.approachBearingDeg != null
+              ? _facingCoachSpeech
               : null,
           onEndBusTrip: _endBusTrip,
         );

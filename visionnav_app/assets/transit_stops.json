@@ -7,7 +7,7 @@
   33.821577,
   73.3
  ],
- "count": 219,
+ "count": 224,
  "stops": [
   {
    "name": "Metro Bus Terminal 7th Avenue",
@@ -1544,6 +1544,46 @@
    "lon": 72.72371,
    "metro": false,
    "osm": "way/233732729"
+  },
+  {
+   "name": "Saidpur Village",
+   "key": "saidpur village",
+   "lat": 33.754157,
+   "lon": 73.069938,
+   "metro": false,
+   "curated": true
+  },
+  {
+   "name": "Capt. Naeem Tufail Shaheed Chowk",
+   "key": "capt naeem tufail shaheed chowk",
+   "lat": 33.643198,
+   "lon": 73.1615,
+   "metro": false,
+   "curated": true
+  },
+  {
+   "name": "Barakahu",
+   "key": "barakahu",
+   "lat": 33.738068,
+   "lon": 73.185495,
+   "metro": false,
+   "curated": true
+  },
+  {
+   "name": "I-16",
+   "key": "i 16",
+   "lat": 33.593578,
+   "lon": 72.932944,
+   "metro": false,
+   "curated": true
+  },
+  {
+   "name": "Quaid Azam University",
+   "key": "quaid azam university",
+   "lat": 33.743736,
+   "lon": 73.158582,
+   "metro": false,
+   "curated": true
   }
  ]
 }

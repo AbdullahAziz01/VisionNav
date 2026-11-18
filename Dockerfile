@@ -16,7 +16,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+ARG TORCH_INDEX_URL=https://download.pytorch.org/whl/cpu
+RUN python -m pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir --index-url "$TORCH_INDEX_URL" torch torchvision \
+    && pip install --no-cache-dir -r requirements.txt
 
 COPY pipeline/ ./pipeline/
 COPY config/ ./config/

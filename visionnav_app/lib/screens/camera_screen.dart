@@ -20,12 +20,16 @@ class CameraScreen extends StatefulWidget {
     this.onEndBusTrip,
     this.walkingNavigation,
     this.scheduledWait,
+    this.facingCoach,
   });
 
   final BusTrip? busTrip;
   final VoidCallback? onEndBusTrip;
   final RouteNavigationService? walkingNavigation;
   final String Function()? scheduledWait;
+
+  /// Live approach-facing coach while waiting for the bus (compass vs approach).
+  final Future<String> Function()? facingCoach;
 
   @override
   State<CameraScreen> createState() => _CameraScreenState();
@@ -59,12 +63,17 @@ class _CameraScreenState extends State<CameraScreen>
   PipelineFrameResult? _latestResult;
   Size? _frameSize;
   bool _scanPromptSpoken = false;
+  bool _facingPromptSpoken = false;
+  bool _facingAlignedSpoken = false;
   bool _delaySpoken = false;
   Stopwatch? _frameAge;
   int _mode = 0;
   int _capturedMode = 0;
+  Timer? _facingTimer;
 
   bool get _walking => widget.walkingNavigation != null;
+  bool get _waitingForBus =>
+      !_walking && widget.busTrip != null && widget.facingCoach != null;
 
   static const Duration _captureInterval = Duration(milliseconds: 500);
 
@@ -83,6 +92,7 @@ class _CameraScreenState extends State<CameraScreen>
     _tts = FlutterTtsService.shared;
     unawaited(_tts.initialize());
     VoiceCommands.shared.register(this, _handleVoice);
+    _restartFacingCoach();
     _initCamera();
   }
 
@@ -90,12 +100,16 @@ class _CameraScreenState extends State<CameraScreen>
   void didUpdateWidget(CameraScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.busTrip != widget.busTrip ||
-        oldWidget.walkingNavigation != widget.walkingNavigation) {
+        oldWidget.walkingNavigation != widget.walkingNavigation ||
+        oldWidget.facingCoach != widget.facingCoach) {
       _mode++;
       _latestResult = null;
       _announcer.reset();
       _scanPromptSpoken = false;
+      _facingPromptSpoken = false;
+      _facingAlignedSpoken = false;
       _lastSpoken = null;
+      _restartFacingCoach();
     }
   }
 
@@ -105,9 +119,11 @@ class _CameraScreenState extends State<CameraScreen>
     final canSpeak = _ttsEnabled && _tts.canSpeakCamera;
     if (canSpeak && !_scanPromptSpoken && widget.scheduledWait != null) {
       _scanPromptSpoken = true;
-      const prompt = 'Bus scanner ready. Point the camera at the bus sign.';
+      const prompt =
+          'Bus scanner ready. Face the approach direction so the bus arrives in front of the camera, not from behind. Say check direction for compass coaching. Do not step into the road to scan. Ask the driver or stop staff if you are unsure.';
       _lastSpoken = prompt;
       unawaited(_tts.speakCamera(prompt));
+      unawaited(_speakFacingCoach(force: true));
       return;
     }
     final phrase = _announcer.next(
@@ -126,9 +142,42 @@ class _CameraScreenState extends State<CameraScreen>
     } else if (trip != null && canSpeak && !_scanPromptSpoken) {
       _scanPromptSpoken = true;
       const prompt =
-          'Bus scanner ready. Point the rear camera at the bus sign.';
+          'Bus scanner ready. Face the approach direction so the bus arrives in front of the camera, not from behind. Say check direction for compass coaching. Do not step into the road to scan. Ask the driver or stop staff if you are unsure.';
       _lastSpoken = prompt;
       unawaited(_tts.speakCamera(prompt));
+      unawaited(_speakFacingCoach(force: true));
+    }
+  }
+
+  void _restartFacingCoach() {
+    _facingTimer?.cancel();
+    _facingTimer = null;
+    if (!_waitingForBus) return;
+    _facingTimer = Timer.periodic(const Duration(seconds: 8), (_) {
+      unawaited(_speakFacingCoach());
+    });
+  }
+
+  Future<void> _speakFacingCoach({bool force = false}) async {
+    final coach = widget.facingCoach;
+    if (coach == null || _walking || !_ttsEnabled) return;
+    if (!force && !_tts.canSpeakCamera) return;
+    try {
+      final phrase = await coach();
+      if (!mounted || _walking) return;
+      final aligned = phrase.startsWith('Good.');
+      if (aligned) {
+        if (_facingAlignedSpoken && !force) return;
+        _facingAlignedSpoken = true;
+      } else {
+        _facingAlignedSpoken = false;
+      }
+      if (!force && _facingPromptSpoken && aligned) return;
+      _facingPromptSpoken = true;
+      _lastSpoken = phrase;
+      await _tts.speakCamera(phrase);
+    } catch (_) {
+      // Heading/compass failures are non-fatal; user can retry with voice.
     }
   }
 
@@ -152,13 +201,27 @@ class _CameraScreenState extends State<CameraScreen>
       widget.onEndBusTrip?.call();
     } else if (c == 'check wait' && widget.scheduledWait != null) {
       await voice.say(widget.scheduledWait!());
+    } else if ((c == 'check direction' ||
+            c == 'check facing' ||
+            c == 'face bus' ||
+            c == 'which way') &&
+        widget.facingCoach != null) {
+      try {
+        final phrase = await widget.facingCoach!();
+        _lastSpoken = phrase;
+        await voice.say(phrase);
+      } catch (_) {
+        await voice.say(
+          'Could not read the compass. Face so the bus approaches in front of the camera, then try check direction again.',
+        );
+      }
     } else if (c == 'camera status') {
       await voice.say(_errorMsg ?? _apiStatus ?? 'Camera is initializing.');
     } else if (c == 'open permission settings') {
       await openAppSettings();
     } else if (c == 'screen commands') {
       await voice.say(
-        'Say add location, plan a bus trip, mute announcements, unmute announcements, repeat detection, camera status, retry camera, or end bus trip.',
+        'Say add location, plan a bus trip, mute announcements, unmute announcements, repeat detection, check wait, check direction, camera status, retry camera, or end bus trip.',
       );
     } else {
       return false;
@@ -468,6 +531,8 @@ class _CameraScreenState extends State<CameraScreen>
   @override
   void dispose() {
     VoiceCommands.shared.unregister(this);
+    _facingTimer?.cancel();
+    _facingTimer = null;
     _screenDisposed = true;
     _lifecyclePaused = true;
     _lifecycleEpoch++;

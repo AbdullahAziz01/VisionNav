@@ -1,0 +1,1718 @@
+{
+  "last_updated": "19 November, 2026 – 12:06 AM",
+  "all_summaries": [
+    {
+      "id": 26,
+      "title": null,
+      "status": "CUSTOM",
+      "online": null,
+      "interval": null,
+      "from_station": null,
+      "to_station": null,
+      "route_code": "FRG-01: PIMS - BaraKahu",
+      "custom_time": "Every 50 Minutes"
+    },
+    {
+      "id": 1,
+      "title": null,
+      "status": "TRIAL",
+      "online": null,
+      "interval": null,
+      "from_station": null,
+      "to_station": null,
+      "route_code": "FR-1: Khanna Pul - NUST Metro Station",
+      "custom_time": null
+    },
+    {
+      "id": 5,
+      "title": null,
+      "status": "CUSTOM",
+      "online": null,
+      "interval": null,
+      "from_station": null,
+      "to_station": null,
+      "route_code": "FR-2: PIMS - FAIZABAD",
+      "custom_time": "Every 60 Minutes"
+    },
+    {
+      "id": 6,
+      "title": null,
+      "status": "CUSTOM",
+      "online": null,
+      "interval": null,
+      "from_station": null,
+      "to_station": null,
+      "route_code": "FR-3A: PIMS - Faisal Masjid",
+      "custom_time": "Every 20 Minutes"
+    },
+    {
+      "id": 25,
+      "title": null,
+      "status": "CUSTOM",
+      "online": null,
+      "interval": null,
+      "from_station": null,
+      "to_station": null,
+      "route_code": "FR-04: PIMS - Bari Imam",
+      "custom_time": "Every 30 Minutes"
+    },
+    {
+      "id": 7,
+      "title": null,
+      "status": "CUSTOM",
+      "online": null,
+      "interval": null,
+      "from_station": null,
+      "to_station": null,
+      "route_code": "FR-4: PIMS - Aiwan e Saddar",
+      "custom_time": "Every 10 Minutes"
+    },
+    {
+      "id": 8,
+      "title": null,
+      "status": "CUSTOM",
+      "online": null,
+      "interval": null,
+      "from_station": null,
+      "to_station": null,
+      "route_code": "FR-4A: PIMS - QAU",
+      "custom_time": "Every 30 Minutes"
+    },
+    {
+      "id": 10,
+      "title": null,
+      "status": "TRIAL",
+      "online": null,
+      "interval": null,
+      "from_station": null,
+      "to_station": null,
+      "route_code": "FR-6: PIMS - Golra Shareef",
+      "custom_time": null
+    },
+    {
+      "id": 11,
+      "title": null,
+      "status": "CUSTOM",
+      "online": null,
+      "interval": null,
+      "from_station": null,
+      "to_station": null,
+      "route_code": "FR-7: PIMS - G-11",
+      "custom_time": "Every 10 Minutes"
+    },
+    {
+      "id": 12,
+      "title": null,
+      "status": "CUSTOM",
+      "online": null,
+      "interval": null,
+      "from_station": null,
+      "to_station": null,
+      "route_code": "FR-8A: PIMS - Tramri via Aabpara",
+      "custom_time": "Every 20 Minutes"
+    },
+    {
+      "id": 22,
+      "title": null,
+      "status": "TRIAL",
+      "online": null,
+      "interval": null,
+      "from_station": null,
+      "to_station": null,
+      "route_code": "FR-8B: Khanna Pul - Nilore",
+      "custom_time": null
+    },
+    {
+      "id": 13,
+      "title": null,
+      "status": "CUSTOM",
+      "online": null,
+      "interval": null,
+      "from_station": null,
+      "to_station": null,
+      "route_code": "FR-8C: PIMS - Tramri Faizabad",
+      "custom_time": "Every 20 Minutes"
+    },
+    {
+      "id": 14,
+      "title": null,
+      "status": "CUSTOM",
+      "online": null,
+      "interval": null,
+      "from_station": null,
+      "to_station": null,
+      "route_code": "FR-9: Khanna Pul - Golra Mor Station",
+      "custom_time": "Every 15 Minutes"
+    },
+    {
+      "id": 15,
+      "title": null,
+      "status": "CUSTOM",
+      "online": null,
+      "interval": null,
+      "from_station": null,
+      "to_station": null,
+      "route_code": "FR-10: Golra Mor Station - Taxila",
+      "custom_time": "Every 60 Minutes"
+    },
+    {
+      "id": 16,
+      "title": null,
+      "status": "TRIAL",
+      "online": null,
+      "interval": null,
+      "from_station": null,
+      "to_station": null,
+      "route_code": "FR-11: Golra Morh - i-16",
+      "custom_time": null
+    },
+    {
+      "id": 17,
+      "title": null,
+      "status": "TRIAL",
+      "online": null,
+      "interval": null,
+      "from_station": null,
+      "to_station": null,
+      "route_code": "FR-12: Taxila - Hassan Abdal",
+      "custom_time": null
+    },
+    {
+      "id": 18,
+      "title": null,
+      "status": "TRIAL",
+      "online": null,
+      "interval": null,
+      "from_station": null,
+      "to_station": null,
+      "route_code": "FR-13: Golra Morh - Fateh Jang",
+      "custom_time": null
+    },
+    {
+      "id": 19,
+      "title": null,
+      "status": "CUSTOM",
+      "online": null,
+      "interval": null,
+      "from_station": null,
+      "to_station": null,
+      "route_code": "FR-14: Mandi Mor - Bahra Kahu",
+      "custom_time": "Every 60 Minutes"
+    },
+    {
+      "id": 20,
+      "title": null,
+      "status": "CUSTOM",
+      "online": null,
+      "interval": null,
+      "from_station": null,
+      "to_station": null,
+      "route_code": "FR-14A: Jillani Stop - 17 Meel",
+      "custom_time": "Every 60 Minutes"
+    },
+    {
+      "id": 21,
+      "title": null,
+      "status": "TRIAL",
+      "online": null,
+      "interval": null,
+      "from_station": null,
+      "to_station": null,
+      "route_code": "FR-15: PIMS - Bhara Khu",
+      "custom_time": null
+    },
+    {
+      "id": 23,
+      "title": null,
+      "status": "TRIAL",
+      "online": null,
+      "interval": null,
+      "from_station": null,
+      "to_station": null,
+      "route_code": "EXP-16: PIMS - Media Town",
+      "custom_time": null
+    },
+    {
+      "id": 24,
+      "title": null,
+      "status": "TRIAL",
+      "online": null,
+      "interval": null,
+      "from_station": null,
+      "to_station": null,
+      "route_code": "FR-17: T Chowk - Aari Syedan",
+      "custom_time": null
+    }
+  ],
+  "full_stations": [
+    {
+      "id": 26,
+      "sub_stations": [],
+      "name": "FRG-01: PIMS - BaraKahu",
+      "is_active": false,
+      "was_active_before_off": true,
+      "updated_at": "2026-11-19T00:06:07+05:00",
+      "status": "CUSTOM",
+      "custom_time": "Every 50 Minutes",
+      "order": 0
+    },
+    {
+      "id": 1,
+      "sub_stations": [
+        {
+          "id": 1,
+          "name": "Nust Metro Station",
+          "time": "00:05:00",
+          "order": 1,
+          "feeder_station": 1
+        },
+        {
+          "id": 2,
+          "name": "Police Foundation Metro Station",
+          "time": "00:10:00",
+          "order": 2,
+          "feeder_station": 1
+        },
+        {
+          "id": 3,
+          "name": "NPA Stop",
+          "time": "00:15:00",
+          "order": 3,
+          "feeder_station": 1
+        },
+        {
+          "id": 4,
+          "name": "Islamic University",
+          "time": "00:20:00",
+          "order": 4,
+          "feeder_station": 1
+        },
+        {
+          "id": 5,
+          "name": "Bahria University",
+          "time": "00:25:00",
+          "order": 5,
+          "feeder_station": 1
+        },
+        {
+          "id": 6,
+          "name": "FAST University",
+          "time": "00:30:00",
+          "order": 6,
+          "feeder_station": 1
+        },
+        {
+          "id": 7,
+          "name": "PAEC General Hospital",
+          "time": "00:35:00",
+          "order": 7,
+          "feeder_station": 1
+        },
+        {
+          "id": 8,
+          "name": "IMC Hospital",
+          "time": "00:40:00",
+          "order": 8,
+          "feeder_station": 1
+        },
+        {
+          "id": 9,
+          "name": "Metro CNC",
+          "time": "00:45:00",
+          "order": 9,
+          "feeder_station": 1
+        },
+        {
+          "id": 10,
+          "name": "Sabzi Mandi",
+          "time": "00:50:00",
+          "order": 10,
+          "feeder_station": 1
+        },
+        {
+          "id": 11,
+          "name": "Mandi Morh",
+          "time": "00:55:00",
+          "order": 11,
+          "feeder_station": 1
+        },
+        {
+          "id": 12,
+          "name": "Kurang Road Stop",
+          "time": "01:00:00",
+          "order": 12,
+          "feeder_station": 1
+        },
+        {
+          "id": 13,
+          "name": "IESCO",
+          "time": "01:05:00",
+          "order": 13,
+          "feeder_station": 1
+        },
+        {
+          "id": 14,
+          "name": "PTCL I-10",
+          "time": "01:10:00",
+          "order": 14,
+          "feeder_station": 1
+        },
+        {
+          "id": 15,
+          "name": "Sui Gas Stop",
+          "time": "01:15:00",
+          "order": 15,
+          "feeder_station": 1
+        },
+        {
+          "id": 16,
+          "name": "OGTI Stop",
+          "time": "01:20:00",
+          "order": 16,
+          "feeder_station": 1
+        },
+        {
+          "id": 17,
+          "name": "CDA Complain Center",
+          "time": "01:25:00",
+          "order": 17,
+          "feeder_station": 1
+        },
+        {
+          "id": 18,
+          "name": "MCI Model School",
+          "time": "01:30:00",
+          "order": 18,
+          "feeder_station": 1
+        },
+        {
+          "id": 19,
+          "name": "Potohar Metro Bus Station",
+          "time": "01:35:00",
+          "order": 19,
+          "feeder_station": 1
+        },
+        {
+          "id": 20,
+          "name": "I-8 Markaz",
+          "time": "01:40:00",
+          "order": 20,
+          "feeder_station": 1
+        },
+        {
+          "id": 21,
+          "name": "Faizabad Metro Station",
+          "time": "01:45:00",
+          "order": 21,
+          "feeder_station": 1
+        },
+        {
+          "id": 22,
+          "name": "Sohan",
+          "time": "01:50:00",
+          "order": 22,
+          "feeder_station": 1
+        },
+        {
+          "id": 23,
+          "name": "Dhok Kala Khan",
+          "time": "01:55:00",
+          "order": 23,
+          "feeder_station": 1
+        },
+        {
+          "id": 24,
+          "name": "Iqbal Town",
+          "time": "02:00:00",
+          "order": 24,
+          "feeder_station": 1
+        },
+        {
+          "id": 25,
+          "name": "Iqbal Town",
+          "time": "02:05:00",
+          "order": 25,
+          "feeder_station": 1
+        },
+        {
+          "id": 26,
+          "name": "Kuri Road",
+          "time": "02:10:00",
+          "order": 26,
+          "feeder_station": 1
+        },
+        {
+          "id": 27,
+          "name": "Zia Masjid",
+          "time": "02:15:00",
+          "order": 27,
+          "feeder_station": 1
+        },
+        {
+          "id": 28,
+          "name": "Khanna Pul",
+          "time": "02:20:00",
+          "order": 28,
+          "feeder_station": 1
+        }
+      ],
+      "name": "FR-1: Khanna Pul - NUST Metro Station",
+      "is_active": false,
+      "was_active_before_off": true,
+      "updated_at": "2026-11-19T00:06:07+05:00",
+      "status": "TRIAL",
+      "custom_time": null,
+      "order": 1
+    },
+    {
+      "id": 5,
+      "sub_stations": [],
+      "name": "FR-2: PIMS - FAIZABAD",
+      "is_active": false,
+      "was_active_before_off": false,
+      "updated_at": "2026-11-19T00:06:07+05:00",
+      "status": "CUSTOM",
+      "custom_time": "Every 60 Minutes",
+      "order": 2
+    },
+    {
+      "id": 6,
+      "sub_stations": [
+        {
+          "id": 29,
+          "name": "PIMS Hospital",
+          "time": "00:05:00",
+          "order": 1,
+          "feeder_station": 6
+        },
+        {
+          "id": 30,
+          "name": "PIMS Metro Station",
+          "time": "00:10:00",
+          "order": 2,
+          "feeder_station": 6
+        },
+        {
+          "id": 31,
+          "name": "IMCB F-8",
+          "time": "00:15:00",
+          "order": 3,
+          "feeder_station": 6
+        },
+        {
+          "id": 32,
+          "name": "Katchery",
+          "time": "00:20:00",
+          "order": 4,
+          "feeder_station": 6
+        },
+        {
+          "id": 33,
+          "name": "F-8 Markaz",
+          "time": "00:25:00",
+          "order": 5,
+          "feeder_station": 6
+        },
+        {
+          "id": 34,
+          "name": "F-9 Park",
+          "time": "00:30:00",
+          "order": 6,
+          "feeder_station": 6
+        },
+        {
+          "id": 35,
+          "name": "Shaheen Chowk",
+          "time": "00:35:00",
+          "order": 7,
+          "feeder_station": 6
+        },
+        {
+          "id": 36,
+          "name": "Bahria University",
+          "time": "00:40:00",
+          "order": 8,
+          "feeder_station": 6
+        },
+        {
+          "id": 37,
+          "name": "Naval Complex",
+          "time": "00:45:00",
+          "order": 9,
+          "feeder_station": 6
+        },
+        {
+          "id": 38,
+          "name": "Faisal Masjid",
+          "time": "00:50:00",
+          "order": 10,
+          "feeder_station": 6
+        },
+        {
+          "id": 39,
+          "name": "Parveen Shakir Road",
+          "time": "00:55:00",
+          "order": 11,
+          "feeder_station": 6
+        },
+        {
+          "id": 40,
+          "name": "Kohsar Road/F-7 Markaz",
+          "time": "01:00:00",
+          "order": 12,
+          "feeder_station": 6
+        },
+        {
+          "id": 41,
+          "name": "Murghzar Zoo",
+          "time": "01:05:00",
+          "order": 13,
+          "feeder_station": 6
+        },
+        {
+          "id": 42,
+          "name": "F-6",
+          "time": "01:10:00",
+          "order": 14,
+          "feeder_station": 6
+        },
+        {
+          "id": 43,
+          "name": "Said Pur Village",
+          "time": "01:15:00",
+          "order": 15,
+          "feeder_station": 6
+        }
+      ],
+      "name": "FR-3A: PIMS - Faisal Masjid",
+      "is_active": false,
+      "was_active_before_off": true,
+      "updated_at": "2026-11-19T00:06:07+05:00",
+      "status": "CUSTOM",
+      "custom_time": "Every 20 Minutes",
+      "order": 3
+    },
+    {
+      "id": 25,
+      "sub_stations": [],
+      "name": "FR-04: PIMS - Bari Imam",
+      "is_active": false,
+      "was_active_before_off": true,
+      "updated_at": "2026-11-19T00:06:07+05:00",
+      "status": "CUSTOM",
+      "custom_time": "Every 30 Minutes",
+      "order": 4
+    },
+    {
+      "id": 7,
+      "sub_stations": [
+        {
+          "id": 44,
+          "name": "PIMS Hospital",
+          "time": "00:05:00",
+          "order": 1,
+          "feeder_station": 7
+        },
+        {
+          "id": 45,
+          "name": "Children Hospital",
+          "time": "00:10:00",
+          "order": 2,
+          "feeder_station": 7
+        },
+        {
+          "id": 46,
+          "name": "Rescue 15",
+          "time": "00:15:00",
+          "order": 3,
+          "feeder_station": 7
+        },
+        {
+          "id": 47,
+          "name": "Bank Colony",
+          "time": "00:20:00",
+          "order": 4,
+          "feeder_station": 7
+        },
+        {
+          "id": 48,
+          "name": "Salai Centre",
+          "time": "00:25:00",
+          "order": 5,
+          "feeder_station": 7
+        },
+        {
+          "id": 49,
+          "name": "Sitara Market",
+          "time": "00:30:00",
+          "order": 6,
+          "feeder_station": 7
+        },
+        {
+          "id": 50,
+          "name": "Pulley Stop",
+          "time": "00:35:00",
+          "order": 7,
+          "feeder_station": 7
+        },
+        {
+          "id": 51,
+          "name": "Iqbal Hall",
+          "time": "00:40:00",
+          "order": 8,
+          "feeder_station": 7
+        },
+        {
+          "id": 52,
+          "name": "G-6/1.2",
+          "time": "00:45:00",
+          "order": 9,
+          "feeder_station": 7
+        },
+        {
+          "id": 53,
+          "name": "Melody Market",
+          "time": "00:50:00",
+          "order": 10,
+          "feeder_station": 7
+        },
+        {
+          "id": 54,
+          "name": "Abpara Market",
+          "time": "00:55:00",
+          "order": 11,
+          "feeder_station": 7
+        },
+        {
+          "id": 55,
+          "name": "Youth Hostel",
+          "time": "01:00:00",
+          "order": 12,
+          "feeder_station": 7
+        },
+        {
+          "id": 56,
+          "name": "Metropolitan Corporation",
+          "time": "01:05:00",
+          "order": 13,
+          "feeder_station": 7
+        },
+        {
+          "id": 57,
+          "name": "ICB College",
+          "time": "01:10:00",
+          "order": 14,
+          "feeder_station": 7
+        },
+        {
+          "id": 58,
+          "name": "NADRA Chowk",
+          "time": "01:15:00",
+          "order": 15,
+          "feeder_station": 7
+        },
+        {
+          "id": 59,
+          "name": "Lodges Park",
+          "time": "01:20:00",
+          "order": 16,
+          "feeder_station": 7
+        },
+        {
+          "id": 60,
+          "name": "Sukh Chayn Park",
+          "time": "01:25:00",
+          "order": 17,
+          "feeder_station": 7
+        },
+        {
+          "id": 61,
+          "name": "Ministry of Foreign Affairs",
+          "time": "01:30:00",
+          "order": 18,
+          "feeder_station": 7
+        },
+        {
+          "id": 62,
+          "name": "Radio Pakistan",
+          "time": "01:35:00",
+          "order": 19,
+          "feeder_station": 7
+        },
+        {
+          "id": 63,
+          "name": "Election Commission of Pakistan",
+          "time": "01:40:00",
+          "order": 20,
+          "feeder_station": 7
+        },
+        {
+          "id": 64,
+          "name": "Supreme Court of Pakistan",
+          "time": "01:45:00",
+          "order": 21,
+          "feeder_station": 7
+        },
+        {
+          "id": 65,
+          "name": "Parliament House",
+          "time": "01:50:00",
+          "order": 22,
+          "feeder_station": 7
+        },
+        {
+          "id": 66,
+          "name": "National Library",
+          "time": "01:55:00",
+          "order": 23,
+          "feeder_station": 7
+        },
+        {
+          "id": 67,
+          "name": "Secretariate Police Station",
+          "time": "02:00:00",
+          "order": 24,
+          "feeder_station": 7
+        },
+        {
+          "id": 68,
+          "name": "Diplomatic Enclave Gate 4",
+          "time": "02:05:00",
+          "order": 25,
+          "feeder_station": 7
+        },
+        {
+          "id": 69,
+          "name": "Aiwan e Sadar Colony",
+          "time": "02:10:00",
+          "order": 26,
+          "feeder_station": 7
+        },
+        {
+          "id": 70,
+          "name": "Muslim Colony",
+          "time": "02:15:00",
+          "order": 27,
+          "feeder_station": 7
+        },
+        {
+          "id": 71,
+          "name": "Rangers Gate",
+          "time": "02:20:00",
+          "order": 28,
+          "feeder_station": 7
+        },
+        {
+          "id": 72,
+          "name": "Bari Imam",
+          "time": "02:25:00",
+          "order": 29,
+          "feeder_station": 7
+        },
+        {
+          "id": 106,
+          "name": "PIMS Gate",
+          "time": "00:10:00",
+          "order": 30,
+          "feeder_station": 7
+        },
+        {
+          "id": 107,
+          "name": "Children Hospital",
+          "time": "00:10:00",
+          "order": 31,
+          "feeder_station": 7
+        },
+        {
+          "id": 108,
+          "name": "Rescue 15",
+          "time": "00:10:00",
+          "order": 32,
+          "feeder_station": 7
+        },
+        {
+          "id": 109,
+          "name": "Bank Colony",
+          "time": "00:10:00",
+          "order": 33,
+          "feeder_station": 7
+        },
+        {
+          "id": 110,
+          "name": "Salai centre",
+          "time": "00:10:00",
+          "order": 34,
+          "feeder_station": 7
+        },
+        {
+          "id": 111,
+          "name": "Sitara Market",
+          "time": "00:10:00",
+          "order": 35,
+          "feeder_station": 7
+        },
+        {
+          "id": 112,
+          "name": "Pulley Stop",
+          "time": "00:10:00",
+          "order": 36,
+          "feeder_station": 7
+        },
+        {
+          "id": 113,
+          "name": "Iqbal Hall",
+          "time": "00:10:00",
+          "order": 37,
+          "feeder_station": 7
+        },
+        {
+          "id": 114,
+          "name": "G-6/1,2",
+          "time": "00:10:00",
+          "order": 38,
+          "feeder_station": 7
+        },
+        {
+          "id": 115,
+          "name": "Melody Market",
+          "time": "00:10:00",
+          "order": 39,
+          "feeder_station": 7
+        },
+        {
+          "id": 116,
+          "name": "Abpara Market",
+          "time": "00:10:00",
+          "order": 40,
+          "feeder_station": 7
+        },
+        {
+          "id": 117,
+          "name": "Youth Hostel",
+          "time": "00:10:00",
+          "order": 41,
+          "feeder_station": 7
+        },
+        {
+          "id": 118,
+          "name": "Metropolitan Corporation",
+          "time": "00:10:00",
+          "order": 42,
+          "feeder_station": 7
+        },
+        {
+          "id": 119,
+          "name": "ICB College",
+          "time": "00:10:00",
+          "order": 43,
+          "feeder_station": 7
+        },
+        {
+          "id": 120,
+          "name": "NADRA Chowk",
+          "time": "00:10:00",
+          "order": 44,
+          "feeder_station": 7
+        },
+        {
+          "id": 121,
+          "name": "Lodges Park",
+          "time": "00:10:00",
+          "order": 45,
+          "feeder_station": 7
+        },
+        {
+          "id": 122,
+          "name": "Sukh chayn Park",
+          "time": "00:10:00",
+          "order": 46,
+          "feeder_station": 7
+        },
+        {
+          "id": 123,
+          "name": "Ministry of Foreign Affairs",
+          "time": "00:10:00",
+          "order": 47,
+          "feeder_station": 7
+        },
+        {
+          "id": 124,
+          "name": "Radio Pakistan",
+          "time": null,
+          "order": 48,
+          "feeder_station": 7
+        },
+        {
+          "id": 125,
+          "name": "National library",
+          "time": "00:10:00",
+          "order": 49,
+          "feeder_station": 7
+        },
+        {
+          "id": 126,
+          "name": "Secretariate Police station",
+          "time": "00:10:00",
+          "order": 50,
+          "feeder_station": 7
+        },
+        {
+          "id": 127,
+          "name": "Diplomatic Enclave Gate 4",
+          "time": "00:10:00",
+          "order": 51,
+          "feeder_station": 7
+        },
+        {
+          "id": 128,
+          "name": "Muslim Colony",
+          "time": "00:10:00",
+          "order": 52,
+          "feeder_station": 7
+        },
+        {
+          "id": 129,
+          "name": "Bari Imam",
+          "time": "00:10:00",
+          "order": 53,
+          "feeder_station": 7
+        }
+      ],
+      "name": "FR-4: PIMS - Aiwan e Saddar",
+      "is_active": false,
+      "was_active_before_off": true,
+      "updated_at": "2026-11-19T00:06:07+05:00",
+      "status": "CUSTOM",
+      "custom_time": "Every 10 Minutes",
+      "order": 4
+    },
+    {
+      "id": 8,
+      "sub_stations": [
+        {
+          "id": 79,
+          "name": "Bari Imam",
+          "time": "Every 10 min",
+          "order": 1,
+          "feeder_station": 8
+        },
+        {
+          "id": 80,
+          "name": "Muhallah Noori Bagh",
+          "time": "Every 10 min",
+          "order": 2,
+          "feeder_station": 8
+        },
+        {
+          "id": 131,
+          "name": "Community Health Center",
+          "time": "00:10:00",
+          "order": 3,
+          "feeder_station": 8
+        },
+        {
+          "id": 132,
+          "name": "D-Type Quaid e Azam Colony",
+          "time": "00:10:00",
+          "order": 4,
+          "feeder_station": 8
+        },
+        {
+          "id": 133,
+          "name": "C-Type Quaid e Azam Colony",
+          "time": "00:10:00",
+          "order": 5,
+          "feeder_station": 8
+        },
+        {
+          "id": 134,
+          "name": "Babul Quaid",
+          "time": "00:10:00",
+          "order": 6,
+          "feeder_station": 8
+        },
+        {
+          "id": 135,
+          "name": "Quaid Azam University",
+          "time": "00:10:00",
+          "order": 7,
+          "feeder_station": 8
+        }
+      ],
+      "name": "FR-4A: PIMS - QAU",
+      "is_active": false,
+      "was_active_before_off": true,
+      "updated_at": "2026-11-19T00:06:07+05:00",
+      "status": "CUSTOM",
+      "custom_time": "Every 30 Minutes",
+      "order": 5
+    },
+    {
+      "id": 10,
+      "sub_stations": [],
+      "name": "FR-6: PIMS - Golra Shareef",
+      "is_active": false,
+      "was_active_before_off": true,
+      "updated_at": "2026-11-19T00:06:07+05:00",
+      "status": "TRIAL",
+      "custom_time": null,
+      "order": 6
+    },
+    {
+      "id": 11,
+      "sub_stations": [
+        {
+          "id": 84,
+          "name": "PIMS Hospital",
+          "time": "Every 3 min to 6 min",
+          "order": 1,
+          "feeder_station": 11
+        },
+        {
+          "id": 85,
+          "name": "Children Hospital",
+          "time": "Every 3 min to 6 min",
+          "order": 2,
+          "feeder_station": 11
+        },
+        {
+          "id": 86,
+          "name": "NORI Hospital",
+          "time": "Every 3 min to 6 min",
+          "order": 3,
+          "feeder_station": 11
+        },
+        {
+          "id": 87,
+          "name": "Dental Hospital",
+          "time": "Every 3 min to 6 min",
+          "order": 4,
+          "feeder_station": 11
+        },
+        {
+          "id": 88,
+          "name": "G-8 Markaz",
+          "time": "Every 3 min to 6 min",
+          "order": 5,
+          "feeder_station": 11
+        },
+        {
+          "id": 89,
+          "name": "Development Park",
+          "time": "Every 3 min to 6 min",
+          "order": 6,
+          "feeder_station": 11
+        },
+        {
+          "id": 90,
+          "name": "Chaman Metro Station",
+          "time": "Every 3 min to 6 min",
+          "order": 7,
+          "feeder_station": 11
+        },
+        {
+          "id": 91,
+          "name": "Karachi Company",
+          "time": "Every 3 min to 6 min",
+          "order": 8,
+          "feeder_station": 11
+        },
+        {
+          "id": 92,
+          "name": "G-9 Markaz",
+          "time": "Every 3 min to 6 min",
+          "order": 9,
+          "feeder_station": 11
+        },
+        {
+          "id": 93,
+          "name": "Police Flats",
+          "time": "Every 3 min to 6 min",
+          "order": 10,
+          "feeder_station": 11
+        },
+        {
+          "id": 94,
+          "name": "College Morh",
+          "time": "Every 3 min to 6 min",
+          "order": 11,
+          "feeder_station": 11
+        },
+        {
+          "id": 95,
+          "name": "G-10 Markaz",
+          "time": "Every 3 min to 6 min",
+          "order": 12,
+          "feeder_station": 11
+        },
+        {
+          "id": 96,
+          "name": "PHA Flats",
+          "time": "Every 3 min to 6 min",
+          "order": 13,
+          "feeder_station": 11
+        },
+        {
+          "id": 97,
+          "name": "Tanki Stop",
+          "time": "Every 3 min to 6 min",
+          "order": 14,
+          "feeder_station": 11
+        },
+        {
+          "id": 98,
+          "name": "G-10/G-11",
+          "time": "Every 3 min to 6 min",
+          "order": 15,
+          "feeder_station": 11
+        },
+        {
+          "id": 99,
+          "name": "Institute of Modern Studies",
+          "time": "Every 3 min to 6 min",
+          "order": 16,
+          "feeder_station": 11
+        },
+        {
+          "id": 100,
+          "name": "G-11 Markaz",
+          "time": "Every 3 min to 6 min",
+          "order": 17,
+          "feeder_station": 11
+        },
+        {
+          "id": 101,
+          "name": "Mehrabad",
+          "time": "Every 3 min to 6 min",
+          "order": 18,
+          "feeder_station": 11
+        },
+        {
+          "id": 102,
+          "name": "Nust Metro Station",
+          "time": "Every 3 min to 6 min",
+          "order": 19,
+          "feeder_station": 11
+        },
+        {
+          "id": 103,
+          "name": "Bar Council",
+          "time": "Every 3 min to 6 min",
+          "order": 20,
+          "feeder_station": 11
+        },
+        {
+          "id": 104,
+          "name": "A.K Bari Road",
+          "time": "Every 3 min to 6 min",
+          "order": 21,
+          "feeder_station": 11
+        },
+        {
+          "id": 105,
+          "name": "Police Foundation Metro Station",
+          "time": "Every 3 min to 6 min",
+          "order": 22,
+          "feeder_station": 11
+        }
+      ],
+      "name": "FR-7: PIMS - G-11",
+      "is_active": false,
+      "was_active_before_off": true,
+      "updated_at": "2026-11-19T00:06:07+05:00",
+      "status": "CUSTOM",
+      "custom_time": "Every 10 Minutes",
+      "order": 7
+    },
+    {
+      "id": 12,
+      "sub_stations": [],
+      "name": "FR-8A: PIMS - Tramri via Aabpara",
+      "is_active": false,
+      "was_active_before_off": true,
+      "updated_at": "2026-11-19T00:06:07+05:00",
+      "status": "CUSTOM",
+      "custom_time": "Every 20 Minutes",
+      "order": 8
+    },
+    {
+      "id": 22,
+      "sub_stations": [],
+      "name": "FR-8B: Khanna Pul - Nilore",
+      "is_active": false,
+      "was_active_before_off": true,
+      "updated_at": "2026-11-19T00:06:07+05:00",
+      "status": "TRIAL",
+      "custom_time": null,
+      "order": 8
+    },
+    {
+      "id": 13,
+      "sub_stations": [],
+      "name": "FR-8C: PIMS - Tramri Faizabad",
+      "is_active": false,
+      "was_active_before_off": true,
+      "updated_at": "2026-11-19T00:06:07+05:00",
+      "status": "CUSTOM",
+      "custom_time": "Every 20 Minutes",
+      "order": 9
+    },
+    {
+      "id": 14,
+      "sub_stations": [],
+      "name": "FR-9: Khanna Pul - Golra Mor Station",
+      "is_active": false,
+      "was_active_before_off": true,
+      "updated_at": "2026-11-19T00:06:07+05:00",
+      "status": "CUSTOM",
+      "custom_time": "Every 15 Minutes",
+      "order": 10
+    },
+    {
+      "id": 15,
+      "sub_stations": [
+        {
+          "id": 164,
+          "name": "Golra Mor ⇌ B17/Taxila",
+          "time": "06:00 AM",
+          "order": 0,
+          "feeder_station": 15
+        },
+        {
+          "id": 165,
+          "name": "Golra Mor ⇌ B17/Taxila",
+          "time": "06:15 AM",
+          "order": 1,
+          "feeder_station": 15
+        },
+        {
+          "id": 166,
+          "name": "Golra Mor ⇌ B17/Taxila",
+          "time": "07:00 AM",
+          "order": 2,
+          "feeder_station": 15
+        },
+        {
+          "id": 167,
+          "name": "Golra Mor ⇌ B17/Taxila",
+          "time": "08:00 AM",
+          "order": 3,
+          "feeder_station": 15
+        },
+        {
+          "id": 168,
+          "name": "Golra Mor ⇌ B17/Taxila",
+          "time": "09:00 AM",
+          "order": 4,
+          "feeder_station": 15
+        },
+        {
+          "id": 169,
+          "name": "Golra Mor ⇌ B17/Taxila",
+          "time": "09:15 AM",
+          "order": 5,
+          "feeder_station": 15
+        },
+        {
+          "id": 170,
+          "name": "Golra Mor ⇌ B17/Taxila",
+          "time": "10:00 AM",
+          "order": 6,
+          "feeder_station": 15
+        },
+        {
+          "id": 171,
+          "name": "Golra Mor ⇌ B17/Taxila",
+          "time": "11:00 AM",
+          "order": 7,
+          "feeder_station": 15
+        },
+        {
+          "id": 172,
+          "name": "Golra Mor ⇌ B17/Taxila",
+          "time": "12:00 PM",
+          "order": 8,
+          "feeder_station": 15
+        },
+        {
+          "id": 173,
+          "name": "Golra Mor ⇌ B17/Taxila",
+          "time": "12:15",
+          "order": 9,
+          "feeder_station": 15
+        },
+        {
+          "id": 174,
+          "name": "Golra Mor ⇌ B17/Taxila",
+          "time": "01:00 PM",
+          "order": 10,
+          "feeder_station": 15
+        },
+        {
+          "id": 175,
+          "name": "Golra Mor ⇌ B17/Taxila",
+          "time": "02:00 PM",
+          "order": 11,
+          "feeder_station": 15
+        },
+        {
+          "id": 176,
+          "name": "Golra Mor ⇌ B17/Taxila",
+          "time": "03:00 PM",
+          "order": 12,
+          "feeder_station": 15
+        },
+        {
+          "id": 177,
+          "name": "Golra Mor ⇌ B17/Taxila",
+          "time": "05:15 PM",
+          "order": 13,
+          "feeder_station": 15
+        },
+        {
+          "id": 178,
+          "name": "Golra Mor ⇌ B17/Taxila",
+          "time": "04:00 PM",
+          "order": 14,
+          "feeder_station": 15
+        },
+        {
+          "id": 179,
+          "name": "Golra Mor ⇌ B17/Taxila",
+          "time": "05:00 PM",
+          "order": 15,
+          "feeder_station": 15
+        },
+        {
+          "id": 180,
+          "name": "Golra Mor ⇌ B17/Taxila",
+          "time": "05:00 PM",
+          "order": 15,
+          "feeder_station": 15
+        },
+        {
+          "id": 181,
+          "name": "Golra Mor ⇌ B17/Taxila",
+          "time": "06:00 PM",
+          "order": 16,
+          "feeder_station": 15
+        },
+        {
+          "id": 182,
+          "name": "Golra Mor ⇌ B17/Taxila",
+          "time": "06:15 PM",
+          "order": 17,
+          "feeder_station": 15
+        },
+        {
+          "id": 183,
+          "name": "Golra Mor ⇌ B17/Taxila",
+          "time": "07:00 PM",
+          "order": 18,
+          "feeder_station": 15
+        },
+        {
+          "id": 184,
+          "name": "Golra Mor ⇌ B17/Taxila",
+          "time": "08:00 PM",
+          "order": 19,
+          "feeder_station": 15
+        }
+      ],
+      "name": "FR-10: Golra Mor Station - Taxila",
+      "is_active": false,
+      "was_active_before_off": true,
+      "updated_at": "2026-11-19T00:06:07+05:00",
+      "status": "CUSTOM",
+      "custom_time": "Every 60 Minutes",
+      "order": 11
+    },
+    {
+      "id": 16,
+      "sub_stations": [
+        {
+          "id": 141,
+          "name": "Golra Mor ⇌ i-16",
+          "time": "6:00 AM",
+          "order": 0,
+          "feeder_station": 16
+        },
+        {
+          "id": 142,
+          "name": "Golra Mor ⇌ i-16",
+          "time": "06:30 AM",
+          "order": 1,
+          "feeder_station": 16
+        },
+        {
+          "id": 143,
+          "name": "Golra Mor ⇌ i-16",
+          "time": "07:00 AM",
+          "order": 2,
+          "feeder_station": 16
+        },
+        {
+          "id": 144,
+          "name": "Golra Mor ⇌ i-16",
+          "time": "07:30 AM",
+          "order": 3,
+          "feeder_station": 16
+        },
+        {
+          "id": 145,
+          "name": "Golra Mor ⇌ i-16",
+          "time": "08:00 AM",
+          "order": 4,
+          "feeder_station": 16
+        },
+        {
+          "id": 146,
+          "name": "Golra Mor ⇌ i-16",
+          "time": "08:30 AM",
+          "order": 5,
+          "feeder_station": 16
+        },
+        {
+          "id": 147,
+          "name": "Golra Mor ⇌ i-16",
+          "time": "09:00 AM",
+          "order": 6,
+          "feeder_station": 16
+        },
+        {
+          "id": 148,
+          "name": "Golra Mor ⇌ i-16",
+          "time": "10:00 AM",
+          "order": 7,
+          "feeder_station": 16
+        },
+        {
+          "id": 149,
+          "name": "Golra Mor ⇌ i-16",
+          "time": "11:00 AM",
+          "order": 8,
+          "feeder_station": 16
+        },
+        {
+          "id": 150,
+          "name": "Golra Mor ⇌ i-16",
+          "time": "12:00 PM",
+          "order": 9,
+          "feeder_station": 16
+        },
+        {
+          "id": 151,
+          "name": "Golra Mor ⇌ i-16",
+          "time": "12:30 PM",
+          "order": 10,
+          "feeder_station": 16
+        },
+        {
+          "id": 152,
+          "name": "Golra Mor ⇌ i-16",
+          "time": "01:00 PM",
+          "order": 11,
+          "feeder_station": 16
+        },
+        {
+          "id": 153,
+          "name": "Golra Mor ⇌ i-16",
+          "time": "01:30 PM",
+          "order": 12,
+          "feeder_station": 16
+        },
+        {
+          "id": 154,
+          "name": "Golra Mor ⇌ i-16",
+          "time": "02:00 PM",
+          "order": 13,
+          "feeder_station": 16
+        },
+        {
+          "id": 155,
+          "name": "02:30 PM",
+          "time": "02:30 PM",
+          "order": 14,
+          "feeder_station": 16
+        },
+        {
+          "id": 156,
+          "name": "Golra Mor ⇌ i-16",
+          "time": "03:00 PM",
+          "order": 15,
+          "feeder_station": 16
+        },
+        {
+          "id": 157,
+          "name": "Golra Mor ⇌ i-16",
+          "time": "03:30 PM",
+          "order": 16,
+          "feeder_station": 16
+        },
+        {
+          "id": 158,
+          "name": "Golra Mor ⇌ i-16",
+          "time": "04:00",
+          "order": 17,
+          "feeder_station": 16
+        },
+        {
+          "id": 159,
+          "name": "Golra Mor ⇌ i-16",
+          "time": "04:30 PM",
+          "order": 18,
+          "feeder_station": 16
+        },
+        {
+          "id": 160,
+          "name": "Golra Mor ⇌ i-16",
+          "time": "05:00",
+          "order": 19,
+          "feeder_station": 16
+        },
+        {
+          "id": 161,
+          "name": "Golra Mor ⇌ i-16",
+          "time": "05:30 PM",
+          "order": 20,
+          "feeder_station": 16
+        },
+        {
+          "id": 162,
+          "name": "Golra Mor ⇌ i-16",
+          "time": "06:00 PM",
+          "order": 21,
+          "feeder_station": 16
+        },
+        {
+          "id": 163,
+          "name": "Golra Mor ⇌ i-16",
+          "time": "07:00 PM",
+          "order": 22,
+          "feeder_station": 16
+        }
+      ],
+      "name": "FR-11: Golra Morh - i-16",
+      "is_active": false,
+      "was_active_before_off": true,
+      "updated_at": "2026-11-19T00:06:07+05:00",
+      "status": "TRIAL",
+      "custom_time": null,
+      "order": 12
+    },
+    {
+      "id": 17,
+      "sub_stations": [],
+      "name": "FR-12: Taxila - Hassan Abdal",
+      "is_active": false,
+      "was_active_before_off": true,
+      "updated_at": "2026-11-19T00:06:07+05:00",
+      "status": "TRIAL",
+      "custom_time": null,
+      "order": 13
+    },
+    {
+      "id": 18,
+      "sub_stations": [
+        {
+          "id": 137,
+          "name": "Golra Mor ⇌ Fateh Jang",
+          "time": "6:00 AM",
+          "order": 0,
+          "feeder_station": 18
+        },
+        {
+          "id": 136,
+          "name": "Golra Mor ⇌ Fateh Jang",
+          "time": "9:00 AM",
+          "order": 1,
+          "feeder_station": 18
+        },
+        {
+          "id": 138,
+          "name": "Golra Mor ⇌ Fateh Jang",
+          "time": "12:00 PM",
+          "order": 2,
+          "feeder_station": 18
+        },
+        {
+          "id": 139,
+          "name": "Golra Mor ⇌ Fateh Jang",
+          "time": "03:00 PM",
+          "order": 4,
+          "feeder_station": 18
+        },
+        {
+          "id": 140,
+          "name": "Golra Mor ⇌ Fateh Jang",
+          "time": "06:00 PM",
+          "order": 5,
+          "feeder_station": 18
+        }
+      ],
+      "name": "FR-13: Golra Morh - Fateh Jang",
+      "is_active": false,
+      "was_active_before_off": true,
+      "updated_at": "2026-11-19T00:06:07+05:00",
+      "status": "TRIAL",
+      "custom_time": null,
+      "order": 14
+    },
+    {
+      "id": 19,
+      "sub_stations": [],
+      "name": "FR-14: Mandi Mor - Bahra Kahu",
+      "is_active": false,
+      "was_active_before_off": true,
+      "updated_at": "2026-11-19T00:06:07+05:00",
+      "status": "CUSTOM",
+      "custom_time": "Every 60 Minutes",
+      "order": 15
+    },
+    {
+      "id": 20,
+      "sub_stations": [],
+      "name": "FR-14A: Jillani Stop - 17 Meel",
+      "is_active": false,
+      "was_active_before_off": true,
+      "updated_at": "2026-11-19T00:06:07+05:00",
+      "status": "CUSTOM",
+      "custom_time": "Every 60 Minutes",
+      "order": 16
+    },
+    {
+      "id": 21,
+      "sub_stations": [],
+      "name": "FR-15: PIMS - Bhara Khu",
+      "is_active": false,
+      "was_active_before_off": true,
+      "updated_at": "2026-11-19T00:06:07+05:00",
+      "status": "TRIAL",
+      "custom_time": null,
+      "order": 17
+    },
+    {
+      "id": 23,
+      "sub_stations": [],
+      "name": "EXP-16: PIMS - Media Town",
+      "is_active": false,
+      "was_active_before_off": true,
+      "updated_at": "2026-11-19T00:06:07+05:00",
+      "status": "TRIAL",
+      "custom_time": null,
+      "order": 19
+    },
+    {
+      "id": 24,
+      "sub_stations": [],
+      "name": "FR-17: T Chowk - Aari Syedan",
+      "is_active": false,
+      "was_active_before_off": true,
+      "updated_at": "2026-11-19T00:06:07+05:00",
+      "status": "TRIAL",
+      "custom_time": null,
+      "order": 20
+    }
+  ],
+  "focus": []
+}
